@@ -11,8 +11,8 @@ Whoop, whoop!
 
 Testing with some C# code.
 ```csharp
-Person person = new PersonBuilder()
-    .WithName("N.O. Body")
+Person sherlock = new PersonBuilder()
+    .WithName("Sherlock  Holmes")
     .IsMan()
     .WithAddress(
         new AddressBuilder()
@@ -21,4 +21,9 @@ Person person = new PersonBuilder()
             .Build()
     )
     .Build();
+```
+
+
+```csharp
+Person sherlock = A.Man.Called("Sherlock  Holmes").LivingAt("221B Baker Street, London");
 ```
