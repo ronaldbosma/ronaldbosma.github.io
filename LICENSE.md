@@ -1,4 +1,4 @@
-# Released under MIT License
+# Everything related to the [Lanyon Theme](https://github.com/poole/lanyon) is released under MIT License
 
 Copyright (c) 2014 Mark Otto.
 
