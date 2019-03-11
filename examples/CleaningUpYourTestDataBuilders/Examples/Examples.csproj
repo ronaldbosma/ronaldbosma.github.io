@@ -49,6 +49,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="02-IntroducingObjectMother\AddressBuilder.cs" />
+    <Compile Include="02-IntroducingObjectMother\A_ObjectMother.cs" />
+    <Compile Include="02-IntroducingObjectMother\PersonBuilder.cs" />
+    <Compile Include="02-IntroducingObjectMother\Tests.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Gender.cs" />
     <Compile Include="01-InitialState\AddressBuilder.cs" />
