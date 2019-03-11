@@ -7,7 +7,7 @@ namespace Examples._03_RefactorObjectMother
   public class Tests
   {
     [TestMethod]
-    public void TestInitialState()
+    public void TestRefactorObjectMother()
     {
       Person sherlock = A.Man
         .WithName("Sherlock Holmes")

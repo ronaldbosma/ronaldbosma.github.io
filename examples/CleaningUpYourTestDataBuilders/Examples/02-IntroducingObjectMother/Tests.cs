@@ -7,7 +7,7 @@ namespace Examples._02_IntroducingObjectMother
   public class Tests
   {
     [TestMethod]
-    public void TestInitialState()
+    public void TestIntroducingObjectMother()
     {
       Person sherlock = A.Person
         .WithName("Sherlock Holmes")

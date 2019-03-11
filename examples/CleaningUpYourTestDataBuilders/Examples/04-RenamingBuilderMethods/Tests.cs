@@ -7,7 +7,7 @@ namespace Examples._04_RenamingBuilderMethods
   public class Tests
   {
     [TestMethod]
-    public void TestInitialState()
+    public void TestRenamingBuilderMethods()
     {
       Person sherlock = A.Man.Called("Sherlock Holmes")
         .LivingAt(
