@@ -57,6 +57,10 @@
     <Compile Include="03-RefactorObjectMother\A_ObjectMother.cs" />
     <Compile Include="03-RefactorObjectMother\PersonBuilder.cs" />
     <Compile Include="03-RefactorObjectMother\Tests.cs" />
+    <Compile Include="04-RenamingBuilderMethods\AddressBuilder.cs" />
+    <Compile Include="04-RenamingBuilderMethods\A_ObjectMother.cs" />
+    <Compile Include="04-RenamingBuilderMethods\PersonBuilder.cs" />
+    <Compile Include="04-RenamingBuilderMethods\Tests.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Gender.cs" />
     <Compile Include="01-InitialState\AddressBuilder.cs" />
