@@ -65,6 +65,10 @@
     <Compile Include="05-RefactorAddressBuilding\A_ObjectMother.cs" />
     <Compile Include="05-RefactorAddressBuilding\PersonBuilder.cs" />
     <Compile Include="05-RefactorAddressBuilding\Tests.cs" />
+    <Compile Include="06-ImplicitConversionForBuild\AddressBuilder.cs" />
+    <Compile Include="06-ImplicitConversionForBuild\A_ObjectMother.cs" />
+    <Compile Include="06-ImplicitConversionForBuild\PersonBuilder.cs" />
+    <Compile Include="06-ImplicitConversionForBuild\Tests.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Gender.cs" />
     <Compile Include="01-InitialState\AddressBuilder.cs" />
