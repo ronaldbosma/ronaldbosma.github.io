@@ -1,8 +1,8 @@
 namespace Examples.Models
 {
-  enum Gender
-  {
-    Woman,
-    Man
-  }
+    enum Gender
+    {
+        Woman,
+        Man
+    }
 }

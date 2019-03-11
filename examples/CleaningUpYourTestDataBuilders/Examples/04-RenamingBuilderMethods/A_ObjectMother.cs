@@ -1,9 +1,9 @@
-namespace Examples._04_RenamingBuilderMethods
+﻿namespace Examples._04_RenamingBuilderMethods
 {
-  class A
-  {
-    public static PersonBuilder Person => new PersonBuilder();
+    class A
+    {
+        public static PersonBuilder Person => new PersonBuilder();
 
-    public static PersonBuilder Man => Person.IsMan();
-  }
+        public static PersonBuilder Man => Person.IsMan();
+    }
 }

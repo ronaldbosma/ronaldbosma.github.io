@@ -1,9 +1,9 @@
-namespace Examples._05_RefactorAddressBuilding
+﻿namespace Examples._05_RefactorAddressBuilding
 {
-  class A
-  {
-    public static PersonBuilder Person => new PersonBuilder();
+    class A
+    {
+        public static PersonBuilder Person => new PersonBuilder();
 
-    public static PersonBuilder Man => Person.IsMan();
-  }
+        public static PersonBuilder Man => Person.IsMan();
+    }
 }
