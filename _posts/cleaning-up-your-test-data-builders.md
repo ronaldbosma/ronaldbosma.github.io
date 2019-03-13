@@ -1,6 +1,8 @@
 ---
 layout: post
 title: "Cleaning Up Your Test Data Builders"
+draft: true
+tags: [ "Cleaner Code", "Test Automation", ".NET" ]
 ---
 
 I've been using the [Test Data Builder](http://www.natpryce.com/articles/000714.html) pattern for quite a while now. It's really improved the readability of my test automation code. I've always had the nagging feeling though that it could be better.
