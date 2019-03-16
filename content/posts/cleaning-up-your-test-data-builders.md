@@ -1,10 +1,11 @@
 ---
 title: "Cleaning Up Your Test Data Builders"
 date: 2019-03-16T13:24:49+01:00
-draft: false
+publishdate: 2019-03-16T13:24:49+01:00
+image: "images/hal-gatewood-484469-unsplash.jpg"
 tags: [ "Cleaner Code", "Test Automation" ]
-type: "post"
 comments: false
+draft: false
 ---
 
 I've been using the [Test Data Builder](http://www.natpryce.com/articles/000714.html) pattern for quite a while now. It's really improved the readability of my test automation code. I've always had the nagging feeling though that it could be better.
