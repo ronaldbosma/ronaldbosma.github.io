@@ -201,7 +201,7 @@
     .Build();</code></pre></div>
 <h3 id="simplifying-address-creation">Simplifying address creation</h3>
 
-<p>The <code>AddressBuilder</code> is still a bit ugly. So I&rsquo;ve refactored the <code>LivingAt</code> method to take the first and second address line in one string, separated by a comma. The <code>AddressBuilder</code> is used inside <code>LivingAt</code> to parse the string.</p>
+<p>The <code>AddressBuilder</code> is still a bit ugly. So I&rsquo;ve refactored the <code>LivingAt</code> method to take the first and second address line in one string, separated by a comma. The <code>AddressBuilder</code> is used inside <code>LivingAt</code> to parse the string and create the address.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Man.Called(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
     .LivingAt(<span style="color:#e6db74">&#34;221B Baker Street, London&#34;</span>)
     .Build();</code></pre></div>
@@ -209,7 +209,7 @@
 
 <h3 id="finishing-touch">Finishing touch</h3>
 
-<p>If your using explicit types instead of the <code>var</code> keyword there&rsquo;s one more step to take. You can remove the call to <code>Build</code> by introducing an <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/implicit">implicit type conversion operator</a> in the <code>PersonBuilder</code>. This will convert a <code>PersonBuilder</code> to a <code>Person</code> by calling the <code>Build</code> method.</p>
+<p>If you&rsquo;re using explicit types instead of the <code>var</code> keyword there&rsquo;s one more step to take. You can remove the call to <code>Build</code> by introducing an <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/implicit">implicit type conversion operator</a> in the <code>PersonBuilder</code>. This will convert a <code>PersonBuilder</code> to a <code>Person</code> by calling the <code>Build</code> method.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Man.Called(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
     .LivingAt(<span style="color:#e6db74">&#34;221B Baker Street, London&#34;</span>);</code></pre></div>
 <h3 id="conclusion">Conclusion</h3>
