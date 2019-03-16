@@ -7,7 +7,7 @@ tags: [ "Cleaner Code", "Test Automation" ]
 
 I've been using the [Test Data Builder](http://www.natpryce.com/articles/000714.html) pattern for quite a while now. It's really improved the readability of my test automation code. I've always had the nagging feeling though that it could be better.
 
-Inspired by a talk I attended a couple of months a go I decided to refactor some of my test data builders. In this post I'll go through some of the steps I've taken.
+Inspired by a talk I attended a couple of months ago I decided to refactor some of my test data builders. In this post I'll go through some of the steps I've taken.
 
 The code example below is my initial take on a builder to create a simple Person object. It has a name, gender and address.
 
@@ -78,7 +78,7 @@ Person sherlock = A.Man.Called("Sherlock Holmes")
 
 ### Simplifying address creation
 
-The `AddressBuilder` is still a bit ugly. So I've refactored the `LivingAt` method to take the first and second address line in one string, seperated by a comma. The `AddressBuilder` is used inside `LivingAt` to parse the string.  
+The `AddressBuilder` is still a bit ugly. So I've refactored the `LivingAt` method to take the first and second address line in one string, separated by a comma. The `AddressBuilder` is used inside `LivingAt` to parse the string.  
 
 ```csharp
 Person sherlock = A.Man.Called("Sherlock Holmes")
