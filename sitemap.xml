@@ -3,17 +3,42 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://ronaldbosma.github.io/blog/cleaning-up-your-test-data-creation/</loc>
+    <lastmod>2019-03-17T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/blog/</loc>
+    <lastmod>2019-03-17T00:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://ronaldbosma.github.io/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>https://ronaldbosma.github.io/tags/cleaner-code/</loc>
+    <lastmod>2019-03-17T00:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://ronaldbosma.github.io/</loc>
+    <lastmod>2019-03-17T00:00:00+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://ronaldbosma.github.io/tags/</loc>
+    <lastmod>2019-03-17T00:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/test-automation/</loc>
+    <lastmod>2019-03-17T00:00:00+01:00</lastmod>
     <priority>0</priority>
   </url>
   
