@@ -14,10 +14,10 @@
     
     <item>
       <title>Cleaning Up Your Test Data Creation</title>
-      <link>https://ronaldbosma.github.io/blog/cleaning-up-your-test-data-creation/</link>
+      <link>https://ronaldbosma.github.io/2019/03/20/cleaning-up-your-test-data-creation/</link>
       <pubDate>Wed, 20 Mar 2019 00:00:00 +0100</pubDate>
       
-      <guid>https://ronaldbosma.github.io/blog/cleaning-up-your-test-data-creation/</guid>
+      <guid>https://ronaldbosma.github.io/2019/03/20/cleaning-up-your-test-data-creation/</guid>
       <description>I still come across a lot of automated tests with many lines of code just to create an object. Even when most data is not relevant for the scenario being tested.</description>
     </item>
     
