@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="generator" content="Hugo 0.55.1" />
+	
+	<title>Build And Release Hugo Site Using Azure Pipelines | Ronald&#39;s Blog</title>
+	
+	
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+	 crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+	<link href="/css/medium.css" rel="stylesheet">
+	<link href="/css/additional.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Build%20And%20Release%20Hugo%20Site%20Using%20Azure%20Pipelines&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2019%2f03%2f24%2fbuild-and-release-hugo-site-using-azure-pipelines%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2019%2f03%2f24%2fbuild-and-release-hugo-site-using-azure-pipelines%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://plus.google.com/share?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2019%2f03%2f24%2fbuild-and-release-hugo-site-using-azure-pipelines%2f" onclick="window.open(this.href, 'google-share', 'width=550,height=435');return false;">
+        <i class="fab fa-google"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2019%2f03%2f24%2fbuild-and-release-hugo-site-using-azure-pipelines%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+        <div class="sep">
+        </div>				
+        <ul>
+            <li> 
+            <a  class="small smoothscroll" href="#disqus_thread"></a>
+            </li>
+        </ul>
+    
+</div></div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="post-top-meta">
+                            <div>
+                                <img class="author-thumb" src="/images/author.png" alt="Ronald Bosma">
+                            </div>
+                            <div >
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software engineer<br>
+                                    <i class="far fa-star"></i>
+                                    Apr 15, 2019
+                                    <i class="far fa-clock clock"></i>
+                                    9 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Build And Release Hugo Site Using Azure Pipelines</h1> 
+                    </div>
+
+                    
+                    
+                        <img class="featured-image img-fluid" src="/images/build-and-release-hugo-site-using-azure-pipelines/post.jpg" alt="thumbnail for this post">
+                    
+                    
+                    
+                    
+                    <div class="article-post">
+                        
+
+<p><em>In this post I&rsquo;ll give a step-by-step explanation on how I build and publish my Hugo blog site to GitHub Pages using Azure Pipelines.</em></p>
+
+<p>I&rsquo;m using <a href="https://gohugo.io">Hugo</a> to create my blog site. It lets me create my posts in markdown and, with a simple command, generate a static website. This website is hosted on my personal <a href="https://pages.github.com/">GitHub Pages</a> site. GitHub Pages allows me to turn content in a git repository into a website and host it online.</p>
+
+<p>My goal was to publish changes to my blog whenever I push a change to the master branch of my blog repository. Before I go into the details of how I did this, let’s first have a look at what I started with.</p>
+
+<p>I used the instructions on <a href="https://gohugo.io/hosting-and-deployment/hosting-on-github/">Hosting Hugo site on GitHub</a> to create 2 git repositories.<br />
+1. A <code>blog</code> repository containing my markdown files, Hugo templates, theme, etc.<br />
+2. A <code>&lt;username&gt;.github.io</code> repository as the source of my GitHub Pages site.</p>
+
+<p>The <code>ronaldbosma.github.io</code> repository was included as a submodule in the <code>blog</code> repository. This allowed me to run the Hugo command and generate the static website in the <code>ronaldbosma.github.io</code> repository. Here&rsquo;s a graphical representation.</p>
+
+<p><img src="../../../../../images/build-and-release-hugo-site-using-azure-pipelines/initial-repo-setup.png" alt="Initial repository setup" /></p>
+
+<p>As per the instructions I used a <code>deploy.sh</code> script to generate the Hugo static website in the public folder and push any changes to <code>ronaldbosma.github.io</code>. This has a few disadvantages though.</p>
+
+<p>First off it&rsquo;s a manual action which can be forgotten easily. Also, I&rsquo;m a developer and I dislike doing things manually.</p>
+
+<p>I also prefer to create separate branches for my posts so I can create a pull request and ask my peers for feedback. The <code>deploy.sh</code> script can be run from every branch. Possibly publishing something I don&rsquo;t want to or removing changes I haven&rsquo;t merged from master yet.</p>
+
+<p>The last problem I had was that for some reason the link from the <code>blog</code> repository to the <code>ronaldbosma.github.io</code> submodule seemed to disappear. Making pushing any changes to <code>ronaldbosma.github.io</code> impossible. As a pragmatic solution I just removed and added the submodule manually, which was cumbersome.</p>
+
+<p>What I wanted was to automatically build and release my blog whenever I push a change in the master branch of my <code>blog</code> repository. I used Azure Pipelines to make this happen. The image below shows the various steps that are executed in the pipeline.</p>
+
+<p><img src="../../../../../images/build-and-release-hugo-site-using-azure-pipelines/pipeline.png" alt="Pipeline" /></p>
+
+<p>First a build pipeline is triggered whenever I push to master. Using a Hugo build task the static site is generated and published as an artifact of the build. When the build succeeds a release pipeline is triggered, which will take the site and push this into the <code>ronaldbosma.github.io</code> repository using a Publish to GitHub Pages task.</p>
+
+<p>Although I&rsquo;m interacting with a git repository when I publish my site, I decided to put this step in a release pipeline and not a build pipeline. I&rsquo;m releasing my site here. Not building it. This also allows me to add more stages to for example a testing environment or change the target location and type of my site altogether without affecting my build pipeline.</p>
+
+<p>There&rsquo;s another advantage to this solution besides having to do less manual work when publishing new changes to my blog. I can set a publish date in my posts. Posts with a publish date in the future will be ignored when generating my Hugo site. By scheduling my build pipeline to trigger at a regular interval I&rsquo;m able to schedule posts to be published in the future.</p>
+
+<p>In the next section of this post you&rsquo;ll find a step-by-step explanation of what I did to create this pipeline.</p>
+
+<ul>
+<li><a href="#step-1-prerequisites">Step 1: Prerequisites</a>
+
+<ul>
+<li><a href="#1-1-install-the-hugo-extension">1.1 Install the Hugo extension</a></li>
+<li><a href="#1-2-install-the-github-pages-publish-extension">1.2 Install the GitHub Pages Publish extension</a></li>
+<li><a href="#1-3-generate-github-personal-access-token">1.3 Generate GitHub Personal Access Token</a></li>
+</ul></li>
+<li><a href="#step-2-remove-submodule">Step 2: Remove submodule</a></li>
+<li><a href="#step-3-build-hugo-site">Step 3: Build Hugo site</a>
+
+<ul>
+<li><a href="#3-1-create-build-pipeline-linked-to-github">3.1 Create build pipeline linked to GitHub</a></li>
+<li><a href="#3-2-configure-build-pipeline">3.2 Configure build pipeline</a></li>
+</ul></li>
+<li><a href="#step-4-publish-hugo-site">Step 4: Publish Hugo site</a></li>
+</ul>
+
+<p>If you already have experience with Azure Pipelines in combination with GitHub repositories you can just setup the <a href="#step-1-prerequisites">Prerequisites</a> and jump right into configuring the <a href="#3-2-configure-build-pipeline">build pipeline</a> and <a href="#step-4-publish-hugo-site">release pipeline</a>.</p>
+
+<h3 id="step-1-prerequisites">Step 1: Prerequisites</h3>
+
+<p>You&rsquo;ll need an Azure DevOps project that has the &lsquo;Pipelines&rsquo; Azure DevOps service enabled. You can enable this service in your Project settings.</p>
+
+<p>There are also two extensions we&rsquo;ll need to install from the Marketplace. These will be installed at the Organization level in Azure DevOps. So be sure you have the proper permissions.</p>
+
+<p><em>Both extensions use PowerShell. So if you&rsquo;re unable to install these extensions. Have a look at the PowerShell scripts in their GitHub repositories. You might find what you need.</em></p>
+
+<h4 id="1-1-install-the-hugo-extension">1.1 Install the Hugo extension</h4>
+
+<p>We&rsquo;re going to use the Hugo extension to generate our Hugo site. You can find it <a href="https://marketplace.visualstudio.com/items?itemName=giuliovdev.hugo-extension">here</a> in the Marketplace. You&rsquo;ll have to sign in first before you can actually install the extension.</p>
+
+<p>After signing in, click &lsquo;Get it free&rsquo; and select your Azure DevOps organization and click &lsquo;Install&rsquo;.</p>
+
+<h4 id="1-2-install-the-github-pages-publish-extension">1.2 Install the GitHub Pages Publish extension</h4>
+
+<p>We also need the GitHub Pages Publish extension to publish our Hugo site to GitHub Pages. You can find it <a href="https://marketplace.visualstudio.com/items?itemName=AccidentalFish.githubpages-publish">here</a> in the Marketplace. You need version 1.0.0 or higher. It has the option to change the branch to master instead of using gh-pages.</p>
+
+<p>Click &lsquo;Get it free&rsquo; again. Select your Azure DevOps organization and click &lsquo;Install&rsquo;.</p>
+
+<h4 id="1-3-generate-github-personal-access-token">1.3 Generate GitHub Personal Access Token</h4>
+
+<p>The Publish to GitHub Pages task requires a GitHub Personal Access Token to access the GitHub Pages repository. Create one using these steps.</p>
+
+<ul>
+<li>Browse to <a href="https://github.com/settings/tokens/new">https://github.com/settings/tokens/new</a>.</li>
+<li>Enter your password if requested.</li>
+<li>Enter a description.</li>
+<li>Check the public_repo option.<br />
+<img src="../../../../../images/build-and-release-hugo-site-using-azure-pipelines/access-token-generate.png" alt="Generate token" /></li>
+<li>Click &lsquo;Generate token&rsquo; at the bottom of the page.</li>
+<li>Store the token for later use.</li>
+</ul>
+
+<h3 id="step-2-remove-submodule">Step 2: Remove submodule</h3>
+
+<p>If you&rsquo;ve included your GitHub Pages repository as a submodule to your blog repository like me. You can remove the submodule. Our new build pipeline will generate the site as an artifact that will be pushed to our GitHub Pages repository. So you don&rsquo;t need the submodule anymore.</p>
+
+<p>Follow these steps:</p>
+
+<ul>
+<li>Delete the &lsquo;public&rsquo; submodule section from the .gitmodules file.</li>
+<li>Stage the .gitmodules changes: <code>git add .gitmodules</code>.</li>
+<li>Delete the &lsquo;public&rsquo; submodule section from the .git/config file.</li>
+<li>Run <code>git rm --cached public</code> (no trailing slash).</li>
+<li>Remove the folder &lsquo;.git/modules/public&rsquo;.</li>
+<li>Commit <code>git commit -m &quot;Removed public submodule&quot;</code>.</li>
+<li>Delete the now untracked public folder from your cloned repo.</li>
+</ul>
+
+<h3 id="step-3-build-hugo-site">Step 3: Build Hugo site</h3>
+
+<p>Now that we&rsquo;re finished with the preparations it&rsquo;s time to generate our Hugo site.</p>
+
+<h4 id="3-1-create-build-pipeline-linked-to-github">3.1 Create build pipeline linked to GitHub</h4>
+
+<p>We&rsquo;ll start with a new build pipeline. You can follow the steps below or have a look at <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started-yaml?view=azure-devops">create your first pipeline</a> for a detailed description.</p>
+
+<ul>
+<li>Open your Azure DevOps project.</li>
+<li>In the left menu choose Pipelines &gt; Builds.</li>
+<li>Click the &lsquo;New pipeline&rsquo; button.</li>
+<li>Select &lsquo;GitHub&rsquo; as the source of your code.</li>
+<li>Select your blog repository containing your Hugo templates, themes, markdown posts, etc.</li>
+<li>Install Azure Pipelines in your GitHub account if you haven&rsquo;t already.</li>
+<li>Authorize Azure Pipelines to access your GitHub resources.</li>
+<li>Select the pipeline template you want to start from. In our case the &lsquo;Starter pipeline&rsquo; will do.</li>
+<li>An editor is opened where you can configure your pipeline using yaml. Remove all content. We&rsquo;ll start from scratch in the next section.</li>
+</ul>
+
+<h4 id="3-2-configure-build-pipeline">3.2 Configure build pipeline</h4>
+
+<p>The first thing to do is <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema#triggers">configure a trigger</a>. The following will make the build pipeline trigger whenever a change is pushed to master.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">trigger:
+- master</code></pre></div>
+<p>The Hugo task we&rsquo;re going to use, uses PowerShell. So we&rsquo;ll have to use a Windows VM as a build agent.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">pool:
+  vmImage: <span style="color:#e6db74">&#39;vs2017-win2016&#39;</span>  <span style="color:#75715e"># need a Windows host because the Hugo task uses PowerShell</span></code></pre></div>
+<p>I&rsquo;ve included the Hugo theme I use as a submodule in my blog repository. This step will <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema#checkout">checkout the blog repository including the theme submodule</a>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">steps:
+- checkout: self
+  displayName: <span style="color:#e6db74">&#39;Checkout repository including submodules&#39;</span>
+  submodules: <span style="color:#66d9ef">true</span>  <span style="color:#75715e"># true so Hugo theme submodule is checked out</span></code></pre></div>
+<p>Next step is to generate the Hugo site. This will use the Hugo task we&rsquo;ve installed earlier. The output will be generated to the artifact staging directory.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- task: HugoTask@<span style="color:#ae81ff">1</span>
+  displayName: <span style="color:#e6db74">&#39;Generate Hugo site&#39;</span>
+  inputs:
+    destination: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)&#39;</span></code></pre></div>
+<p><em>You can find a description of the possible task parameters <a href="https://github.com/giuliov/hugo-vsts-extension/blob/master/README.md">here</a>. Have a look at the <a href="https://github.com/giuliov/hugo-vsts-extension/blob/master/hugo-task/task.json">task.json</a> if you need the exact input names.</em></p>
+
+<p>The last step is to publish the generated Hugo site as an artifact of our build. This will make it possible to use the result in a release pipeline when publishing the site.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- task: PublishPipelineArtifact@<span style="color:#ae81ff">0</span>
+  displayName: <span style="color:#e6db74">&#39;Publish Hugo site as artifact&#39;</span>
+  inputs:
+    artifactName: <span style="color:#e6db74">&#39;hugo-site&#39;</span>
+    targetPath: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)&#39;</span></code></pre></div>
+<p>That&rsquo;s it. You can click &lsquo;Save and run&rsquo;. Provide a comment and click &lsquo;Save and run&rsquo; again. This will create an &lsquo;azure-pipelines.yml&rsquo; file in your blog repository which contains your build pipeline. You can find the final azure-pipelines.yml for my blog site <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/BuildAndReleaseHugoSiteUsingAzurePipelines/azure-pipelines.yml">here</a>.</p>
+
+<p>Because of the trigger on master it will start a new build immediately. After your build succeeds it should contain an artifact as shown in the image below.<br />
+<img src="../../../../../images/build-and-release-hugo-site-using-azure-pipelines/hugo-site-artifacts.png" alt="Build artifacts" /></p>
+
+<h3 id="step-4-publish-hugo-site">Step 4: Publish Hugo site</h3>
+
+<p>Now that we have a successful build we can create a release pipeline. It will take the generated Hugo site and publish it to GitHub Pages.</p>
+
+<p><em>We&rsquo;re going to use a task to push the Hugo site to a GitHub repository. If you want to push to a local repository or have some extra requirements. Have a look at <a href="https://github.com/JamesRandall/Vsts-GitHub-Pages-Publish/blob/master/buildAndReleaseTask/publish.ps1">this publish.ps1 script</a> that&rsquo;s used by the task.</em></p>
+
+<p>To configure the release pipeline:</p>
+
+<ul>
+<li>Open your Azure DevOps project.</li>
+<li>In the left menu choose Pipelines &gt; Releases.</li>
+<li>Click the &lsquo;New pipeline&rsquo; button.</li>
+<li>Select the &lsquo;Empty job&rsquo; template.</li>
+<li>Give the stage a name. E.g. &lsquo;GitHub Pages&rsquo;.</li>
+<li>Click &lsquo;Add an artifact&rsquo;.</li>
+
+<li><p>Select &lsquo;Build&rsquo; as the source type.<br />
+As the source, select the build pipeline we&rsquo;ve just created.<br />
+Enter a different source alias if you want, like &lsquo;blog&rsquo;.<br />
+<img src="../../../../../images/build-and-release-hugo-site-using-azure-pipelines/release-add-an-artifact.png" alt="Add artifact" /></p></li>
+
+<li><p>Enable the &lsquo;Continuous deployment trigger&rsquo; so the release will automatically start after the build succeeds.<br />
+<img src="../../../../../images/build-and-release-hugo-site-using-azure-pipelines/release-continuous-deployment-trigger.png" alt="Continuous deployment trigger" /></p></li>
+
+<li><p>Open the Tasks tab for the &lsquo;GitHub Pages&rsquo; stage.</p></li>
+
+<li><p>Add the <a href="https://marketplace.visualstudio.com/items?itemName=AccidentalFish.githubpages-publish">Publish to GitHub Pages</a> task installed in the prerequisites and configure it:</p>
+
+<ul>
+<li>&lsquo;Documentation Source&rsquo; should be <code>$(System.DefaultWorkingDirectory)/blog/*</code>. Where blog is the artifact alias you&rsquo;ve configured.</li>
+<li>Configure the &lsquo;GitHub Personal Access Token&rsquo; as <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&amp;tabs=yaml%2Cbatch#secret-variables">a secret</a> using a variable.<br /></li>
+<li>Set &lsquo;Branch Name&rsquo; to master.<br />
+<img src="../../../../../images/build-and-release-hugo-site-using-azure-pipelines/release-publish-to-github-pages.png" alt="Publish to GitHub Pages configuration" />
+<br /></li>
+</ul></li>
+</ul>
+
+<p>You can now trigger a new build. After the build succeeds the release will start and publish any change in your site to GitHub Pages.</p>
+
+<p>With this pipeline it&rsquo;s a breeze to publish new changes to your blog. No more manual labor!</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure-pipelines">Azure Pipelines</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-devops">Azure DevOps</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/hugo">Hugo</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/continuous-integration">Continuous Integration</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="/blog/2019/03/20/cleaning-up-your-test-data-creation/">Cleaning Up Your Test Data Creation &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+<div class="container">
+    <div id="comments" class="row justify-content-center mb-5">
+        <div class="col-md-8">              
+            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "ronaldbosma-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>               
+        </div>
+    </div>
+</div>
+
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a href="/tags/azure-devops">azure-devops</a>
+			
+			<a href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a href="/tags/hugo">hugo</a>
+			
+			<a href="/tags/test-automation">test-automation</a>
+			
+		</div>
+	</div>
+</div>
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+        </div>
+
+    
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>    
+    
+<script src="/js/mediumish.js"></script>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-136383708-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    </body>
+</html>
