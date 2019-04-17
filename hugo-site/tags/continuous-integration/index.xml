@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Continuous Integration on Ronald&#39;s Blog</title>
+    <link>https://ronaldbosma.github.io/tags/continuous-integration/</link>
+    <description>Recent content in Continuous Integration on Ronald&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Ronald Bosma - All rights reserved</copyright>
+    <lastBuildDate>Sun, 24 Mar 2019 00:00:00 +0100</lastBuildDate>
+    
+	<atom:link href="https://ronaldbosma.github.io/tags/continuous-integration/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Build And Release Hugo Site Using Azure Pipelines</title>
+      <link>https://ronaldbosma.github.io/blog/2019/03/24/build-and-release-hugo-site-using-azure-pipelines/</link>
+      <pubDate>Sun, 24 Mar 2019 00:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2019/03/24/build-and-release-hugo-site-using-azure-pipelines/</guid>
+      <description>In this post I&amp;rsquo;ll give a step-by-step explanation on how I build and publish my Hugo blog site to GitHub Pages using Azure Pipelines.</description>
+    </item>
+    
+  </channel>
+</rss>
