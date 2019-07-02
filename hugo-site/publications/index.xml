@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Publications on Ronald&#39;s Blog</title>
+    <link>https://ronaldbosma.github.io/publications/</link>
+    <description>Recent content in Publications on Ronald&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Ronald Bosma - All rights reserved</copyright>
+    
+	<atom:link href="https://ronaldbosma.github.io/publications/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>https://ronaldbosma.github.io/publications/valkuilen-als-je-niet-tdd-doet/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/publications/valkuilen-als-je-niet-tdd-doet/</guid>
+      <description>Valkuilen als je niet TDD doet In recente jaren is test automatisering steeds meer de norm geworden. Bedrijven moeten steeds sneller nieuwe software naar productie kunnen brengen waardoor vergaande automatisering nodig is.</description>
+    </item>
+    
+  </channel>
+</rss>

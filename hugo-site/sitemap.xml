@@ -67,7 +67,17 @@
   </url>
   
   <url>
+    <loc>https://ronaldbosma.github.io/publications/valkuilen-als-je-niet-tdd-doet/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://ronaldbosma.github.io/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/publications/</loc>
     <priority>0</priority>
   </url>
   
