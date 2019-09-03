@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="generator" content="Hugo 0.57.2" />
+	
+	<title>Using multi-stage YAML pipeline to create and publish NuGet packages | Ronald&#39;s Blog</title>
+	
+	
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+	 crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+	<link href="/css/medium.css" rel="stylesheet">
+	<link href="/css/additional.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Using%20multi-stage%20YAML%20pipeline%20to%20create%20and%20publish%20NuGet%20packages&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2019%2f09%2f03%2fusing-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2019%2f09%2f03%2fusing-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2019%2f09%2f03%2fusing-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.png" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software engineer<br>
+                                    <i class="far fa-star"></i>
+                                    Sep 3, 2019
+                                    <i class="far fa-clock clock"></i>
+                                    8 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Using multi-stage YAML pipeline to create and publish NuGet packages</h1> 
+                    </div>
+
+                    
+                    
+                        <img class="featured-image img-fluid" src="/images/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages.jpg" alt="thumbnail for this post">
+                    
+                    
+                    
+                    
+                    <div class="article-post">
+                        
+
+<p>I&rsquo;ve recently created <a href="https://www.nuget.org/packages/FluentAssertions.ArgumentMatchers.Moq/">a new NuGet package</a> that I published on nuget.org. In order to make the process of creating and publishing this package as smooth and simple as possible, I&rsquo;ve created a multi-stage YAML pipeline in Azure DevOps.</p>
+
+<p>My preferred way of working with NuGet packages is to first create a prerelease version of a package and use it in my software. If I&rsquo;m confident that it works I create a release version.</p>
+
+<p>I&rsquo;ve created a single pipeline to support this workflow, using the multi-stage pipelines feature that&rsquo;s currently in preview. This way a separate build &amp; release pipeline is not necessary anymore and you can have your entire pipeline in YAML stored with your code.</p>
+
+<p>The pipeline:</p>
+
+<ul>
+<li>builds the solution</li>
+<li>creates a prerelease version of the NuGet package</li>
+<li>creates a release version of the NuGet package</li>
+<li>automatically publishes the prerelease package to a private Azure DevOps Artifacts feed</li>
+<li>publishes the release version of the package to nuget.org if I give an approval</li>
+</ul>
+
+<p>In this post I&rsquo;ll go into how the pipeline is set up.</p>
+
+<p>First step is to enable the <em>multi-stage pipelines</em> preview feature:</p>
+
+<ul>
+<li>Login to your Azure DevOps environment.</li>
+<li>Click on your avatar in the top right corner.</li>
+<li>Choose <em>Preview features</em>.</li>
+<li>Enable the <em>Multi-stage pipelines</em> option.<br />
+<img src="../../../../../images/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/preview-feature-multi-stage-pipelines.png" alt="Multi-stage pipelines preview feature" /></li>
+</ul>
+
+<p>Now that the preview feature is enabled we can start. So, create a new pipeline and connect it to one of the sources that supports YAML, like Azure Repositories or GitHub. You can choose any pipeline template, because we&rsquo;re going to clear it and start from scratch. The <a href="https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core">Build, test, and deploy .NET Core apps</a> documentation is a good starting point if you haven&rsquo;t created a pipeline before.</p>
+
+<h3 id="create-nuget-packages">Create NuGet packages</h3>
+
+<p>Clear the YAML editor and add the following YAML. This will build any projects in your git repository using the .NET Core 2.2 SDK.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">trigger:
+- master
+
+stages:
+
+- stage: <span style="color:#e6db74">&#39;Build&#39;</span>
+  variables:
+    buildConfiguration: <span style="color:#e6db74">&#39;Release&#39;</span>
+
+  jobs:
+  - job:
+    pool:
+      vmImage: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+
+    workspace:
+      clean: all
+
+    steps:
+    - task: UseDotNet@<span style="color:#ae81ff">2</span>
+      displayName: <span style="color:#e6db74">&#39;Use .NET Core sdk&#39;</span>
+      inputs:
+        packageType: sdk
+        version: <span style="color:#ae81ff">2.2</span>.x
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+    
+    - task: DotNetCoreCLI@<span style="color:#ae81ff">2</span>
+      displayName: <span style="color:#e6db74">&#34;NuGet Restore&#34;</span>
+      inputs:
+        command: restore
+        projects: <span style="color:#e6db74">&#39;**/*.csproj&#39;</span>
+    
+    - task: DotNetCoreCLI@<span style="color:#ae81ff">2</span>
+      displayName: <span style="color:#e6db74">&#34;Build Solution&#34;</span>
+      inputs:
+        command: build
+        projects: <span style="color:#e6db74">&#39;**/*.csproj&#39;</span>
+        arguments: <span style="color:#e6db74">&#39;--configuration $(buildConfiguration)&#39;</span></code></pre></div>
+<p>There are a few things to note. First the pipeline will trigger on a push to master. Next, we specify the <code>stages</code> keyword. Indicating that this is a multi-stage pipeline. In the first stage we&rsquo;ll build the solution and create the packages.</p>
+
+<p>Since my NuGet package targets <em>netstandard2.0</em>, we&rsquo;re installing the .NET Core SDK as the first step in the stage using the <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/dotnet-core-tool-installer?view=azure-devops">UseDotNet</a> task. It allows us to specify a wildcard for the version. Ensuring that we&rsquo;re always using the latest available version of the .NET Core SDK.</p>
+
+<p>Then we restore any NuGet packages we require and build the solution.</p>
+
+<p>To keep the sample simple, I&rsquo;ve left out additional steps to analyze the solution using SonarQube and run unit tests. You can find the full pipeline of my NuGet package including these steps <a href="https://github.com/ronaldbosma/FluentAssertions.ArgumentMatchers.Moq/blob/master/azure-pipelines.yml">here</a>.</p>
+
+<p>Now that the solution can be build we can create our prerelease and release versions of the NuGet package.</p>
+
+<p>To be able to create a prerelease package the first thing we need to do is configure a version prefix in the csproj of our project. See the example below.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;Project</span> <span style="color:#a6e22e">Sdk=</span><span style="color:#e6db74">&#34;Microsoft.NET.Sdk&#34;</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;PropertyGroup&gt;</span>
+    <span style="color:#f92672">&lt;VersionPrefix&gt;</span>1.2.0<span style="color:#f92672">&lt;/VersionPrefix&gt;</span>
+  <span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
+<span style="color:#f92672">&lt;/Project&gt;</span></code></pre></div>
+<p>If you already have a <code>Version</code> tag specified, change this to <code>VersionPrefix</code>. This will make it possible to add a suffix to the version. Making it a prerelease package.</p>
+
+<p>You might also have the <code>GeneratePackageOnBuild</code> property set to true. Although it can&rsquo;t hurt. It&rsquo;s not necessary. You can remove it if you want.</p>
+
+<p>Now that we&rsquo;ve prepared our project, go back to the pipeline editor and add the following YAML at the end.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    - task: DotNetCoreCLI@<span style="color:#ae81ff">2</span>
+      displayName: <span style="color:#e6db74">&#39;Create NuGet Package - Release Version&#39;</span>
+      inputs:
+        command: pack
+        packDirectory: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages/releases&#39;</span>
+        arguments: <span style="color:#e6db74">&#39;--configuration $(buildConfiguration)&#39;</span>
+        nobuild: <span style="color:#66d9ef">true</span>
+    
+    - task: DotNetCoreCLI@<span style="color:#ae81ff">2</span>
+      displayName: <span style="color:#e6db74">&#39;Create NuGet Package - Prerelease Version&#39;</span>
+      inputs:
+        command: pack
+        buildProperties: <span style="color:#e6db74">&#39;VersionSuffix=&#34;$(Build.BuildNumber)&#34;&#39;</span>
+        packDirectory: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages/prereleases&#39;</span>
+        arguments: <span style="color:#e6db74">&#39;--configuration $(buildConfiguration)&#39;</span></code></pre></div>
+<p>The first task will create the release version of the package. The generated nupkg file will be created in the folder <code>packages/releases</code> of the artifact staging directory. The <code>nobuild</code> input is set to <code>true</code>. Meaning this task will not build the solution again.</p>
+
+<p>The second task will create the prerelease version of the package. The output will be generated in the <code>packages\prereleases</code> folder. There are two differences with the release package task.</p>
+
+<p>First of all. Using the <code>buildProperties</code> input we&rsquo;re adding the build number to the version of the package. Anything specified in the version suffix will be added after the version prefix, separated by a -. If the version prefix is <code>1.2.0</code> and the build number is <code>20190903.1</code>. Than the version of the package will be <code>1.2.0-20190903.1</code>.</p>
+
+<p>The second difference is that the <code>nobuild</code> input is not specified. To add the version suffix to the package a build is necessary. Because of this, the order of these two tasks is also important. If you create the prerelease version first and then the release version (and have <code>nobuild</code> set to <code>true</code>), the release version assemblies will have a product version containing the prerelease suffix. The product version would be <code>1.2.0-20190903.1</code> instead of <code>1.2.0</code>.</p>
+
+<p>The last step in the <em>Build</em> stage is to publish the packages as an artifact of the pipeline. Making it possible to access them in subsequent stages. Add the following <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops&amp;tabs=yaml">publish step</a> to create a &lsquo;packages&rsquo; artifact in the pipeline.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    - publish: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages&#39;</span>
+      artifact: <span style="color:#e6db74">&#39;packages&#39;</span></code></pre></div>
+<p>The <em>Build</em> stage is now complete. You can run it to see if everything works. The next step is to publish the prerelease package.</p>
+
+<h3 id="publish-prerelease-package-to-azure-devops-artifacts-feed">Publish prerelease package to Azure DevOps Artifacts feed</h3>
+
+<p>You can add the following YAML at the end of the pipeline yml file to publish the prerelease package.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- stage: <span style="color:#e6db74">&#39;PublishPrereleaseNuGetPackage&#39;</span>
+  displayName: <span style="color:#e6db74">&#39;Publish Prerelease NuGet Package&#39;</span>
+  dependsOn: <span style="color:#e6db74">&#39;Build&#39;</span>
+  condition: succeeded()
+  jobs:
+  - job:
+    pool:
+      vmImage: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+
+    steps:
+    - checkout: none
+
+    - download: current
+      artifact: <span style="color:#e6db74">&#39;packages&#39;</span>
+
+    - task: NuGetCommand@<span style="color:#ae81ff">2</span>
+      displayName: <span style="color:#e6db74">&#39;Push NuGet Package&#39;</span>
+      inputs:
+        command: <span style="color:#e6db74">&#39;push&#39;</span>
+        packagesToPush: <span style="color:#e6db74">&#39;$(Pipeline.Workspace)/packages/prereleases/*.nupkg&#39;</span>
+        nuGetFeedType: <span style="color:#e6db74">&#39;internal&#39;</span>
+        publishVstsFeed: <span style="color:#e6db74">&#39;Test&#39;</span></code></pre></div>
+<p>I&rsquo;ve decided to use a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema#job">normal job</a> instead of a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema#deployment-job">deployment job</a>. The reason is that you need an environment when using a deployment job and we don&rsquo;t have any need for it at this stage. We will for the last stage though.</p>
+
+<p>This stage will start automatically after the <em>Build</em> stage has succeeded. The first step <code>checkout: none</code> is to skip the checkout of the repository. We don&rsquo;t need any code checked out here. We only need the prerelease NuGet package which is available as an artifact.</p>
+
+<p>That&rsquo;s where the second step comes in. The <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops&amp;tabs=yaml#downloading-artifacts">download step</a> will download the &lsquo;packages&rsquo; artifact that was published in the pipeline at an earlier stage. It will be available in the <code>$(Pipeline.Workspace)/packages</code> folder.</p>
+
+<p>The <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/package/nuget?view=azure-devops">NuGetCommand</a> task will publish the prerelease package to an internal Azure DevOps Artifacts feed called &lsquo;Test&rsquo;.</p>
+
+<p>That&rsquo;s everything you need to publish the prerelease package. You can give the pipeline another run to see if it works.</p>
+
+<h3 id="publish-release-package-to-nuget-org">Publish release package to nuget.org</h3>
+
+<p>The last stage will publish the release version of the NuGet package to nuget.org. But before we proceed we&rsquo;ll need to make a few preparations.</p>
+
+<h4 id="create-new-environment">Create new environment</h4>
+
+<p>In the &lsquo;old style&rsquo; release pipelines, approvals were configured on stages itself. With the new multi-stage pipelines this has been moved to environments. It&rsquo;s not as comprehensive though. At the moment you can only configure one or more users/groups and all must approve. No further options can be specified as of this time.</p>
+
+<p>So, lets create an environment first.</p>
+
+<ul>
+<li>Click the <em>Environments</em> menu item in the Azure DevOps portal.<br />
+(When you enabled the <em>multi-stage pipelines</em> preview feature this new menu item appeared in the <em>Pipelines</em> menu.)</li>
+<li>Choose <em>New environment</em>.</li>
+<li>Specify a name like &lsquo;nuget-org&rsquo; (a . is not allowed) and an optional description.<br />
+<img src="../../../../../images/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/new-environment.png" alt="New environment" /></li>
+<li>Click Create.</li>
+</ul>
+
+<p>After the environment is created, open it to configure users or groups to give their approval before the package is published.</p>
+
+<ul>
+<li>Click on the button with three dots.</li>
+<li>Choose <em>Checks</em>.<br />
+<img src="../../../../../images/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/environment-add-checks.png" alt="Environment add checks" /></li>
+<li>Click <em>Create</em> in the new screen.</li>
+<li>Add users and groups and specify optional instructions for the approvers.<br />
+<img src="../../../../../images/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/environment-add-checks-create-approvals.png" alt="Create approvals" /></li>
+<li>Click <em>Create</em>.</li>
+</ul>
+
+<p>The environment is now ready to deploy to.</p>
+
+<h4 id="configure-nuget-org-service-connection">Configure nuget.org service connection</h4>
+
+<p>To be able to push a package to nuget.org you&rsquo;ll need an account. Create an account on <a href="https://www.nuget.org">nuget.org</a> if you haven&rsquo;t already and log in. Then create an api key as described <a href="https://docs.microsoft.com/en-us/nuget/nuget-org/scoped-api-keys">here</a>.</p>
+
+<p>Using that api key we can create a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&amp;tabs=yaml#sep-nuget">NuGet service connection</a> in Azure DevOps following these steps:</p>
+
+<ul>
+<li>Go to <em>Project settings</em>.</li>
+<li>Choose <em>Service connections</em>.</li>
+<li>Add a new service connection of type &lsquo;NuGet&rsquo;.</li>
+<li>Give the connection a name like &lsquo;NuGet&rsquo;.</li>
+<li>Specify <code>https://api.nuget.org/v3/index.json</code> as the feed URL.</li>
+<li>Enter your api key.<br />
+<img src="../../../../../images/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/nuget-service-connection.png" alt="NuGet service connection" /></li>
+<li>Click <em>OK</em>.</li>
+</ul>
+
+<h4 id="publish-nuget-package">Publish NuGet package</h4>
+
+<p>Now that we have our environment and NuGet service connection configured we can add the last stage to the YAML pipeline. For this add the following YAML to the end of the pipeline yml file.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- stage: <span style="color:#e6db74">&#39;PublishReleaseNuGetPackage&#39;</span>
+  displayName: <span style="color:#e6db74">&#39;Publish Release NuGet Package&#39;</span>
+  dependsOn: <span style="color:#e6db74">&#39;PublishPrereleaseNuGetPackage&#39;</span>
+  condition: succeeded()
+  jobs:
+  - deployment:
+    pool:
+      vmImage: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+    environment: <span style="color:#e6db74">&#39;nuget-org&#39;</span>
+    strategy:
+     runOnce:
+       deploy:
+         steps:
+         - task: NuGetCommand@<span style="color:#ae81ff">2</span>
+           displayName: <span style="color:#e6db74">&#39;Push NuGet Package&#39;</span>
+           inputs:
+             command: <span style="color:#e6db74">&#39;push&#39;</span>
+             packagesToPush: <span style="color:#e6db74">&#39;$(Pipeline.Workspace)/packages/releases/*.nupkg&#39;</span>
+             nuGetFeedType: <span style="color:#e6db74">&#39;external&#39;</span>
+             publishFeedCredentials: <span style="color:#e6db74">&#39;NuGet&#39;</span></code></pre></div>
+<p>You&rsquo;ll notice that this stage configuration looks a little different than the stage for the prerelease package. We&rsquo;re using a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema#deployment-job">deployment job</a> to publish the package and have configured the <code>nuget-org</code> environment to be used by the job. Making sure that we first need to give an approval before the package is published to nuget.org.</p>
+
+<p>Because of the deployment job we don&rsquo;t have to specify the <code>checkout: none</code> step. The repository will not be automatically checked out. The download pipeline artifact task is also not necessary here because the artifacts will be automatically downloaded to the <code>$(Pipeline.Workspace)</code> folder.</p>
+
+<p>In the <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/package/nuget?view=azure-devops">NuGetCommand</a> task we need to specify that the feed to push to is external. The <code>publishFeedCredentials</code> input is set to the name of the service connection we&rsquo;ve created earlier.</p>
+
+<p>And there you have it. A multi-stage pipeline that creates and publishes NuGet packages. If all stages pass you should have something like this.</p>
+
+<p><img src="../../../../../images/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/successful-pipeline.png" alt="NuGet service connection" /></p>
+
+<p>You can find the full example <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/UsingMultiStageYAMLPipelineToCreateAndPublishNuGetPackages/azure-pipelines.yml">here</a>.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure-pipelines">Azure Pipelines</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-devops">Azure DevOps</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/nuget">NuGet</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/continuous-integration">Continuous Integration</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/yaml">YAML</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="/blog/2019/03/24/build-and-release-hugo-site-using-azure-pipelines/">Build And Release Hugo Site Using Azure Pipelines &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+<script src="/js/mediumish.js"></script>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-136383708-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    </body>
+</html>

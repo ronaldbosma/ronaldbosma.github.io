@@ -81,12 +81,6 @@
         <i class="fab fa-facebook-f"></i>
         </a>
         </li>
-        
-        <li class="ml-1 mr-1">
-        <a target="_blank" href="https://plus.google.com/share?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2019%2f03%2f24%2fbuild-and-release-hugo-site-using-azure-pipelines%2f" onclick="window.open(this.href, 'google-share', 'width=550,height=435');return false;">
-        <i class="fab fa-google"></i>
-        </a>
-        </li>
 
         <li class="ml-1 mr-1">
         <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2019%2f03%2f24%2fbuild-and-release-hugo-site-using-azure-pipelines%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
@@ -124,7 +118,7 @@
                                     <i class="far fa-star"></i>
                                     Apr 15, 2019
                                     <i class="far fa-clock clock"></i>
-                                    8 min read
+                                    9 min read
                                 </span>					
                             </div>
                         </div>			
@@ -327,7 +321,7 @@ Enter a different source alias if you want, like &lsquo;blog&rsquo;.<br />
 <li><p>Add the <a href="https://marketplace.visualstudio.com/items?itemName=AccidentalFish.githubpages-publish">Publish to GitHub Pages</a> task installed in the prerequisites and configure it:</p>
 
 <ul>
-<li>&lsquo;Documentation Source&rsquo; should be <code>$(System.DefaultWorkingDirectory)/blog/*</code>. Where blog is the artifact alias you&rsquo;ve configured.</li>
+<li>&lsquo;Documentation Source&rsquo; should be <code>$(System.DefaultWorkingDirectory)/blog/hugo-site/*</code>. Where <em>blog</em> is the artifact alias you&rsquo;ve configured and <em>hugo-site</em> the name of the artifact specified in the build pipeline.</li>
 <li>Configure the &lsquo;GitHub Personal Access Token&rsquo; as <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&amp;tabs=yaml%2Cbatch#secret-variables">a secret</a> using a variable.<br /></li>
 <li>Set &lsquo;Branch Name&rsquo; to master.<br />
 <img src="../../../../../images/build-and-release-hugo-site-using-azure-pipelines/release-publish-to-github-pages.png" alt="Publish to GitHub Pages configuration" />
@@ -367,6 +361,8 @@ Enter a different source alias if you want, like &lsquo;blog&rsquo;.<br />
                     
                     
                     <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                        <a class="d-block col-md-6" href="/blog/2019/09/03/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/"> &laquo; Using multi-stage YAML pipeline to create and publish NuGet packages</a>
                     
                     
                         <a class="d-block col-md-6 text-lg-right" href="/blog/2019/03/20/cleaning-up-your-test-data-creation/">Cleaning Up Your Test Data Creation &raquo;</a>
@@ -430,7 +426,11 @@ Enter a different source alias if you want, like &lsquo;blog&rsquo;.<br />
 			
 			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
 			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
 			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
 			
 		</div>
 	</div>

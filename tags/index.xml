@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Sun, 24 Mar 2019 00:00:00 +0100</lastBuildDate>
+    <lastBuildDate>Tue, 03 Sep 2019 00:00:00 +0100</lastBuildDate>
     
 	<atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +15,7 @@
     <item>
       <title>Azure DevOps</title>
       <link>https://ronaldbosma.github.io/tags/azure-devops/</link>
-      <pubDate>Sun, 24 Mar 2019 00:00:00 +0100</pubDate>
+      <pubDate>Tue, 03 Sep 2019 00:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure-devops/</guid>
       <description></description>
@@ -24,7 +24,7 @@
     <item>
       <title>Azure Pipelines</title>
       <link>https://ronaldbosma.github.io/tags/azure-pipelines/</link>
-      <pubDate>Sun, 24 Mar 2019 00:00:00 +0100</pubDate>
+      <pubDate>Tue, 03 Sep 2019 00:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure-pipelines/</guid>
       <description></description>
@@ -33,9 +33,27 @@
     <item>
       <title>Continuous Integration</title>
       <link>https://ronaldbosma.github.io/tags/continuous-integration/</link>
-      <pubDate>Sun, 24 Mar 2019 00:00:00 +0100</pubDate>
+      <pubDate>Tue, 03 Sep 2019 00:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/continuous-integration/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>NuGet</title>
+      <link>https://ronaldbosma.github.io/tags/nuget/</link>
+      <pubDate>Tue, 03 Sep 2019 00:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/nuget/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>YAML</title>
+      <link>https://ronaldbosma.github.io/tags/yaml/</link>
+      <pubDate>Tue, 03 Sep 2019 00:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/yaml/</guid>
       <description></description>
     </item>
     
