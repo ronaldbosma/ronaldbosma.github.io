@@ -141,6 +141,8 @@
 
 <p>I&rsquo;m using <a href="https://gohugo.io">Hugo</a> to create my blog site. It lets me create my posts in markdown and, with a simple command, generate a static website. This website is hosted on my personal <a href="https://pages.github.com/">GitHub Pages</a> site. GitHub Pages allows me to turn content in a git repository into a website and host it online.</p>
 
+<p><strong>UPDATE 2019-09-03</strong>: I&rsquo;ve merged the build and release pipeline into a single multi-stage pipeline. You can find an example <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/BuildAndReleaseHugoSiteUsingAzurePipelines/azure-pipelines-multi-stage-example.yml">here</a>.</p>
+
 <p>My goal was to publish changes to my blog whenever I push a change to the master branch of my blog repository. Before I go into the details of how I did this, let’s first have a look at what I started with.</p>
 
 <p>I used the instructions on <a href="https://gohugo.io/hosting-and-deployment/hosting-on-github/">Hosting Hugo site on GitHub</a> to create 2 git repositories.<br />
@@ -379,26 +381,7 @@ Enter a different source alias if you want, like &lsquo;blog&rsquo;.<br />
 <div class="container">
     <div id="comments" class="row justify-content-center mb-5">
         <div class="col-md-8">              
-            <div id="disqus_thread"></div>
-<script type="application/javascript">
-    var disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "ronaldbosma-github-io" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>               
+                           
         </div>
     </div>
 </div>
