@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="generator" content="Hugo 0.57.2" />
+        <meta name="generator" content="Hugo 0.58.1" />
 	
 	<title>Build And Release Hugo Site Using Azure Pipelines | Ronald&#39;s Blog</title>
 	
@@ -141,7 +141,7 @@
 
 <p>I&rsquo;m using <a href="https://gohugo.io">Hugo</a> to create my blog site. It lets me create my posts in markdown and, with a simple command, generate a static website. This website is hosted on my personal <a href="https://pages.github.com/">GitHub Pages</a> site. GitHub Pages allows me to turn content in a git repository into a website and host it online.</p>
 
-<p><strong>UPDATE 2019-09-03</strong>: I&rsquo;ve merged the build and release pipeline into a single multi-stage pipeline. You can find an example <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/BuildAndReleaseHugoSiteUsingAzurePipelines/azure-pipelines-multi-stage-example.yml">here</a>.</p>
+<p><strong>UPDATE 2019-09-03</strong>: I&rsquo;ve merged the build and release pipeline into a single multi-stage pipeline. You can find an example <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/BuildAndReleaseHugoSiteUsingAzurePipelines/azure-pipelines-multi-stage-example.yml">here</a>. The rest of the post is still based on a separate build and release pipeline.</p>
 
 <p>My goal was to publish changes to my blog whenever I push a change to the master branch of my blog repository. Before I go into the details of how I did this, let’s first have a look at what I started with.</p>
 
