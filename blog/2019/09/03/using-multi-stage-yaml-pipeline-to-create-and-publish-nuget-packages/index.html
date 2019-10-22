@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="generator" content="Hugo 0.58.1" />
+        <meta name="generator" content="Hugo 0.59.0" />
 	
 	<title>Using multi-stage YAML pipeline to create and publish NuGet packages | Ronald&#39;s Blog</title>
 	
@@ -131,7 +131,7 @@
                     <div class="article-post">
                         
 
-<p>I&rsquo;ve recently created <a href="https://www.nuget.org/packages/FluentAssertions.ArgumentMatchers.Moq/">a new NuGet package</a> that I published on nuget.org. In order to make the process of creating and publishing this package as smooth and simple as possible, I&rsquo;ve created a multi-stage YAML pipeline in Azure DevOps.</p>
+<p>I&rsquo;ve recently created a new NuGet package called <a href="https://www.nuget.org/packages/FluentAssertions.ArgumentMatchers.Moq/">FluentAssertions.ArgumentMatchers.Moq</a> that I published on nuget.org. In order to make the process of creating and publishing this package as smooth and simple as possible, I&rsquo;ve created a multi-stage YAML pipeline in Azure DevOps.</p>
 
 <p>My preferred way of working with NuGet packages is to first create a prerelease version of a package and use it in my software. If I&rsquo;m confident that it works I create a release version.</p>
 
@@ -241,7 +241,7 @@ stages:
 
 <p>The second task will create the prerelease version of the package. The output will be generated in the <code>packages\prereleases</code> folder. There are two differences with the release package task.</p>
 
-<p>First of all. Using the <code>buildProperties</code> input we&rsquo;re adding the build number to the version of the package. Anything specified in the version suffix will be added after the version prefix, separated by a -. If the version prefix is <code>1.2.0</code> and the build number is <code>20190903.1</code>. Than the version of the package will be <code>1.2.0-20190903.1</code>.</p>
+<p>First of all. Using the <code>buildProperties</code> input we&rsquo;re adding the build number to the version of the package. Anything specified in the version suffix will be added after the version prefix, separated by a -. If the version prefix is <code>1.2.0</code> and the build number is <code>20190903.1</code>. Then the version of the package will be <code>1.2.0-20190903.1</code>.</p>
 
 <p>The second difference is that the <code>nobuild</code> input is not specified. To add the version suffix to the package a build is necessary. Because of this, the order of these two tasks is also important. If you create the prerelease version first and then the release version (and have <code>nobuild</code> set to <code>true</code>), the release version assemblies will have a product version containing the prerelease suffix. The product version would be <code>1.2.0-20190903.1</code> instead of <code>1.2.0</code>.</p>
 

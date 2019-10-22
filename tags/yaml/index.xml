@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>YAML on Ronald&#39;s Blog</title>
@@ -18,7 +18,7 @@
       <pubDate>Tue, 03 Sep 2019 00:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/blog/2019/09/03/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/</guid>
-      <description>I&amp;rsquo;ve recently created a new NuGet package that I published on nuget.org. In order to make the process of creating and publishing this package as smooth and simple as possible, I&amp;rsquo;ve created a multi-stage YAML pipeline in Azure DevOps.</description>
+      <description>I&amp;rsquo;ve recently created a new NuGet package called FluentAssertions.ArgumentMatchers.Moq that I published on nuget.org. In order to make the process of creating and publishing this package as smooth and simple as possible, I&amp;rsquo;ve created a multi-stage YAML pipeline in Azure DevOps.</description>
     </item>
     
   </channel>
