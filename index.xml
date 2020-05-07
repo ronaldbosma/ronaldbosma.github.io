@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 03 Sep 2019 00:00:00 +0100</lastBuildDate>
+    <lastBuildDate>Thu, 07 May 2020 00:00:00 +0200</lastBuildDate>
     
 	<atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How to install .NET Core on a Windows server</title>
+      <link>https://ronaldbosma.github.io/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/</link>
+      <pubDate>Thu, 07 May 2020 00:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/</guid>
+      <description>In this post I show how I install and update the .NET Core Runtime &amp;amp; Hosting Bundle on Windows servers using Azure Pipelines. Making patching .NET Core a trivial matter.</description>
+    </item>
     
     <item>
       <title>Using multi-stage YAML pipeline to create and publish NuGet packages</title>

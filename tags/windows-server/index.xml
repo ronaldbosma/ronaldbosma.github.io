@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Windows server on Ronald&#39;s Blog</title>
+    <link>https://ronaldbosma.github.io/tags/windows-server/</link>
+    <description>Recent content in Windows server on Ronald&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Ronald Bosma - All rights reserved</copyright>
+    <lastBuildDate>Thu, 07 May 2020 00:00:00 +0200</lastBuildDate>
+    
+	<atom:link href="https://ronaldbosma.github.io/tags/windows-server/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>How to install .NET Core on a Windows server</title>
+      <link>https://ronaldbosma.github.io/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/</link>
+      <pubDate>Thu, 07 May 2020 00:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/</guid>
+      <description>In this post I show how I install and update the .NET Core Runtime &amp;amp; Hosting Bundle on Windows servers using Azure Pipelines. Making patching .NET Core a trivial matter.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -3,18 +3,48 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://ronaldbosma.github.io/tags/.net-core/</loc>
+    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ronaldbosma.github.io/tags/azure-devops/</loc>
-    <lastmod>2019-10-22T08:40:00+02:00</lastmod>
+    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
   </url>
   
   <url>
     <loc>https://ronaldbosma.github.io/tags/azure-pipelines/</loc>
-    <lastmod>2019-10-22T08:40:00+02:00</lastmod>
+    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
   </url>
   
   <url>
     <loc>https://ronaldbosma.github.io/blog/</loc>
-    <lastmod>2019-10-22T08:40:00+02:00</lastmod>
+    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/</loc>
+    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/iis/</loc>
+    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/</loc>
+    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/</loc>
+    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/windows-server/</loc>
+    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
   </url>
   
   <url>
@@ -24,16 +54,6 @@
   
   <url>
     <loc>https://ronaldbosma.github.io/tags/nuget/</loc>
-    <lastmod>2019-10-22T08:40:00+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2019-10-22T08:40:00+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ronaldbosma.github.io/tags/</loc>
     <lastmod>2019-10-22T08:40:00+02:00</lastmod>
   </url>
   
