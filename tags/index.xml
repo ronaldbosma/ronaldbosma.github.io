@@ -7,10 +7,73 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Thu, 07 May 2020 00:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 08 Aug 2020 00:00:00 +0200</lastBuildDate>
     
 	<atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>ATDD</title>
+      <link>https://ronaldbosma.github.io/tags/atdd/</link>
+      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/atdd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>BDD</title>
+      <link>https://ronaldbosma.github.io/tags/bdd/</link>
+      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/bdd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cleaner Code</title>
+      <link>https://ronaldbosma.github.io/tags/cleaner-code/</link>
+      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/cleaner-code/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gherkin</title>
+      <link>https://ronaldbosma.github.io/tags/gherkin/</link>
+      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/gherkin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>SpecFlow</title>
+      <link>https://ronaldbosma.github.io/tags/specflow/</link>
+      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/specflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Specification by Example</title>
+      <link>https://ronaldbosma.github.io/tags/specification-by-example/</link>
+      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/specification-by-example/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Test Automation</title>
+      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
+      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>.NET Core</title>
@@ -90,24 +153,6 @@
       <pubDate>Sun, 24 Mar 2019 00:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/hugo/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Cleaner Code</title>
-      <link>https://ronaldbosma.github.io/tags/cleaner-code/</link>
-      <pubDate>Wed, 20 Mar 2019 00:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/cleaner-code/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Test Automation</title>
-      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
-      <pubDate>Wed, 20 Mar 2019 00:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
       <description></description>
     </item>
     

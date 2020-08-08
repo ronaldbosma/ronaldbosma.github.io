@@ -3,6 +3,61 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://ronaldbosma.github.io/tags/atdd/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/bdd/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/blog/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/cleaner-code/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/gherkin/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/blog/2020/08/08/handling-technical-ids-in-gherkin-with-specflow/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/specflow/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/specification-by-example/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ronaldbosma.github.io/tags/test-automation/</loc>
+    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ronaldbosma.github.io/tags/.net-core/</loc>
     <lastmod>2020-05-07T17:43:45+02:00</lastmod>
   </url>
@@ -18,27 +73,12 @@
   </url>
   
   <url>
-    <loc>https://ronaldbosma.github.io/blog/</loc>
-    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://ronaldbosma.github.io/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/</loc>
     <lastmod>2020-05-07T17:43:45+02:00</lastmod>
   </url>
   
   <url>
     <loc>https://ronaldbosma.github.io/tags/iis/</loc>
-    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2020-05-07T17:43:45+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ronaldbosma.github.io/tags/</loc>
     <lastmod>2020-05-07T17:43:45+02:00</lastmod>
   </url>
   
@@ -78,17 +118,7 @@
   </url>
   
   <url>
-    <loc>https://ronaldbosma.github.io/tags/cleaner-code/</loc>
-    <lastmod>2019-04-04T17:49:06+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://ronaldbosma.github.io/blog/2019/03/20/cleaning-up-your-test-data-creation/</loc>
-    <lastmod>2019-04-04T17:49:06+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ronaldbosma.github.io/tags/test-automation/</loc>
     <lastmod>2019-04-04T17:49:06+00:00</lastmod>
   </url>
   

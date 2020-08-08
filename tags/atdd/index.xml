@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ATDD on Ronald&#39;s Blog</title>
+    <link>https://ronaldbosma.github.io/tags/atdd/</link>
+    <description>Recent content in ATDD on Ronald&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Ronald Bosma - All rights reserved</copyright>
+    <lastBuildDate>Sat, 08 Aug 2020 00:00:00 +0200</lastBuildDate>
+    
+	<atom:link href="https://ronaldbosma.github.io/tags/atdd/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Handling technical ids in Gherkin with SpecFlow</title>
+      <link>https://ronaldbosma.github.io/blog/2020/08/08/handling-technical-ids-in-gherkin-with-specflow/</link>
+      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2020/08/08/handling-technical-ids-in-gherkin-with-specflow/</guid>
+      <description>Gherkin scenarios in Specification by Example are used to describe the functional requirements of your software. They should be readable for the team and also for the business that uses the software. Technical ids don&amp;rsquo;t have a place here. They&amp;rsquo;re usually included in scenarios for test automation purposes but make the them harder to read. So, what to do when your code requires a technical id?</description>
+    </item>
+    
+  </channel>
+</rss>

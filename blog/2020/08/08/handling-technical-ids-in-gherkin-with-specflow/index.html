@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="generator" content="Hugo 0.74.3" />
+	
+	<title>Handling technical ids in Gherkin with SpecFlow | Ronald&#39;s Blog</title>
+	
+	
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+	 crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+	<link href="/css/medium.css" rel="stylesheet">
+	<link href="/css/additional.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Handling%20technical%20ids%20in%20Gherkin%20with%20SpecFlow&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2020%2f08%2f08%2fhandling-technical-ids-in-gherkin-with-specflow%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2020%2f08%2f08%2fhandling-technical-ids-in-gherkin-with-specflow%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2020%2f08%2f08%2fhandling-technical-ids-in-gherkin-with-specflow%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.png" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software engineer<br>
+                                    <i class="far fa-star"></i>
+                                    Aug 8, 2020
+                                    <i class="far fa-clock clock"></i>
+                                    5 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Handling technical ids in Gherkin with SpecFlow</h1> 
+                    </div>
+
+                    
+                    
+                        <img class="featured-image img-fluid" src="/images/handling-technical-ids-in-gherkin-with-specflow.jpg" alt="thumbnail for this post">
+                    
+                    
+                    
+                    
+                    <div class="article-post">
+                        <p>When you use Specification by Example with the Gherkin syntax and automate your scenarios with SpecFlow, you&rsquo;re bound to encounter situations where you&rsquo;ll need a technical id. For example, to stub data that&rsquo;s retrieved from a repository or external service.</p>
+<p>Gherkin scenarios are used to describe the functional requirements of your software. They should be readable for the team and also for the business that uses the software. Technical ids don&rsquo;t have a place here. They&rsquo;re usually included in scenarios for test automation purposes but make them harder to read. So, what to do when your code requires a technical id?</p>
+<p>Let&rsquo;s start with an example scenario:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Gherkin" data-lang="Gherkin"><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">the following people
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Id</span><span style="color:#66d9ef">                                   |</span><span style="color:#e6db74"> Address</span><span style="color:#66d9ef">                           |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9A9EE974-9062-4AB3-98C8-E83B0A5A3BAA</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 221B Baker Street, London, UK</span><span style="color:#66d9ef">     |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 70EC5DE6-F569-4092-AF58-DA857F44279E</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 1630 Revello Drive, Sunnydale, US</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 0545383F-28E7-4968-9525-11829915ED89</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 31 Spooner Street, Quahog, US</span><span style="color:#66d9ef">     |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> EF03C690-6F29-43F0-931F-546938F2869F</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 12 Grimmauld Place, London, UK</span><span style="color:#66d9ef">    |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">person &#39;</span><span style="color:#e6db74">0545383</span><span style="color:#a6e22e">F-</span><span style="color:#e6db74">28E7</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">4968</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">9525</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">11829915</span><span style="color:#a6e22e">ED</span><span style="color:#e6db74">89</span><span style="color:#a6e22e">&#39; moves to &#39;</span><span style="color:#e6db74">742</span><span style="color:#a6e22e"> Evergreen Terrace, Springfield, US&#39;
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">the new address of person &#39;</span><span style="color:#e6db74">0545383</span><span style="color:#a6e22e">F-</span><span style="color:#e6db74">28E7</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">4968</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">9525</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">11829915</span><span style="color:#a6e22e">ED</span><span style="color:#e6db74">89</span><span style="color:#a6e22e">&#39; is &#39;</span><span style="color:#e6db74">742</span><span style="color:#a6e22e"> Evergreen Terrace, Springfield, US&#39;
+</span></code></pre></div><p>This scenario describes functionality for moving a person from one address to another. The technical id is used to identify the specific person that is moving.</p>
+<p>The <code>MovingService</code> class that implements the functionality has a simple <code>MovePerson</code> method that retrieves a person by its id from a repository and sets the new address.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MovingService</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> IPeopleRepository _peopleRepository;
+
+    <span style="color:#66d9ef">public</span> MovingService(IPeopleRepository peopleRepository)
+    {
+        _peopleRepository = peopleRepository ?? <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> ArgumentNullException(nameof(peopleRepository));
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> MovePerson(Guid personId, <span style="color:#66d9ef">string</span> newAddress)
+    {
+        <span style="color:#66d9ef">var</span> person = _peopleRepository.GetById(personId);
+        person.Address = newAddress;
+    }
+}
+</code></pre></div><p>The corresponding SpecFlow glue code that automates the scenario:</p>
+<ul>
+<li>injects a simple in-memory stub into <code>MovingService</code></li>
+<li>adds the people specified in the <code>Given</code> step</li>
+<li>calls the <code>MovingService.MovePerson</code> method</li>
+<li>and verifies that the specified person has the new address.</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Binding]</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">InitialScenarioSteps</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> PeopleRepositoryStub _peopleRepositoryStub = <span style="color:#66d9ef">new</span> PeopleRepositoryStub();
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> MovingService _movingService;
+
+    <span style="color:#66d9ef">public</span> InitialScenarioSteps()
+    {
+        _movingService = <span style="color:#66d9ef">new</span> MovingService(_peopleRepositoryStub);
+    }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Given(@&#34;the following people&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> GivenTheFollowingPeople(Table table)
+    {
+        <span style="color:#66d9ef">var</span> people = table.CreateSet&lt;Person&gt;();
+        _peopleRepositoryStub.AddRange(people);
+    }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [When(@&#34;person &#39;(.*)&#39; moves to &#39;(.*)&#39;&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> WhenPersonMovesTo(Guid personId, <span style="color:#66d9ef">string</span> newAddress)
+    {
+        _movingService.MovePerson(personId, newAddress);
+    }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Then(@&#34;the new address of person &#39;(.*)&#39; is &#39;(.*)&#39;&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ThenTheNewAddressOfPersonIs(Guid personId, <span style="color:#66d9ef">string</span> expectedAddress)
+    {
+        <span style="color:#66d9ef">var</span> person = _peopleRepositoryStub.GetById(personId);
+        Assert.AreEqual(expectedAddress, person.Address);
+    }
+}
+</code></pre></div><h2 id="refactoring-our-scenario">Refactoring our scenario</h2>
+<p>If we look at the scenario again you can see that a technical <code>Guid</code> is used as the id to identify a person.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Gherkin" data-lang="Gherkin"><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">the following people
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Id</span><span style="color:#66d9ef">                                   |</span><span style="color:#e6db74"> Address</span><span style="color:#66d9ef">                           |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9A9EE974-9062-4AB3-98C8-E83B0A5A3BAA</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 221B Baker Street, London, UK</span><span style="color:#66d9ef">     |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 70EC5DE6-F569-4092-AF58-DA857F44279E</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 1630 Revello Drive, Sunnydale, US</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 0545383F-28E7-4968-9525-11829915ED89</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 31 Spooner Street, Quahog, US</span><span style="color:#66d9ef">     |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> EF03C690-6F29-43F0-931F-546938F2869F</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 12 Grimmauld Place, London, UK</span><span style="color:#66d9ef">    |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">person &#39;</span><span style="color:#e6db74">0545383</span><span style="color:#a6e22e">F-</span><span style="color:#e6db74">28E7</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">4968</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">9525</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">11829915</span><span style="color:#a6e22e">ED</span><span style="color:#e6db74">89</span><span style="color:#a6e22e">&#39; moves to &#39;</span><span style="color:#e6db74">742</span><span style="color:#a6e22e"> Evergreen Terrace, Springfield, US&#39;
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">the new address of person &#39;</span><span style="color:#e6db74">0545383</span><span style="color:#a6e22e">F-</span><span style="color:#e6db74">28E7</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">4968</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">9525</span><span style="color:#a6e22e">-</span><span style="color:#e6db74">11829915</span><span style="color:#a6e22e">ED</span><span style="color:#e6db74">89</span><span style="color:#a6e22e">&#39; is &#39;</span><span style="color:#e6db74">742</span><span style="color:#a6e22e"> Evergreen Terrace, Springfield, US&#39;
+</span></code></pre></div><p>For our test automation code, the id is super helpful because we can just pass it into to the <code>MovingService.MovePerson</code> method. For the business, requirements engineers, and others who might be less technical, this scenario is probably more difficult to read.</p>
+<p>Also, the user interface that would implement this feature would most likely not show the technical id to the user at all. Making it even harder for users to understand what to expect.</p>
+<p>It&rsquo;s better to look for a functional id to identify our person in this example. Preferably one that is commonly used by the business. Usually one property or a combination of properties of an object can be used to uniquely identify that object.</p>
+<p>The name of a person is ideal for our specific scenario because it&rsquo;s often used in real life to identify a person. We can replace the technical id with the name of the person in our scenario.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Gherkin" data-lang="Gherkin"><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">the following people
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Name</span><span style="color:#66d9ef">            |</span><span style="color:#e6db74"> Address</span><span style="color:#66d9ef">                           |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Sherlock Holmes</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 221B Baker Street, London, UK</span><span style="color:#66d9ef">     |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Buffy Summers</span><span style="color:#66d9ef">   |</span><span style="color:#e6db74"> 1630 Revello Drive, Sunnydale, US</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Peter Griffin</span><span style="color:#66d9ef">   |</span><span style="color:#e6db74"> 31 Spooner Street, Quahog, US</span><span style="color:#66d9ef">     |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Sirius Black</span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 12 Grimmauld Place, London, UK</span><span style="color:#66d9ef">    |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">&#39;Peter Griffin&#39; moves to &#39;</span><span style="color:#e6db74">742</span><span style="color:#a6e22e"> Evergreen Terrace, Springfield, US&#39;
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">the new address of &#39;Peter Griffin&#39; is &#39;</span><span style="color:#e6db74">742</span><span style="color:#a6e22e"> Evergreen Terrace, Springfield, US&#39;
+</span></code></pre></div><blockquote>
+<p>Note that the functional id that you&rsquo;ve chosen does not have to be a property that is unique within your system or database. Multiple people might have the same name in your system. However, as long as the name is unique within our scenarios, there is no problem.</p>
+</blockquote>
+<p>This scenario looks a lot more readable to me and is more aligned with our business in terms of language. The only problem is that our code expects a technical id. We need to convert our functional id in the glue code to the technical id expected by our software.</p>
+<p>I&rsquo;ve created a helper method to convert a person&rsquo;s name to an id. It takes a <code>string</code> as parameter and returns a <code>Guid</code>. See the code snippet below.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Gherkin" data-lang="Gherkin"><span style="color:#a6e22e">private static Guid NameToId(string name)
+</span><span style="color:#a6e22e">{
+</span><span style="color:#a6e22e">    // Convert the name to an integer value and make sure it&#39;s always a positive number
+</span><span style="color:#a6e22e">    int personId = Math.Abs(name.GetHashCode());
+</span><span style="color:#a6e22e">    // Convert the integer personId to a string of </span><span style="color:#e6db74">32</span><span style="color:#a6e22e"> digits so we can create a valid Guid
+</span><span style="color:#a6e22e">    string personIdGuid = personId.ToString().PadLeft(</span><span style="color:#e6db74">32</span><span style="color:#a6e22e">, &#39;</span><span style="color:#e6db74">0</span><span style="color:#a6e22e">&#39;);
+</span><span style="color:#a6e22e">    
+</span><span style="color:#a6e22e">    return Guid.ParseExact(personIdGuid, &#34;</span><span style="color:#e6db74">N</span><span style="color:#a6e22e">&#34;);
+</span><span style="color:#a6e22e">}
+</span></code></pre></div><blockquote>
+<p>Since a <code>Guid</code> must be 32 characters long and is limited to numbers and the letters &lsquo;A&rsquo; through &lsquo;F&rsquo;, I&rsquo;m converting the name to a number first with <code>GetHashCode</code>. This will result in a number with a maximum length of 10. The number is then padded with zeros to create a 32-character long string of digits that can be converted to a valid <code>Guid</code>.</p>
+</blockquote>
+<p>If we need the id of a person, but only have the name, we simply call <code>NameToId</code> and use the result as the person&rsquo;s id. See the following example for the <code>When</code> step of our scenario.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[When(@&#34;&#39;(.*)&#39; moves to &#39;(.*)&#39;&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> WhenMovesTo(<span style="color:#66d9ef">string</span> name, <span style="color:#66d9ef">string</span> newAddress)
+{
+    Guid personId = NameToId(name);
+    _movingService.MovePerson(personId, newAddress);
+}
+</code></pre></div><p>With this little trick we have scenarios that are easy to read for all parties involved and we can automate them too.</p>
+<p>You can find a working code example <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/HandlingTechnicalIdsInGherkinWithSpecFlow">here</a>.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/gherkin">Gherkin</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/specflow">SpecFlow</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/specification-by-example">Specification by Example</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/atdd">ATDD</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bdd">BDD</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/test-automation">Test Automation</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/cleaner-code">Cleaner Code</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/">How to install .NET Core on a Windows server &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+<script src="/js/mediumish.js"></script>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-136383708-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    </body>
+</html>
