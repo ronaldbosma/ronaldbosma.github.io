@@ -6,10 +6,6 @@
     <description>Recent content in Categories on Ronald&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>Ronald Bosma - All rights reserved</copyright>
-    
-	<atom:link href="https://ronaldbosma.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>Ronald Bosma - All rights reserved</copyright><atom:link href="https://ronaldbosma.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

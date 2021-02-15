@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="generator" content="Hugo 0.74.3" />
+        <meta name="generator" content="Hugo 0.80.0" />
 	
 	<title>Using multi-stage YAML pipeline to create and publish NuGet packages | Ronald&#39;s Blog</title>
 	
@@ -152,43 +152,43 @@
 <p>Now that the preview feature is enabled we can start. So, create a new pipeline and connect it to one of the sources that supports YAML, like Azure Repositories or GitHub. You can choose any pipeline template, because we&rsquo;re going to clear it and start from scratch. The <a href="https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core">Build, test, and deploy .NET Core apps</a> documentation is a good starting point if you haven&rsquo;t created a pipeline before.</p>
 <h3 id="create-nuget-packages">Create NuGet packages</h3>
 <p>Clear the YAML editor and add the following YAML. This will build any projects in your git repository using the .NET Core 2.2 SDK.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">trigger</span>:
-- master
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">trigger</span>:
+- <span style="color:#ae81ff">master</span>
 
-<span style="color:#66d9ef">stages</span>:
+<span style="color:#f92672">stages</span>:
 
-- <span style="color:#66d9ef">stage</span>: <span style="color:#e6db74">&#39;Build&#39;</span>
-  <span style="color:#66d9ef">variables</span>:
-    <span style="color:#66d9ef">buildConfiguration</span>: <span style="color:#e6db74">&#39;Release&#39;</span>
+- <span style="color:#f92672">stage</span>: <span style="color:#e6db74">&#39;Build&#39;</span>
+  <span style="color:#f92672">variables</span>:
+    <span style="color:#f92672">buildConfiguration</span>: <span style="color:#e6db74">&#39;Release&#39;</span>
 
-  <span style="color:#66d9ef">jobs</span>:
-  - <span style="color:#66d9ef">job</span>:
-    <span style="color:#66d9ef">pool</span>:
-      <span style="color:#66d9ef">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+  <span style="color:#f92672">jobs</span>:
+  - <span style="color:#f92672">job</span>:
+    <span style="color:#f92672">pool</span>:
+      <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 
-    <span style="color:#66d9ef">workspace</span>:
-      <span style="color:#66d9ef">clean</span>: all
+    <span style="color:#f92672">workspace</span>:
+      <span style="color:#f92672">clean</span>: <span style="color:#ae81ff">all</span>
 
-    <span style="color:#66d9ef">steps</span>:
-    - <span style="color:#66d9ef">task</span>: UseDotNet@<span style="color:#ae81ff">2</span>
-      <span style="color:#66d9ef">displayName</span>: <span style="color:#e6db74">&#39;Use .NET Core sdk&#39;</span>
-      <span style="color:#66d9ef">inputs</span>:
-        <span style="color:#66d9ef">packageType</span>: sdk
-        <span style="color:#66d9ef">version</span>: <span style="color:#ae81ff">2.2</span>.x
-        <span style="color:#66d9ef">installationPath</span>: $(Agent.ToolsDirectory)/dotnet
+    <span style="color:#f92672">steps</span>:
+    - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">UseDotNet@2</span>
+      <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Use .NET Core sdk&#39;</span>
+      <span style="color:#f92672">inputs</span>:
+        <span style="color:#f92672">packageType</span>: <span style="color:#ae81ff">sdk</span>
+        <span style="color:#f92672">version</span>: <span style="color:#ae81ff">2.2</span><span style="color:#ae81ff">.x</span>
+        <span style="color:#f92672">installationPath</span>: <span style="color:#ae81ff">$(Agent.ToolsDirectory)/dotnet</span>
     
-    - <span style="color:#66d9ef">task</span>: DotNetCoreCLI@<span style="color:#ae81ff">2</span>
-      <span style="color:#66d9ef">displayName</span>: <span style="color:#e6db74">&#34;NuGet Restore&#34;</span>
-      <span style="color:#66d9ef">inputs</span>:
-        <span style="color:#66d9ef">command</span>: restore
-        <span style="color:#66d9ef">projects</span>: <span style="color:#e6db74">&#39;**/*.csproj&#39;</span>
+    - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">DotNetCoreCLI@2</span>
+      <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#34;NuGet Restore&#34;</span>
+      <span style="color:#f92672">inputs</span>:
+        <span style="color:#f92672">command</span>: <span style="color:#ae81ff">restore</span>
+        <span style="color:#f92672">projects</span>: <span style="color:#e6db74">&#39;**/*.csproj&#39;</span>
     
-    - <span style="color:#66d9ef">task</span>: DotNetCoreCLI@<span style="color:#ae81ff">2</span>
-      <span style="color:#66d9ef">displayName</span>: <span style="color:#e6db74">&#34;Build Solution&#34;</span>
-      <span style="color:#66d9ef">inputs</span>:
-        <span style="color:#66d9ef">command</span>: build
-        <span style="color:#66d9ef">projects</span>: <span style="color:#e6db74">&#39;**/*.csproj&#39;</span>
-        <span style="color:#66d9ef">arguments</span>: <span style="color:#e6db74">&#39;--configuration $(buildConfiguration)&#39;</span>
+    - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">DotNetCoreCLI@2</span>
+      <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#34;Build Solution&#34;</span>
+      <span style="color:#f92672">inputs</span>:
+        <span style="color:#f92672">command</span>: <span style="color:#ae81ff">build</span>
+        <span style="color:#f92672">projects</span>: <span style="color:#e6db74">&#39;**/*.csproj&#39;</span>
+        <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;--configuration $(buildConfiguration)&#39;</span>
 </code></pre></div><p>There are a few things to note. First the pipeline will trigger on a push to master. Next, we specify the <code>stages</code> keyword. Indicating that this is a multi-stage pipeline. In the first stage we&rsquo;ll build the solution and create the packages.</p>
 <p>Since my NuGet package targets <em>netstandard2.0</em>, we&rsquo;re installing the .NET Core SDK as the first step in the stage using the <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/dotnet-core-tool-installer?view=azure-devops">UseDotNet</a> task. It allows us to specify a wildcard for the version. Ensuring that we&rsquo;re always using the latest available version of the .NET Core SDK.</p>
 <p>Then we restore any NuGet packages we require and build the solution.</p>
@@ -203,53 +203,53 @@
 </code></pre></div><p>If you already have a <code>Version</code> tag specified, change this to <code>VersionPrefix</code>. This will make it possible to add a suffix to the version. Making it a prerelease package.</p>
 <p>You might also have the <code>GeneratePackageOnBuild</code> property set to true. Although it can&rsquo;t hurt. It&rsquo;s not necessary. You can remove it if you want.</p>
 <p>Now that we&rsquo;ve prepared our project, go back to the pipeline editor and add the following YAML at the end.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    - <span style="color:#66d9ef">task</span>: DotNetCoreCLI@<span style="color:#ae81ff">2</span>
-      <span style="color:#66d9ef">displayName</span>: <span style="color:#e6db74">&#39;Create NuGet Package - Release Version&#39;</span>
-      <span style="color:#66d9ef">inputs</span>:
-        <span style="color:#66d9ef">command</span>: pack
-        <span style="color:#66d9ef">packDirectory</span>: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages/releases&#39;</span>
-        <span style="color:#66d9ef">arguments</span>: <span style="color:#e6db74">&#39;--configuration $(buildConfiguration)&#39;</span>
-        <span style="color:#66d9ef">nobuild</span>: <span style="color:#66d9ef">true</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">DotNetCoreCLI@2</span>
+      <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Create NuGet Package - Release Version&#39;</span>
+      <span style="color:#f92672">inputs</span>:
+        <span style="color:#f92672">command</span>: <span style="color:#ae81ff">pack</span>
+        <span style="color:#f92672">packDirectory</span>: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages/releases&#39;</span>
+        <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;--configuration $(buildConfiguration)&#39;</span>
+        <span style="color:#f92672">nobuild</span>: <span style="color:#66d9ef">true</span>
     
-    - <span style="color:#66d9ef">task</span>: DotNetCoreCLI@<span style="color:#ae81ff">2</span>
-      <span style="color:#66d9ef">displayName</span>: <span style="color:#e6db74">&#39;Create NuGet Package - Prerelease Version&#39;</span>
-      <span style="color:#66d9ef">inputs</span>:
-        <span style="color:#66d9ef">command</span>: pack
-        <span style="color:#66d9ef">buildProperties</span>: <span style="color:#e6db74">&#39;VersionSuffix=&#34;$(Build.BuildNumber)&#34;&#39;</span>
-        <span style="color:#66d9ef">packDirectory</span>: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages/prereleases&#39;</span>
-        <span style="color:#66d9ef">arguments</span>: <span style="color:#e6db74">&#39;--configuration $(buildConfiguration)&#39;</span>
+    - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">DotNetCoreCLI@2</span>
+      <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Create NuGet Package - Prerelease Version&#39;</span>
+      <span style="color:#f92672">inputs</span>:
+        <span style="color:#f92672">command</span>: <span style="color:#ae81ff">pack</span>
+        <span style="color:#f92672">buildProperties</span>: <span style="color:#e6db74">&#39;VersionSuffix=&#34;$(Build.BuildNumber)&#34;&#39;</span>
+        <span style="color:#f92672">packDirectory</span>: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages/prereleases&#39;</span>
+        <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;--configuration $(buildConfiguration)&#39;</span>
 </code></pre></div><p>The first task will create the release version of the package. The generated nupkg file will be created in the folder <code>packages/releases</code> of the artifact staging directory. The <code>nobuild</code> input is set to <code>true</code>. Meaning this task will not build the solution again.</p>
 <p>The second task will create the prerelease version of the package. The output will be generated in the <code>packages\prereleases</code> folder. There are two differences with the release package task.</p>
 <p>First of all. Using the <code>buildProperties</code> input we&rsquo;re adding the build number to the version of the package. Anything specified in the version suffix will be added after the version prefix, separated by a -. If the version prefix is <code>1.2.0</code> and the build number is <code>20190903.1</code>. Then the version of the package will be <code>1.2.0-20190903.1</code>.</p>
 <p>The second difference is that the <code>nobuild</code> input is not specified. To add the version suffix to the package a build is necessary. Because of this, the order of these two tasks is also important. If you create the prerelease version first and then the release version (and have <code>nobuild</code> set to <code>true</code>), the release version assemblies will have a product version containing the prerelease suffix. The product version would be <code>1.2.0-20190903.1</code> instead of <code>1.2.0</code>.</p>
 <p>The last step in the <em>Build</em> stage is to publish the packages as an artifact of the pipeline. Making it possible to access them in subsequent stages. Add the following <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops&amp;tabs=yaml">publish step</a> to create a &lsquo;packages&rsquo; artifact in the pipeline.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    - <span style="color:#66d9ef">publish</span>: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages&#39;</span>
-      <span style="color:#66d9ef">artifact</span>: <span style="color:#e6db74">&#39;packages&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    - <span style="color:#f92672">publish</span>: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages&#39;</span>
+      <span style="color:#f92672">artifact</span>: <span style="color:#e6db74">&#39;packages&#39;</span>
 </code></pre></div><p>The <em>Build</em> stage is now complete. You can run it to see if everything works. The next step is to publish the prerelease package.</p>
 <h3 id="publish-prerelease-package-to-azure-devops-artifacts-feed">Publish prerelease package to Azure DevOps Artifacts feed</h3>
 <p>You can add the following YAML at the end of the pipeline yml file to publish the prerelease package.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#66d9ef">stage</span>: <span style="color:#e6db74">&#39;PublishPrereleaseNuGetPackage&#39;</span>
-  <span style="color:#66d9ef">displayName</span>: <span style="color:#e6db74">&#39;Publish Prerelease NuGet Package&#39;</span>
-  <span style="color:#66d9ef">dependsOn</span>: <span style="color:#e6db74">&#39;Build&#39;</span>
-  <span style="color:#66d9ef">condition</span>: succeeded()
-  <span style="color:#66d9ef">jobs</span>:
-  - <span style="color:#66d9ef">job</span>:
-    <span style="color:#66d9ef">pool</span>:
-      <span style="color:#66d9ef">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">stage</span>: <span style="color:#e6db74">&#39;PublishPrereleaseNuGetPackage&#39;</span>
+  <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Publish Prerelease NuGet Package&#39;</span>
+  <span style="color:#f92672">dependsOn</span>: <span style="color:#e6db74">&#39;Build&#39;</span>
+  <span style="color:#f92672">condition</span>: <span style="color:#ae81ff">succeeded()</span>
+  <span style="color:#f92672">jobs</span>:
+  - <span style="color:#f92672">job</span>:
+    <span style="color:#f92672">pool</span>:
+      <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 
-    <span style="color:#66d9ef">steps</span>:
-    - <span style="color:#66d9ef">checkout</span>: none
+    <span style="color:#f92672">steps</span>:
+    - <span style="color:#f92672">checkout</span>: <span style="color:#ae81ff">none</span>
 
-    - <span style="color:#66d9ef">download</span>: current
-      <span style="color:#66d9ef">artifact</span>: <span style="color:#e6db74">&#39;packages&#39;</span>
+    - <span style="color:#f92672">download</span>: <span style="color:#ae81ff">current</span>
+      <span style="color:#f92672">artifact</span>: <span style="color:#e6db74">&#39;packages&#39;</span>
 
-    - <span style="color:#66d9ef">task</span>: NuGetCommand@<span style="color:#ae81ff">2</span>
-      <span style="color:#66d9ef">displayName</span>: <span style="color:#e6db74">&#39;Push NuGet Package&#39;</span>
-      <span style="color:#66d9ef">inputs</span>:
-        <span style="color:#66d9ef">command</span>: <span style="color:#e6db74">&#39;push&#39;</span>
-        <span style="color:#66d9ef">packagesToPush</span>: <span style="color:#e6db74">&#39;$(Pipeline.Workspace)/packages/prereleases/*.nupkg&#39;</span>
-        <span style="color:#66d9ef">nuGetFeedType</span>: <span style="color:#e6db74">&#39;internal&#39;</span>
-        <span style="color:#66d9ef">publishVstsFeed</span>: <span style="color:#e6db74">&#39;Test&#39;</span>
+    - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">NuGetCommand@2</span>
+      <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Push NuGet Package&#39;</span>
+      <span style="color:#f92672">inputs</span>:
+        <span style="color:#f92672">command</span>: <span style="color:#e6db74">&#39;push&#39;</span>
+        <span style="color:#f92672">packagesToPush</span>: <span style="color:#e6db74">&#39;$(Pipeline.Workspace)/packages/prereleases/*.nupkg&#39;</span>
+        <span style="color:#f92672">nuGetFeedType</span>: <span style="color:#e6db74">&#39;internal&#39;</span>
+        <span style="color:#f92672">publishVstsFeed</span>: <span style="color:#e6db74">&#39;Test&#39;</span>
 </code></pre></div><p>I&rsquo;ve decided to use a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema#job">normal job</a> instead of a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema#deployment-job">deployment job</a>. The reason is that you need an environment when using a deployment job and we don&rsquo;t have any need for it at this stage. We will for the last stage though.</p>
 <p>This stage will start automatically after the <em>Build</em> stage has succeeded. The first step <code>checkout: none</code> is to skip the checkout of the repository. We don&rsquo;t need any code checked out here. We only need the prerelease NuGet package which is available as an artifact.</p>
 <p>That&rsquo;s where the second step comes in. The <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops&amp;tabs=yaml#downloading-artifacts">download step</a> will download the &lsquo;packages&rsquo; artifact that was published in the pipeline at an earlier stage. It will be available in the <code>$(Pipeline.Workspace)/packages</code> folder.</p>
@@ -294,26 +294,26 @@
 </ul>
 <h4 id="publish-nuget-package">Publish NuGet package</h4>
 <p>Now that we have our environment and NuGet service connection configured we can add the last stage to the YAML pipeline. For this add the following YAML to the end of the pipeline yml file.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#66d9ef">stage</span>: <span style="color:#e6db74">&#39;PublishReleaseNuGetPackage&#39;</span>
-  <span style="color:#66d9ef">displayName</span>: <span style="color:#e6db74">&#39;Publish Release NuGet Package&#39;</span>
-  <span style="color:#66d9ef">dependsOn</span>: <span style="color:#e6db74">&#39;PublishPrereleaseNuGetPackage&#39;</span>
-  <span style="color:#66d9ef">condition</span>: succeeded()
-  <span style="color:#66d9ef">jobs</span>:
-  - <span style="color:#66d9ef">deployment</span>:
-    <span style="color:#66d9ef">pool</span>:
-      <span style="color:#66d9ef">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
-    <span style="color:#66d9ef">environment</span>: <span style="color:#e6db74">&#39;nuget-org&#39;</span>
-    <span style="color:#66d9ef">strategy</span>:
-     <span style="color:#66d9ef">runOnce</span>:
-       <span style="color:#66d9ef">deploy</span>:
-         <span style="color:#66d9ef">steps</span>:
-         - <span style="color:#66d9ef">task</span>: NuGetCommand@<span style="color:#ae81ff">2</span>
-           <span style="color:#66d9ef">displayName</span>: <span style="color:#e6db74">&#39;Push NuGet Package&#39;</span>
-           <span style="color:#66d9ef">inputs</span>:
-             <span style="color:#66d9ef">command</span>: <span style="color:#e6db74">&#39;push&#39;</span>
-             <span style="color:#66d9ef">packagesToPush</span>: <span style="color:#e6db74">&#39;$(Pipeline.Workspace)/packages/releases/*.nupkg&#39;</span>
-             <span style="color:#66d9ef">nuGetFeedType</span>: <span style="color:#e6db74">&#39;external&#39;</span>
-             <span style="color:#66d9ef">publishFeedCredentials</span>: <span style="color:#e6db74">&#39;NuGet&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">stage</span>: <span style="color:#e6db74">&#39;PublishReleaseNuGetPackage&#39;</span>
+  <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Publish Release NuGet Package&#39;</span>
+  <span style="color:#f92672">dependsOn</span>: <span style="color:#e6db74">&#39;PublishPrereleaseNuGetPackage&#39;</span>
+  <span style="color:#f92672">condition</span>: <span style="color:#ae81ff">succeeded()</span>
+  <span style="color:#f92672">jobs</span>:
+  - <span style="color:#f92672">deployment</span>:
+    <span style="color:#f92672">pool</span>:
+      <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+    <span style="color:#f92672">environment</span>: <span style="color:#e6db74">&#39;nuget-org&#39;</span>
+    <span style="color:#f92672">strategy</span>:
+     <span style="color:#f92672">runOnce</span>:
+       <span style="color:#f92672">deploy</span>:
+         <span style="color:#f92672">steps</span>:
+         - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">NuGetCommand@2</span>
+           <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Push NuGet Package&#39;</span>
+           <span style="color:#f92672">inputs</span>:
+             <span style="color:#f92672">command</span>: <span style="color:#e6db74">&#39;push&#39;</span>
+             <span style="color:#f92672">packagesToPush</span>: <span style="color:#e6db74">&#39;$(Pipeline.Workspace)/packages/releases/*.nupkg&#39;</span>
+             <span style="color:#f92672">nuGetFeedType</span>: <span style="color:#e6db74">&#39;external&#39;</span>
+             <span style="color:#f92672">publishFeedCredentials</span>: <span style="color:#e6db74">&#39;NuGet&#39;</span>
 </code></pre></div><p>You&rsquo;ll notice that this stage configuration looks a little different than the stage for the prerelease package. We&rsquo;re using a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema#deployment-job">deployment job</a> to publish the package and have configured the <code>nuget-org</code> environment to be used by the job. Making sure that we first need to give an approval before the package is published to nuget.org.</p>
 <p>Because of the deployment job we don&rsquo;t have to specify the <code>checkout: none</code> step. The repository will not be automatically checked out. The download pipeline artifact task is also not necessary here because the artifacts will be automatically downloaded to the <code>$(Pipeline.Workspace)</code> folder.</p>
 <p>In the <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/package/nuget?view=azure-devops">NuGetCommand</a> task we need to specify that the feed to push to is external. The <code>publishFeedCredentials</code> input is set to the name of the service connection we&rsquo;ve created earlier.</p>

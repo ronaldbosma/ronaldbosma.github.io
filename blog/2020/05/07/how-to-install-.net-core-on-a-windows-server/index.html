@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="generator" content="Hugo 0.74.3" />
+        <meta name="generator" content="Hugo 0.80.0" />
 	
 	<title>How to install .NET Core on a Windows server | Ronald&#39;s Blog</title>
 	
@@ -131,7 +131,8 @@
                     <div class="article-post">
                         <p>At my current client we&rsquo;re transitioning from .NET Framework to .NET Core. We only have a few .NET Core web applications at the moment and the preferred hosting model is to host these in IIS. This means we need to install the .NET Core Runtime &amp; Hosting Bundle on every Windows server where a .NET Core web application is deployed. This bundle includes the .NET Core Runtime and IIS support for .NET Core.</p>
 <p>Where new versions and patches of the .NET Framework are installed through Windows Update, .NET Core does not provide a similar solution. Which means that for every .NET Core update we manually need to download the installer and execute it on every server in every environment. To make this process simpler and faster I&rsquo;ve created an Azure DevOps extension called <a href="https://marketplace.visualstudio.com/items?itemName=rbosma.InstallNetCoreRuntimeAndHosting">Install .NET Core Runtime &amp; Hosting Bundle</a> that automates this task. You can find the extension in the <a href="https://marketplace.visualstudio.com/items?itemName=rbosma.InstallNetCoreRuntimeAndHosting">Visual Studio Marketplace</a>.</p>
-<p>In the rest of this post I&rsquo;ll give an example of how you can use this task in Azure DevOps with a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema%2Cparameter-schema">YAML pipeline</a> to automate the installation of the .NET Core Runtime &amp; Hosting Bundle on a Windows server.</p>
+<p><strong>UPDATE:</strong> starting in December 2020 .NET Core has been added to Microsoft Update. Before you proceed and use my custom extension, have a look at <a href="https://devblogs.microsoft.com/dotnet/net-core-updates-coming-to-microsoft-update/">.NET Core coming to Microsoft Update</a>.</p>
+<p>In the rest of this post I&rsquo;ll give an example of how you can use the custom task in Azure DevOps with a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema%2Cparameter-schema">YAML pipeline</a> to automate the installation of the .NET Core Runtime &amp; Hosting Bundle on a Windows server.</p>
 <blockquote>
 <p>NOTE: if you have an older version of Azure DevOps that doesn&rsquo;t support YAML pipelines in combination with environments, you can create a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/release/deployment-groups/?view=azure-devops">deployment group</a> instead of an <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments?view=azure-devops">environment</a>. In that case you can use a <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/release/?view=azure-devops">release pipeline</a> instead of a YAML pipeline to execute the &lsquo;Install .NET Core Runtime &amp; Hosting&rsquo; task.</p>
 </blockquote>
@@ -166,26 +167,26 @@
 <li>Select the pipeline template you want to start from. In our case the &lsquo;Starter pipeline&rsquo; will do.</li>
 <li>An editor is opened where you can configure your pipeline using YAML. Replace all content with the following:</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">trigger</span>: none
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">trigger</span>: <span style="color:#ae81ff">none</span>
 
-<span style="color:#66d9ef">stages</span>:
-- <span style="color:#66d9ef">stage</span>: <span style="color:#e6db74">&#39;InstallNetCore&#39;</span>
-  <span style="color:#66d9ef">jobs</span>:
-  - <span style="color:#66d9ef">deployment</span>: <span style="color:#e6db74">&#39;InstallNetCore&#39;</span>
-    <span style="color:#66d9ef">environment</span>:
-      <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#39;net-core-test&#39;</span>
-      <span style="color:#66d9ef">resourceType</span>: <span style="color:#e6db74">&#39;VirtualMachine&#39;</span>
-      <span style="color:#66d9ef">tags</span>: <span style="color:#e6db74">&#39;net-core&#39;</span>
-    <span style="color:#66d9ef">strategy</span>:
-      <span style="color:#66d9ef">runOnce</span>:
-        <span style="color:#66d9ef">deploy</span>:
-          <span style="color:#66d9ef">steps</span>:
-          - <span style="color:#66d9ef">task</span>: InstallNetCoreRuntimeAndHosting@<span style="color:#ae81ff">1</span>
-            <span style="color:#66d9ef">inputs</span>:
-              <span style="color:#66d9ef">version</span>: <span style="color:#e6db74">&#39;3.1&#39;</span>
-              <span style="color:#66d9ef">useProxy</span>: <span style="color:#66d9ef">false</span>
-              <span style="color:#66d9ef">norestart</span>: <span style="color:#66d9ef">false</span>
-              <span style="color:#66d9ef">iisReset</span>: <span style="color:#66d9ef">true</span>
+<span style="color:#f92672">stages</span>:
+- <span style="color:#f92672">stage</span>: <span style="color:#e6db74">&#39;InstallNetCore&#39;</span>
+  <span style="color:#f92672">jobs</span>:
+  - <span style="color:#f92672">deployment</span>: <span style="color:#e6db74">&#39;InstallNetCore&#39;</span>
+    <span style="color:#f92672">environment</span>:
+      <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;net-core-test&#39;</span>
+      <span style="color:#f92672">resourceType</span>: <span style="color:#e6db74">&#39;VirtualMachine&#39;</span>
+      <span style="color:#f92672">tags</span>: <span style="color:#e6db74">&#39;net-core&#39;</span>
+    <span style="color:#f92672">strategy</span>:
+      <span style="color:#f92672">runOnce</span>:
+        <span style="color:#f92672">deploy</span>:
+          <span style="color:#f92672">steps</span>:
+          - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">InstallNetCoreRuntimeAndHosting@1</span>
+            <span style="color:#f92672">inputs</span>:
+              <span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;3.1&#39;</span>
+              <span style="color:#f92672">useProxy</span>: <span style="color:#66d9ef">false</span>
+              <span style="color:#f92672">norestart</span>: <span style="color:#66d9ef">false</span>
+              <span style="color:#f92672">iisReset</span>: <span style="color:#66d9ef">true</span>
 </code></pre></div><p>The pipeline above will install the .NET Core 3.1 Runtime &amp; Hosting Bundle on every machine with the tag &lsquo;net-core&rsquo; in the environment &lsquo;net-core-test&rsquo;. (See the description in the <a href="https://marketplace.visualstudio.com/items?itemName=rbosma.InstallNetCoreRuntimeAndHosting">Visual Studio Marketplace</a> for more details about the inputs that you can provide to the task.)</p>
 <p>Choose &lsquo;Save and run&rsquo; to save the pipeline in your repository and execute the pipeline. After the pipeline has finished, the result should look like the image below were the .NET Core Runtime &amp; Hosting Bundle has been installed on the servers &lsquo;win-2016-01&rsquo; and &lsquo;win-10&rsquo;.</p>
 <p><img src="../../../../../images/howto-install-net-core-on-windows-server/pipeline-summary.png" alt="Pipeline Summary"></p>
