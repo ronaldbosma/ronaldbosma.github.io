@@ -1,129 +1,79 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
   <url>
     <loc>https://ronaldbosma.github.io/tags/atdd/</loc>
-    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/bdd/</loc>
-    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/blog/</loc>
-    <lastmod>2021-02-15T19:22:20+01:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/cleaner-code/</loc>
-    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/gherkin/</loc>
-    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/blog/2020/08/08/handling-technical-ids-in-gherkin-with-specflow/</loc>
-    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2021-02-15T19:22:20+01:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/specflow/</loc>
-    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/specification-by-example/</loc>
-    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/</loc>
-    <lastmod>2021-02-15T19:22:20+01:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/test-automation/</loc>
-    <lastmod>2020-08-08T14:54:39+02:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-03-02T14:55:23+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/.net-core/</loc>
     <lastmod>2021-02-15T19:22:20+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-devops/</loc>
     <lastmod>2021-02-15T19:22:20+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-pipelines/</loc>
     <lastmod>2021-02-15T19:22:20+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/</loc>
     <lastmod>2021-02-15T19:22:20+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/iis/</loc>
     <lastmod>2021-02-15T19:22:20+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/windows-server/</loc>
     <lastmod>2021-02-15T19:22:20+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/continuous-integration/</loc>
     <lastmod>2019-10-22T08:40:00+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/nuget/</loc>
     <lastmod>2019-10-22T08:40:00+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/blog/2019/09/03/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/</loc>
     <lastmod>2019-10-22T08:40:00+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/yaml/</loc>
     <lastmod>2019-10-22T08:40:00+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/blog/2019/03/24/build-and-release-hugo-site-using-azure-pipelines/</loc>
     <lastmod>2019-09-10T17:30:52+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/hugo/</loc>
     <lastmod>2019-09-10T17:30:52+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/blog/2019/03/20/cleaning-up-your-test-data-creation/</loc>
     <lastmod>2019-04-04T17:49:06+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ronaldbosma.github.io/categories/</loc>
   </url>
-  
 </urlset>

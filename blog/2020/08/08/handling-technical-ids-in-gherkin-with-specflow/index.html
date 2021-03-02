@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="generator" content="Hugo 0.80.0" />
+        <meta name="generator" content="Hugo 0.81.0" />
 	
 	<title>Handling technical ids in Gherkin with SpecFlow | Ronald&#39;s Blog</title>
 	
@@ -222,16 +222,16 @@
 </blockquote>
 <p>This scenario looks a lot more readable to me and is more aligned with our business in terms of language. The only problem is that our code expects a technical id. We need to convert our functional id in the glue code to the technical id expected by our software.</p>
 <p>I&rsquo;ve created a helper method to convert a person&rsquo;s name to an id. It takes a <code>string</code> as parameter and returns a <code>Guid</code>. See the code snippet below.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Gherkin" data-lang="Gherkin"><span style="color:#a6e22e">private static Guid NameToId(string name)
-</span><span style="color:#a6e22e">{
-</span><span style="color:#a6e22e">    // Convert the name to an integer value and make sure it&#39;s always a positive number
-</span><span style="color:#a6e22e">    int personId = Math.Abs(name.GetHashCode());
-</span><span style="color:#a6e22e">    // Convert the integer personId to a string of </span><span style="color:#e6db74">32</span><span style="color:#a6e22e"> digits so we can create a valid Guid
-</span><span style="color:#a6e22e">    string personIdGuid = personId.ToString().PadLeft(</span><span style="color:#e6db74">32</span><span style="color:#a6e22e">, &#39;</span><span style="color:#e6db74">0</span><span style="color:#a6e22e">&#39;);
-</span><span style="color:#a6e22e">    
-</span><span style="color:#a6e22e">    return Guid.ParseExact(personIdGuid, &#34;</span><span style="color:#e6db74">N</span><span style="color:#a6e22e">&#34;);
-</span><span style="color:#a6e22e">}
-</span></code></pre></div><blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Guid NameToId(<span style="color:#66d9ef">string</span> name)
+{
+    <span style="color:#75715e">// Convert the name to an integer value and make sure it&#39;s always a positive number
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> personId = Math.Abs(name.GetHashCode());
+    <span style="color:#75715e">// Convert the integer personId to a string of 32 digits so we can create a valid Guid
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">string</span> personIdGuid = personId.ToString().PadLeft(<span style="color:#ae81ff">32</span>, <span style="color:#e6db74">&#39;0&#39;</span>);
+    
+    <span style="color:#66d9ef">return</span> Guid.ParseExact(personIdGuid, <span style="color:#e6db74">&#34;N&#34;</span>);
+}
+</code></pre></div><blockquote>
 <p>Since a <code>Guid</code> must be 32 characters long and is limited to numbers and the letters &lsquo;A&rsquo; through &lsquo;F&rsquo;, I&rsquo;m converting the name to a number first with <code>GetHashCode</code>. This will result in a number with a maximum length of 10. The number is then padded with zeros to create a 32-character long string of digits that can be converted to a valid <code>Guid</code>.</p>
 </blockquote>
 <p>If we need the id of a person, but only have the name, we simply call <code>NameToId</code> and use the result as the person&rsquo;s id. See the following example for the <code>When</code> step of our scenario.</p>
