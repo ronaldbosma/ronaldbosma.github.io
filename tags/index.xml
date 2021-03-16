@@ -7,7 +7,61 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Sat, 08 Aug 2020 00:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 16 Mar 2021 00:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Azure</title>
+      <link>https://ronaldbosma.github.io/tags/azure/</link>
+      <pubDate>Tue, 16 Mar 2021 00:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure CLI</title>
+      <link>https://ronaldbosma.github.io/tags/azure-cli/</link>
+      <pubDate>Tue, 16 Mar 2021 00:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-cli/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure DevOps</title>
+      <link>https://ronaldbosma.github.io/tags/azure-devops/</link>
+      <pubDate>Tue, 16 Mar 2021 00:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-devops/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Pipelines</title>
+      <link>https://ronaldbosma.github.io/tags/azure-pipelines/</link>
+      <pubDate>Tue, 16 Mar 2021 00:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-pipelines/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Continuous Integration</title>
+      <link>https://ronaldbosma.github.io/tags/continuous-integration/</link>
+      <pubDate>Tue, 16 Mar 2021 00:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/continuous-integration/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>YAML</title>
+      <link>https://ronaldbosma.github.io/tags/yaml/</link>
+      <pubDate>Tue, 16 Mar 2021 00:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/yaml/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>ATDD</title>
       <link>https://ronaldbosma.github.io/tags/atdd/</link>
@@ -81,24 +135,6 @@
     </item>
     
     <item>
-      <title>Azure DevOps</title>
-      <link>https://ronaldbosma.github.io/tags/azure-devops/</link>
-      <pubDate>Thu, 07 May 2020 00:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure-devops/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Azure Pipelines</title>
-      <link>https://ronaldbosma.github.io/tags/azure-pipelines/</link>
-      <pubDate>Thu, 07 May 2020 00:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure-pipelines/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>IIS</title>
       <link>https://ronaldbosma.github.io/tags/iis/</link>
       <pubDate>Thu, 07 May 2020 00:00:00 +0200</pubDate>
@@ -117,29 +153,11 @@
     </item>
     
     <item>
-      <title>Continuous Integration</title>
-      <link>https://ronaldbosma.github.io/tags/continuous-integration/</link>
-      <pubDate>Tue, 03 Sep 2019 00:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/continuous-integration/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>NuGet</title>
       <link>https://ronaldbosma.github.io/tags/nuget/</link>
       <pubDate>Tue, 03 Sep 2019 00:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/nuget/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>YAML</title>
-      <link>https://ronaldbosma.github.io/tags/yaml/</link>
-      <pubDate>Tue, 03 Sep 2019 00:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/yaml/</guid>
       <description></description>
     </item>
     

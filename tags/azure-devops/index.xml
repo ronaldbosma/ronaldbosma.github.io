@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Thu, 07 May 2020 00:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-devops/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 16 Mar 2021 00:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-devops/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Provision an Azure VM in an Azure Pipelines Environment</title>
+      <link>https://ronaldbosma.github.io/blog/2021/03/16/provision-an-azure-vm-in-an-azure-pipelines-environment/</link>
+      <pubDate>Tue, 16 Mar 2021 00:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2021/03/16/provision-an-azure-vm-in-an-azure-pipelines-environment/</guid>
+      <description>In the past I&amp;rsquo;ve created a custom Azure Pipelines task to install .NET Core on a Windows server. To test this task, I had to manually setup an environment with virtual machines. I wanted to automate this process, so I created a YAML pipeline in Azure DevOps that automatically provisions an Azure virtual machine and registers the virtual machine in an Azure Pipelines environment.</description>
+    </item>
+    
     <item>
       <title>How to install .NET Core on a Windows server</title>
       <link>https://ronaldbosma.github.io/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/</link>
