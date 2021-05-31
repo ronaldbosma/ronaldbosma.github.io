@@ -7,7 +7,70 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 16 Mar 2021 00:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 31 May 2021 07:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ATDD</title>
+      <link>https://ronaldbosma.github.io/tags/atdd/</link>
+      <pubDate>Mon, 31 May 2021 07:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/atdd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>BDD</title>
+      <link>https://ronaldbosma.github.io/tags/bdd/</link>
+      <pubDate>Mon, 31 May 2021 07:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/bdd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cleaner Code</title>
+      <link>https://ronaldbosma.github.io/tags/cleaner-code/</link>
+      <pubDate>Mon, 31 May 2021 07:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/cleaner-code/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gherkin</title>
+      <link>https://ronaldbosma.github.io/tags/gherkin/</link>
+      <pubDate>Mon, 31 May 2021 07:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/gherkin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>SpecFlow</title>
+      <link>https://ronaldbosma.github.io/tags/specflow/</link>
+      <pubDate>Mon, 31 May 2021 07:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/specflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Specification by Example</title>
+      <link>https://ronaldbosma.github.io/tags/specification-by-example/</link>
+      <pubDate>Mon, 31 May 2021 07:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/specification-by-example/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Test Automation</title>
+      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
+      <pubDate>Mon, 31 May 2021 07:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Azure</title>
       <link>https://ronaldbosma.github.io/tags/azure/</link>
@@ -59,69 +122,6 @@
       <pubDate>Tue, 16 Mar 2021 00:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/yaml/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ATDD</title>
-      <link>https://ronaldbosma.github.io/tags/atdd/</link>
-      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/atdd/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>BDD</title>
-      <link>https://ronaldbosma.github.io/tags/bdd/</link>
-      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/bdd/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Cleaner Code</title>
-      <link>https://ronaldbosma.github.io/tags/cleaner-code/</link>
-      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/cleaner-code/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gherkin</title>
-      <link>https://ronaldbosma.github.io/tags/gherkin/</link>
-      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/gherkin/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>SpecFlow</title>
-      <link>https://ronaldbosma.github.io/tags/specflow/</link>
-      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/specflow/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Specification by Example</title>
-      <link>https://ronaldbosma.github.io/tags/specification-by-example/</link>
-      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/specification-by-example/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Test Automation</title>
-      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
-      <pubDate>Sat, 08 Aug 2020 00:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
       <description></description>
     </item>
     

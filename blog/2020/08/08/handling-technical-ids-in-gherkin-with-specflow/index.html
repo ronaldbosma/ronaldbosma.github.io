@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="generator" content="Hugo 0.81.0" />
+	<meta name="generator" content="Hugo 0.83.1" />
 	
 	<title>Handling technical ids in Gherkin with SpecFlow | Ronald&#39;s Blog</title>
 	
@@ -163,16 +163,16 @@
 <p>The <code>MovingService</code> class that implements the functionality has a simple <code>MovePerson</code> method that retrieves a person by its id from a repository and sets the new address.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MovingService</span>
 {
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> IPeopleRepository _peopleRepository;
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> IPeopleRepository <span style="color:#ae81ff">_</span>peopleRepository;
 
     <span style="color:#66d9ef">public</span> MovingService(IPeopleRepository peopleRepository)
     {
-        _peopleRepository = peopleRepository ?? <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> ArgumentNullException(nameof(peopleRepository));
+        <span style="color:#ae81ff">_</span>peopleRepository = peopleRepository ?? <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> ArgumentNullException(nameof(peopleRepository));
     }
 
     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> MovePerson(Guid personId, <span style="color:#66d9ef">string</span> newAddress)
     {
-        <span style="color:#66d9ef">var</span> person = _peopleRepository.GetById(personId);
+        <span style="color:#66d9ef">var</span> person = <span style="color:#ae81ff">_</span>peopleRepository.GetById(personId);
         person.Address = newAddress;
     }
 }
@@ -186,31 +186,31 @@
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Binding]</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">InitialScenarioSteps</span>
 {
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> PeopleRepositoryStub _peopleRepositoryStub = <span style="color:#66d9ef">new</span> PeopleRepositoryStub();
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> MovingService _movingService;
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> PeopleRepositoryStub <span style="color:#ae81ff">_</span>peopleRepositoryStub = <span style="color:#66d9ef">new</span> PeopleRepositoryStub();
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> MovingService <span style="color:#ae81ff">_</span>movingService;
 
     <span style="color:#66d9ef">public</span> InitialScenarioSteps()
     {
-        _movingService = <span style="color:#66d9ef">new</span> MovingService(_peopleRepositoryStub);
+        <span style="color:#ae81ff">_</span>movingService = <span style="color:#66d9ef">new</span> MovingService(<span style="color:#ae81ff">_</span>peopleRepositoryStub);
     }
 <span style="color:#a6e22e">
 </span><span style="color:#a6e22e">    [Given(@&#34;the following people&#34;)]</span>
     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> GivenTheFollowingPeople(Table table)
     {
         <span style="color:#66d9ef">var</span> people = table.CreateSet&lt;Person&gt;();
-        _peopleRepositoryStub.AddRange(people);
+        <span style="color:#ae81ff">_</span>peopleRepositoryStub.AddRange(people);
     }
 <span style="color:#a6e22e">
 </span><span style="color:#a6e22e">    [When(@&#34;person &#39;(.*)&#39; moves to &#39;(.*)&#39;&#34;)]</span>
     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> WhenPersonMovesTo(Guid personId, <span style="color:#66d9ef">string</span> newAddress)
     {
-        _movingService.MovePerson(personId, newAddress);
+        <span style="color:#ae81ff">_</span>movingService.MovePerson(personId, newAddress);
     }
 <span style="color:#a6e22e">
 </span><span style="color:#a6e22e">    [Then(@&#34;the new address of person &#39;(.*)&#39; is &#39;(.*)&#39;&#34;)]</span>
     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ThenTheNewAddressOfPersonIs(Guid personId, <span style="color:#66d9ef">string</span> expectedAddress)
     {
-        <span style="color:#66d9ef">var</span> person = _peopleRepositoryStub.GetById(personId);
+        <span style="color:#66d9ef">var</span> person = <span style="color:#ae81ff">_</span>peopleRepositoryStub.GetById(personId);
         Assert.AreEqual(expectedAddress, person.Address);
     }
 }
@@ -258,7 +258,7 @@
 <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> WhenMovesTo(<span style="color:#66d9ef">string</span> name, <span style="color:#66d9ef">string</span> newAddress)
 {
     Guid personId = NameToId(name);
-    _movingService.MovePerson(personId, newAddress);
+    <span style="color:#ae81ff">_</span>movingService.MovePerson(personId, newAddress);
 }
 </code></pre></div><p>With this little trick we have scenarios that are easy to read for all parties involved and we can automate them too.</p>
 <p>You can find a working code example <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/HandlingTechnicalIdsInGherkinWithSpecFlow">here</a>.</p>
@@ -408,6 +408,5 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script>
-
     </body>
 </html>

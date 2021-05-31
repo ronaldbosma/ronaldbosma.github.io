@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.83.1" />
+	
+	<title>Handling exceptions in SpecFlow | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2021/05/31/handling-exceptions-in-specflow/cover.jpg"/>
+<meta name="twitter:title" content="Handling exceptions in SpecFlow"/>
+<meta name="twitter:description" content="I use Gherkin scenarios to describe the functional specifications of my software and SpecFlow to automate these scenarios as tests. Usually there will be a couple of scenarios describing the happy path of the feature I&rsquo;m building but also some scenarios concerning failures. In this post I&rsquo;ll show my solution how to handle failures in the form of exceptions with the Driver pattern."/>
+
+	<meta property="og:title" content="Handling exceptions in SpecFlow" />
+<meta property="og:description" content="I use Gherkin scenarios to describe the functional specifications of my software and SpecFlow to automate these scenarios as tests. Usually there will be a couple of scenarios describing the happy path of the feature I&rsquo;m building but also some scenarios concerning failures. In this post I&rsquo;ll show my solution how to handle failures in the form of exceptions with the Driver pattern." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2021/05/31/handling-exceptions-in-specflow/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2021/05/31/handling-exceptions-in-specflow/cover.jpg"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2021-05-31T07:30:00&#43;02:00" />
+<meta property="article:modified_time" content="2021-05-31T07:39:21&#43;02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+	 crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+	<link href="/css/medium.css" rel="stylesheet">
+	<link href="/css/additional.css" rel="stylesheet">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Handling%20exceptions%20in%20SpecFlow&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2021%2f05%2f31%2fhandling-exceptions-in-specflow%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2021%2f05%2f31%2fhandling-exceptions-in-specflow%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2021%2f05%2f31%2fhandling-exceptions-in-specflow%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.png" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software engineer<br>
+                                    <i class="far fa-star"></i>
+                                    May 31, 2021
+                                    <i class="far fa-clock clock"></i>
+                                    8 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Handling exceptions in SpecFlow</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2021/05/31/handling-exceptions-in-specflow/cover.jpg" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I use Gherkin scenarios to describe the functional specifications of my software and SpecFlow to automate these scenarios as tests. Usually there will be a couple of scenarios describing the happy path of the feature I&rsquo;m building but also some scenarios concerning failures. Depending on how the application code works, these failures are represented by exceptions. In this post I explain how I handle these exceptions.</p>
+<h3 id="table-of-contents">Table of contents</h3>
+<ul>
+<li><a href="#retrieve-existing-person-successfully">Retrieve existing person successfully</a></li>
+<li><a href="#retrieve-unknown-person-and-expect-an-error">Retrieve unknown person and expect an error</a></li>
+<li><a href="#expected-error-was-not-raised">Expected error was not raised</a></li>
+<li><a href="#check-for-unexpected-errors">Check for unexpected errors</a></li>
+<li><a href="#refactor-to-reusable-code">Refactor to reusable code</a>
+<ul>
+<li><a href="#refactored-personsteps-class">Refactored PersonSteps class</a></li>
+<li><a href="#new-generic-errorsteps">New generic ErrorSteps</a></li>
+<li><a href="#the-errordriver-class">The ErrorDriver class</a></li>
+</ul>
+</li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="retrieve-existing-person-successfully">Retrieve existing person successfully</h3>
+<p>Let&rsquo;s start with the following happy path scenario to retrieve a person.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-gherkin" data-lang="gherkin"><span style="color:#66d9ef">Scenario:</span><span style="color:#a6e22e"> Retrieve existing person successfully
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">
+</span><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">the person &#39;Buffy Summers&#39; is registered
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">I retrieve the person &#39;Buffy Summers&#39;
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">the person &#39;Buffy Summers&#39; is returned
+</span></code></pre></div><p>In the <code>Given</code> step we make sure the person exists in our system. We then retrieve the person and verify that the retrieval is successful.</p>
+<p>The following <code>PersonSteps</code> class implements this scenario.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Binding]</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PersonSteps</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> PersonRepository <span style="color:#ae81ff">_</span>people = <span style="color:#66d9ef">new</span> PersonRepository();
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">string</span> <span style="color:#ae81ff">_</span>actualName;
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Given(@&#34;the person &#39;(.*)&#39; is registered&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> GivenThePersonIsRegistered(<span style="color:#66d9ef">string</span> name)
+    {
+        <span style="color:#ae81ff">_</span>people.AddPerson(name);
+    }
+<span style="color:#a6e22e">        
+</span><span style="color:#a6e22e">    [When(@&#34;I retrieve the person &#39;(.*)&#39;&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> WhenIRetrieveThePerson(<span style="color:#66d9ef">string</span> name)
+    {
+        <span style="color:#ae81ff">_</span>actualName = <span style="color:#ae81ff">_</span>people.GetPersonByName(name);
+    }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Then(@&#34;the person &#39;(.*)&#39; is returned&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ThenThePersonIsReturned(<span style="color:#66d9ef">string</span> expectedName)
+    {
+        Assert.IsNotNull(<span style="color:#ae81ff">_</span>actualName, <span style="color:#e6db74">&#34;No person retrieved&#34;</span>);
+        Assert.AreEqual(expectedName, <span style="color:#ae81ff">_</span>actualName);
+    }
+}
+</code></pre></div><p>It uses a simple in-memory <code>PersonRepository</code> to store people. The <code>_actualName</code> instance field is used to store the person that is retrieved so we can check if the retrieval was successful in the <code>Then</code> step. (For demo purposes we only store and retrieve the name of the person.)</p>
+<p>And here&rsquo;s the implementation of <code>PersonRepository</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PersonRepository</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> HashSet&lt;<span style="color:#66d9ef">string</span>&gt; <span style="color:#ae81ff">_</span>people = <span style="color:#66d9ef">new</span> HashSet&lt;<span style="color:#66d9ef">string</span>&gt;();
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AddPerson(<span style="color:#66d9ef">string</span> name)
+    {
+        <span style="color:#75715e">// For demo purposes we only store the name.
+</span><span style="color:#75715e"></span>        <span style="color:#ae81ff">_</span>people.Add(name);
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> GetPersonByName(<span style="color:#66d9ef">string</span> name)
+    {
+        <span style="color:#75715e">// For demo purposes we only check if de name is stored and return the name if it is stored.
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (<span style="color:#ae81ff">_</span>people.Contains(name))
+        {
+            <span style="color:#66d9ef">return</span> name;
+        }
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> PersonNotFoundException(name);
+    }
+}
+</code></pre></div><p>As you can see a <code>PersonNotFoundException</code> is raised when the person can&rsquo;t be found.</p>
+<h3 id="retrieve-unknown-person-and-expect-an-error">Retrieve unknown person and expect an error</h3>
+<p>To verify that an error is raised when a person can&rsquo;t be found, I&rsquo;ve added a second scenario.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-gherkin" data-lang="gherkin"><span style="color:#66d9ef">Scenario:</span><span style="color:#a6e22e"> Retrieve unknown person and expect an error
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">
+</span><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">no person is registered
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">I retrieve the person &#39;Buffy Summers&#39;
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">the error &#39;Person with name Buffy Summers not found&#39; should be raised
+</span></code></pre></div><p>This scenario makes sure no person is registered. It then tries to retrieve a person and validates that an error is raised with the correct message.</p>
+<p>If you execute this scenario with the current implementation of our steps the scenario will fail on the <code>When</code> step because we&rsquo;re not handling the exception. As the code below shows, you can fix this by adding a <code>try catch</code> block in the <code>When</code> step that stores the raised exception in an instance field and check the exception message in the <code>Then</code> step.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">private</span> Exception <span style="color:#ae81ff">_</span>actualException;
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[When(@&#34;I retrieve the person &#39;(.*)&#39;&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> WhenIRetrieveThePerson(<span style="color:#66d9ef">string</span> name)
+{
+    <span style="color:#66d9ef">try</span>
+    {
+        <span style="color:#ae81ff">_</span>actualName = <span style="color:#ae81ff">_</span>people.GetPersonByName(name);
+    }
+    <span style="color:#66d9ef">catch</span> (Exception ex)
+    {
+        <span style="color:#ae81ff">_</span>actualException = ex;
+    }
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[Then(@&#34;the error &#39;(.*)&#39; should be raised&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ThenTheErrorShouldBeRaised(<span style="color:#66d9ef">string</span> expectedErrorMessage)
+{
+    Assert.IsNotNull(<span style="color:#ae81ff">_</span>actualException, <span style="color:#e6db74">&#34;No error was raised&#34;</span>);
+    Assert.AreEqual(expectedErrorMessage, <span style="color:#ae81ff">_</span>actualException.Message);
+}
+</code></pre></div><p>With this implementation both scenarios will succeed as expected.</p>
+<p>Note that I&rsquo;m only checking the message of the exception and not the type. This is on purpose because the business is not familiar with or interested in exception types and I want to keep my scenarios as functional as possible. A unit test can be used to check the actual exception type if necessary.</p>
+<h3 id="expected-error-was-not-raised">Expected error was not raised</h3>
+<p>It&rsquo;s also important that my scenarios fail when something goes wrong. Either because my implementation is wrong or the scenario has an error. Take the following two scenarios for example. I expect a specific error to be raised but this does not happen.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-gherkin" data-lang="gherkin"><span style="color:#66d9ef">Scenario:</span><span style="color:#a6e22e"> Should fail: retrieve person that exists but expect error
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">
+</span><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">the person &#39;Buffy Summers&#39; is registered
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">I retrieve the person &#39;Buffy Summers&#39;
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">the error &#39;Person with name Buffy Summers not found&#39; should be raised
+</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Scenario:</span><span style="color:#a6e22e"> Should fail: different error message expected
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">
+</span><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">no person is registered
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">I retrieve the person &#39;Buffy Summers&#39;
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">the error &#39;Something went wrong&#39; should be raised
+</span></code></pre></div><p>Both scenarios should and will fail. The first fails because I&rsquo;m retrieving a person that exists but I expect the error that the person does not exist. The second scenario fails because I&rsquo;m expecting an error with the wrong message.</p>
+<h3 id="check-for-unexpected-errors">Check for unexpected errors</h3>
+<p>One case that is often forgotten with this solution is to check for unexpected errors. Take the following scenario.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-gherkin" data-lang="gherkin"><span style="color:#66d9ef">Scenario:</span><span style="color:#a6e22e"> Should fail: retrieve unknown person but don&#39;t check error
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">
+</span><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">no person is registered
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">I retrieve the person &#39;Buffy Summers&#39;
+</span></code></pre></div><p>I&rsquo;m retrieving a person that is not registered. In the initial implementation of our <code>When</code> step without the <code>try catch</code> block this scenario would fail because an exception is raised in the <code>When</code> step. But now that I catch exceptions the scenario succeeds when it should fail.</p>
+<blockquote>
+<p>Note that this scenario is missing a <code>Then</code> step so it&rsquo;s not the greatest real-life example. I have seen this issue however in past projects with scenarios that succeeded when an unexpected error was raised even with a <code>Then</code> step. So, a bug in our production code or test automation code was flying under the radar.</p>
+</blockquote>
+<p>To fix this issue we can use an <code>AfterScenario</code> hook to check if an unexpected error has occurred after a scenario has been executed. (See <a href="https://docs.specflow.org/projects/specflow/en/latest/Bindings/Hooks.html">the SpecFlow documentation</a> for more information on hooks.)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[AfterScenario]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> CheckForUnexpectedExceptionsAfterEachScenario()
+{
+    Assert.IsNull(<span style="color:#ae81ff">_</span>actualException, <span style="color:#e6db74">$&#34;No exception was expected to be raised but found exception: {_actualException}&#34;</span>);
+}
+</code></pre></div><p>If <code>_actualException</code> has a value when the <code>AfterScenario</code> hook is executed then the exception was unexpected and the scenario will fail.</p>
+<p>To make sure that scenarios where I do expect an error don&rsquo;t fail I clear <code>_actualException</code> after checking the error. See the altered implementation of the <code>Then</code> step below.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Then(@&#34;the error &#39;(.*)&#39; should be raised&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ThenTheErrorShouldBeRaised(<span style="color:#66d9ef">string</span> expectedErrorMessage)
+{
+    Assert.IsNotNull(<span style="color:#ae81ff">_</span>actualException, <span style="color:#e6db74">&#34;No error was raised&#34;</span>);
+    Assert.AreEqual(expectedErrorMessage, <span style="color:#ae81ff">_</span>actualException.Message);
+
+    <span style="color:#75715e">// Clear the caught exception so it&#39;s not marked as unexpected in the AfterScenario hook
+</span><span style="color:#75715e"></span>    <span style="color:#ae81ff">_</span>actualException = <span style="color:#66d9ef">null</span>;
+}
+</code></pre></div><p>A full example of the implementation so far can be found in <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/HandlingExceptionsInSpecFlow/HandlingExceptionsInSpecFlow.WithoutErrorDriver">this project</a>.</p>
+<h3 id="refactor-to-reusable-code">Refactor to reusable code</h3>
+<p>The current solution works great when I&rsquo;m retrieving a person but I usually have more features and <code>When</code> steps that need this kind of error handling logic. Also, the <code>Then the error '&lt;message&gt;' should be raised</code> step text is generic but can&rsquo;t be reused over multiple step classes right now because of the use of the <code>_actualException</code> instance field.</p>
+<p>To fix this I&rsquo;ve created a generic <code>ErrorDriver</code> class following the <a href="https://docs.specflow.org/projects/specflow/en/latest/Guides/DriverPattern.html">Driver pattern</a> described in the SpecFlow documentation. This class can catch and track exceptions and has a few helper methods for validation.</p>
+<h4 id="refactored-personsteps-class">Refactored PersonSteps class</h4>
+<p>Before showing the <code>ErrorDriver</code> implementation I&rsquo;ll first show how it&rsquo;s used in the refactored <code>PersonSteps</code> class.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Binding]</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PersonSteps</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> PersonRepository <span style="color:#ae81ff">_</span>people = <span style="color:#66d9ef">new</span> PersonRepository();
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">string</span> <span style="color:#ae81ff">_</span>actualName;
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> ErrorDriver <span style="color:#ae81ff">_</span>errorDriver;
+
+    <span style="color:#66d9ef">public</span> PersonSteps(ErrorDriver errorDriver)
+    {
+        <span style="color:#ae81ff">_</span>errorDriver = errorDriver;
+    }
+
+    <span style="color:#75715e">/* Given steps omitted */</span>
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [When(@&#34;I retrieve the person &#39;(.*)&#39;&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> WhenIRetrieveThePerson(<span style="color:#66d9ef">string</span> name)
+    {
+        <span style="color:#ae81ff">_</span>errorDriver.TryExecute(() =&gt;
+            <span style="color:#ae81ff">_</span>actualName = <span style="color:#ae81ff">_</span>people.GetPersonByName(name)
+        );
+    }
+
+    <span style="color:#75715e">/* Then step omitted */</span>
+}
+</code></pre></div><p>As you can see the new <code>ErrorDriver</code> class is injected into the <code>PersonSteps</code> class via <a href="https://docs.specflow.org/projects/specflow/en/latest/Bindings/Context-Injection.html">context injection</a>. The person specific <code>Given</code> and <code>Then</code> steps are unaltered. The <code>When</code> step no longer has a <code>try catch</code> block. Instead the action of retrieving a person is passed into the <code>TryExecute</code> method of the <code>ErrorDriver</code> class as a lambda. The <code>TryExecute</code> method will catch any exception as you&rsquo;ll see in moment. The <code>_actualException</code> private field is no longer used and has been removed.</p>
+<h4 id="new-generic-errorsteps">New generic ErrorSteps</h4>
+<p>The <code>Then the error '&lt;message&gt;' should be raised</code> step and the <code>AfterScenario</code> hook are generic methods that can be reused for other features. I&rsquo;ve moved these to a separate <code>ErrorSteps</code> class as shown below.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Binding]</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ErrorSteps</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> ErrorDriver <span style="color:#ae81ff">_</span>errorDriver;
+
+    <span style="color:#66d9ef">public</span> ErrorSteps(ErrorDriver errorDriver)
+    {
+        <span style="color:#ae81ff">_</span>errorDriver = errorDriver;
+    }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Then(@&#34;the error &#39;(.*)&#39; should be raised&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ThenTheErrorShouldBeRaised(<span style="color:#66d9ef">string</span> expectedErrorMessage)
+    {
+        <span style="color:#ae81ff">_</span>errorDriver.AssertExceptionWasRaisedWithMessage(expectedErrorMessage);
+    }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [AfterScenario]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> CheckForUnexpectedExceptionsAfterEachScenario()
+    {
+        <span style="color:#ae81ff">_</span>errorDriver.AssertNoUnexpectedExceptionsRaised();
+    }
+}
+</code></pre></div><p>This class also receives the <code>ErrorDriver</code> class via context injection. It uses the available <code>Assert</code> methods on <code>ErrorDriver</code> to verify if an expected or unexpected error has occurred.</p>
+<h4 id="the-errordriver-class">The ErrorDriver class</h4>
+<p>And here&rsquo;s the implementation of the <code>ErrorDriver</code> class.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ErrorDriver</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> Queue&lt;Exception&gt; <span style="color:#ae81ff">_</span>exceptions = <span style="color:#66d9ef">new</span> Queue&lt;Exception&gt;();
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> TryExecute(Action act)
+    {
+        <span style="color:#66d9ef">try</span>
+        {
+            act();
+        }
+        <span style="color:#66d9ef">catch</span> (Exception ex)
+        {
+            Trace.WriteLine(<span style="color:#e6db74">$&#34;The following exception was caught while executing {act.Method.Name}: {ex}&#34;</span>);
+            <span style="color:#ae81ff">_</span>exceptions.Enqueue(ex);
+        }
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AssertExceptionWasRaisedWithMessage(<span style="color:#66d9ef">string</span> expectedErrorMessage)
+    {
+        Assert.IsTrue(<span style="color:#ae81ff">_</span>exceptions.Any(), <span style="color:#e6db74">$&#34;No exception was raised but expected exception with message: {expectedErrorMessage}&#34;</span>);
+
+        <span style="color:#66d9ef">var</span> actualException = <span style="color:#ae81ff">_</span>exceptions.Dequeue();
+        Assert.AreEqual(expectedErrorMessage, actualException.Message);
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AssertNoUnexpectedExceptionsRaised()
+    {
+        <span style="color:#66d9ef">if</span> (<span style="color:#ae81ff">_</span>exceptions.Any())
+        {
+            <span style="color:#66d9ef">var</span> unexpectedException = <span style="color:#ae81ff">_</span>exceptions.Dequeue();
+            Assert.Fail(<span style="color:#e6db74">$&#34;No exception was expected to be raised but found exception: {unexpectedException}&#34;</span>);
+        }
+    }
+}
+</code></pre></div><p>As mentioned earlier the <code>TryExecute</code> method contains the <code>try catch</code> block and catches any exception raised by the action. When an exception is caught it will be written to a trace for troubleshooting and added to the <code>_exceptions</code> queue.</p>
+<blockquote>
+<p>I&rsquo;m using a queue so I&rsquo;m able to handle the exceptions in the order they have occurred. Although there will usually only be 0 or 1 exception in the queue.</p>
+</blockquote>
+<p>The <code>AssertExceptionWasRaisedWithMessage</code> method is used in the <code>ErrorSteps</code> class to verify if an expected error has occurred.</p>
+<p>Lastly, the <code>AssertNoUnexpectedExceptionsRaised</code> method is used in the <code>AfterScenario</code> hook to check for any unexpected errors.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>With the generic <code>ErrorDriver</code> and <code>ErrorSteps</code> classes we can quickly create scenarios that both support the happy flow and failures. This solution also protects against unexpected errors that have occurred but are not explicitly checked in a scenario. A case that is often forgotten when using this solution.</p>
+<p>A full code example can be found <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/HandlingExceptionsInSpecFlow">here</a> which also contains extra examples and code for dealing with asynchronous methods.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/gherkin">Gherkin</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/specflow">SpecFlow</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/specification-by-example">Specification by Example</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/atdd">ATDD</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bdd">BDD</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/test-automation">Test Automation</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/cleaner-code">Cleaner Code</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2021/03/16/provision-an-azure-vm-in-an-azure-pipelines-environment/">Provision an Azure VM in an Azure Pipelines Environment &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<script src="/js/mediumish.js"></script>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-136383708-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+    </body>
+</html>

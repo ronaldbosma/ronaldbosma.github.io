@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 16 Mar 2021 00:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 31 May 2021 07:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Handling exceptions in SpecFlow</title>
+      <link>https://ronaldbosma.github.io/blog/2021/05/31/handling-exceptions-in-specflow/</link>
+      <pubDate>Mon, 31 May 2021 07:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2021/05/31/handling-exceptions-in-specflow/</guid>
+      <description>I use Gherkin scenarios to describe the functional specifications of my software and SpecFlow to automate these scenarios as tests. Usually there will be a couple of scenarios describing the happy path of the feature I&amp;rsquo;m building but also some scenarios concerning failures. In this post I&amp;rsquo;ll show my solution how to handle failures in the form of exceptions with the Driver pattern.</description>
+    </item>
+    
     <item>
       <title>Provision an Azure VM in an Azure Pipelines Environment</title>
       <link>https://ronaldbosma.github.io/blog/2021/03/16/provision-an-azure-vm-in-an-azure-pipelines-environment/</link>
