@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="generator" content="Hugo 0.83.1" />
+	<meta name="generator" content="Hugo 0.84.3" />
 	
 	<title>Provision an Azure VM in an Azure Pipelines Environment | Ronald&#39;s Blog</title>
 	
@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2021/03/16/provision-an-azure-vm-in-an-azure-pipelines-environment/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2021/03/16/provision-an-azure-vm-in-an-azure-pipelines-environment/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2021-03-16T00:00:00&#43;01:00" />
-<meta property="article:modified_time" content="2021-03-16T17:04:03&#43;01:00" />
+<meta property="article:modified_time" content="2021-06-29T16:54:29&#43;02:00" />
 
 
 
@@ -128,7 +128,7 @@
                                     <i class="far fa-star"></i>
                                     Mar 16, 2021
                                     <i class="far fa-clock clock"></i>
-                                    11 min read
+                                    12 min read
                                 </span>					
                             </div>
                         </div>			
@@ -172,6 +172,13 @@
 </li>
 </ul>
 <p>In the rest of this post I&rsquo;ll explain how <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/ProvisionAzureVMInAzurePipelinesEnvironment/provision-vm-in-environment-azure-pipeline.yml">this pipeline</a> works.</p>
+<blockquote>
+<p><strong>Update 29-06-2021</strong></p>
+<p>The solution described in this post is based on the functionality in Azure DevOps to automatically create a new environment if it does not exist. A recent update to Azure DevOps has changed this behaviour. See <a href="https://docs.microsoft.com/en-us/azure/devops/release-notes/2021/sprint-188-update#changes-in-the-automatic-creation-of-environments">Release Notes: Changed in the automatic creation of environments</a></p>
+<p>When you follow the steps in this post and start a YAML pipeline, you might get the following error:<br>
+<code>Job InstallNetCore: Environment provision-vm-example-99b1d9650923294a393a8e74602721fb980e549a could not be found. The environment does not exist or has not been authorized for use.</code></p>
+<p>If you get this error you&rsquo;ll need to use a static environment name in the YAML pipeline, manually create that environment in Azure DevOps and remove/disable the step that deletes the environment in Azure DevOps during the cleanup stage. <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/ProvisionAzureVMInAzurePipelinesEnvironment/azure-devops-unregister-agent-from-enviroment.md">Here</a> you can find instructions on how to unregister an agent from an Azure DevOps environment.</p>
+</blockquote>
 <h3 id="table-of-contents">Table of contents</h3>
 <ul>
 <li><a href="#prerequisites">Prerequisites</a>
