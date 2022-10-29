@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="generator" content="Hugo 0.84.3" />
+	<meta name="generator" content="Hugo 0.92.2" />
 	
 	<title>Using multi-stage YAML pipeline to create and publish NuGet packages | Ronald&#39;s Blog</title>
 	
@@ -17,8 +17,8 @@
 <meta property="og:description" content="I&rsquo;ve recently created a new NuGet package called FluentAssertions.ArgumentMatchers.Moq that I published on nuget.org. In order to make the process of creating and publishing this package as smooth and simple as possible, I&rsquo;ve created a multi-stage YAML pipeline in Azure DevOps." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2019/09/03/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2019/09/03/using-multi-stage-yaml-pipeline-to-create-and-publish-nuget-packages/cover.jpg"/><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2019-09-03T00:00:00&#43;01:00" />
-<meta property="article:modified_time" content="2021-03-15T18:58:38&#43;01:00" />
+<meta property="article:published_time" content="2019-09-03T00:00:00+01:00" />
+<meta property="article:modified_time" content="2019-09-03T00:00:00+01:00" />
 
 
 
@@ -171,7 +171,7 @@
 <p>Now that the preview feature is enabled we can start. So, create a new pipeline and connect it to one of the sources that supports YAML, like Azure Repositories or GitHub. You can choose any pipeline template, because we&rsquo;re going to clear it and start from scratch. The <a href="https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core">Build, test, and deploy .NET Core apps</a> documentation is a good starting point if you haven&rsquo;t created a pipeline before.</p>
 <h3 id="create-nuget-packages">Create NuGet packages</h3>
 <p>Clear the YAML editor and add the following YAML. This will build any projects in your git repository using the .NET Core 2.2 SDK.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">trigger</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">trigger</span>:
 - <span style="color:#ae81ff">master</span>
 
 <span style="color:#f92672">stages</span>:
@@ -214,7 +214,7 @@
 <p>To keep the sample simple, I&rsquo;ve left out additional steps to analyze the solution using SonarQube and run unit tests. You can find the full pipeline of my NuGet package including these steps <a href="https://github.com/ronaldbosma/FluentAssertions.ArgumentMatchers.Moq/blob/master/azure-pipelines.yml">here</a>.</p>
 <p>Now that the solution can be build we can create our prerelease and release versions of the NuGet package.</p>
 <p>To be able to create a prerelease package the first thing we need to do is configure a version prefix in the csproj of our project. See the example below.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;Project</span> <span style="color:#a6e22e">Sdk=</span><span style="color:#e6db74">&#34;Microsoft.NET.Sdk&#34;</span><span style="color:#f92672">&gt;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;Project</span> <span style="color:#a6e22e">Sdk=</span><span style="color:#e6db74">&#34;Microsoft.NET.Sdk&#34;</span><span style="color:#f92672">&gt;</span>
   <span style="color:#f92672">&lt;PropertyGroup&gt;</span>
     <span style="color:#f92672">&lt;VersionPrefix&gt;</span>1.2.0<span style="color:#f92672">&lt;/VersionPrefix&gt;</span>
   <span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
@@ -222,7 +222,7 @@
 </code></pre></div><p>If you already have a <code>Version</code> tag specified, change this to <code>VersionPrefix</code>. This will make it possible to add a suffix to the version. Making it a prerelease package.</p>
 <p>You might also have the <code>GeneratePackageOnBuild</code> property set to true. Although it can&rsquo;t hurt. It&rsquo;s not necessary. You can remove it if you want.</p>
 <p>Now that we&rsquo;ve prepared our project, go back to the pipeline editor and add the following YAML at the end.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">DotNetCoreCLI@2</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">DotNetCoreCLI@2</span>
       <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Create NuGet Package - Release Version&#39;</span>
       <span style="color:#f92672">inputs</span>:
         <span style="color:#f92672">command</span>: <span style="color:#ae81ff">pack</span>
@@ -242,12 +242,12 @@
 <p>First of all. Using the <code>buildProperties</code> input we&rsquo;re adding the build number to the version of the package. Anything specified in the version suffix will be added after the version prefix, separated by a -. If the version prefix is <code>1.2.0</code> and the build number is <code>20190903.1</code>. Then the version of the package will be <code>1.2.0-20190903.1</code>.</p>
 <p>The second difference is that the <code>nobuild</code> input is not specified. To add the version suffix to the package a build is necessary. Because of this, the order of these two tasks is also important. If you create the prerelease version first and then the release version (and have <code>nobuild</code> set to <code>true</code>), the release version assemblies will have a product version containing the prerelease suffix. The product version would be <code>1.2.0-20190903.1</code> instead of <code>1.2.0</code>.</p>
 <p>The last step in the <em>Build</em> stage is to publish the packages as an artifact of the pipeline. Making it possible to access them in subsequent stages. Add the following <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops&amp;tabs=yaml">publish step</a> to create a &lsquo;packages&rsquo; artifact in the pipeline.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    - <span style="color:#f92672">publish</span>: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages&#39;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    - <span style="color:#f92672">publish</span>: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)/packages&#39;</span>
       <span style="color:#f92672">artifact</span>: <span style="color:#e6db74">&#39;packages&#39;</span>
 </code></pre></div><p>The <em>Build</em> stage is now complete. You can run it to see if everything works. The next step is to publish the prerelease package.</p>
 <h3 id="publish-prerelease-package-to-azure-devops-artifacts-feed">Publish prerelease package to Azure DevOps Artifacts feed</h3>
 <p>You can add the following YAML at the end of the pipeline yml file to publish the prerelease package.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">stage</span>: <span style="color:#e6db74">&#39;PublishPrereleaseNuGetPackage&#39;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">stage</span>: <span style="color:#e6db74">&#39;PublishPrereleaseNuGetPackage&#39;</span>
   <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Publish Prerelease NuGet Package&#39;</span>
   <span style="color:#f92672">dependsOn</span>: <span style="color:#e6db74">&#39;Build&#39;</span>
   <span style="color:#f92672">condition</span>: <span style="color:#ae81ff">succeeded()</span>
@@ -313,7 +313,7 @@
 </ul>
 <h4 id="publish-nuget-package">Publish NuGet package</h4>
 <p>Now that we have our environment and NuGet service connection configured we can add the last stage to the YAML pipeline. For this add the following YAML to the end of the pipeline yml file.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">stage</span>: <span style="color:#e6db74">&#39;PublishReleaseNuGetPackage&#39;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">stage</span>: <span style="color:#e6db74">&#39;PublishReleaseNuGetPackage&#39;</span>
   <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Publish Release NuGet Package&#39;</span>
   <span style="color:#f92672">dependsOn</span>: <span style="color:#e6db74">&#39;PublishPrereleaseNuGetPackage&#39;</span>
   <span style="color:#f92672">condition</span>: <span style="color:#ae81ff">succeeded()</span>

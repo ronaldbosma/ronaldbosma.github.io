@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="generator" content="Hugo 0.84.3" />
+	<meta name="generator" content="Hugo 0.92.2" />
 	
 	<title>How to install .NET Core on a Windows server | Ronald&#39;s Blog</title>
 	
@@ -17,8 +17,8 @@
 <meta property="og:description" content="In this post I show how I install and update the .NET Core Runtime &amp; Hosting Bundle on Windows servers using Azure Pipelines. Making patching .NET Core a trivial matter." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2020/05/07/how-to-install-.net-core-on-a-windows-server/cover.jpg"/><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2020-05-07T00:00:00&#43;02:00" />
-<meta property="article:modified_time" content="2021-03-15T18:58:38&#43;01:00" />
+<meta property="article:published_time" content="2020-05-07T00:00:00+02:00" />
+<meta property="article:modified_time" content="2021-02-15T00:00:00+02:00" />
 
 
 
@@ -186,7 +186,7 @@
 <li>Select the pipeline template you want to start from. In our case the &lsquo;Starter pipeline&rsquo; will do.</li>
 <li>An editor is opened where you can configure your pipeline using YAML. Replace all content with the following:</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">trigger</span>: <span style="color:#ae81ff">none</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">trigger</span>: <span style="color:#ae81ff">none</span>
 
 <span style="color:#f92672">stages</span>:
 - <span style="color:#f92672">stage</span>: <span style="color:#e6db74">&#39;InstallNetCore&#39;</span>

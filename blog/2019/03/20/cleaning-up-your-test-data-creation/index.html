@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="generator" content="Hugo 0.84.3" />
+	<meta name="generator" content="Hugo 0.92.2" />
 	
 	<title>Cleaning Up Your Test Data Creation | Ronald&#39;s Blog</title>
 	
@@ -17,8 +17,8 @@
 <meta property="og:description" content="I still come across a lot of automated tests with many lines of code just to create an object. Even when most data is not relevant for the scenario being tested." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2019/03/20/cleaning-up-your-test-data-creation/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2019/03/20/cleaning-up-your-test-data-creation/cover.jpg"/><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2019-03-20T00:00:00&#43;01:00" />
-<meta property="article:modified_time" content="2021-03-15T18:58:38&#43;01:00" />
+<meta property="article:published_time" content="2019-03-20T00:00:00+01:00" />
+<meta property="article:modified_time" content="2019-03-17T00:00:00+01:00" />
 
 
 
@@ -160,7 +160,7 @@
 <p>Using a <a href="http://www.natpryce.com/articles/000714.html">Test Data Builder</a> can minimize the lines of code in your test to what&rsquo;s relevant. By default the builder will create all necessary data for you. Using a Fluent API you can call methods on the builder to tweak the data to fit your test scenario.</p>
 <p>Using test data builders has really improved the readability of my test automation code. I&rsquo;ve always had the nagging feeling though that the readability could be improved. Even when using a fairly simple builder, the code seems clunky to me most of the time.</p>
 <p>Here&rsquo;s my initial take on a builder to create a simple <code>Person</code> object. It creates <em><strong>a man called Sherlock Holmes living at 221B Baker Street, London</strong></em>. Although I only specify a name, gender and address it&rsquo;s still a lot of code for just three properties.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = <span style="color:#66d9ef">new</span> PersonBuilder()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = <span style="color:#66d9ef">new</span> PersonBuilder()
     .WithName(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
     .IsMan()
     .WithAddress(
@@ -176,7 +176,7 @@
 <p>Step one is to move the instantiation of the <code>PersonBuilder</code>. In the test I&rsquo;m not really interested in the fact that I&rsquo;m using a builder. I want &lsquo;A Person&rsquo;. We can combine the <a href="https://martinfowler.com/bliki/ObjectMother.html">Object Mother</a> pattern with the Test Data Builder pattern to make this happen.</p>
 <p>An object mother is a factory class. Containing one or more methods/properties to create test data. It will create an object with default data just like a test data builder. The downside of the object mother is that it&rsquo;s harder to tweak your test data. Which can result in a lot of different factory methods all doing almost the same thing. That&rsquo;s why I prefer test data builders.</p>
 <p>I&rsquo;ve created an object mother class called <code>A</code>. It has a static <code>Person</code> property that returns a new instance of the <code>PersonBuilder</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Person
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Person
     .WithName(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
     .IsMan()
     .WithAddress(
@@ -188,7 +188,7 @@
     .Build();
 </code></pre></div><h3 id="moving-a-build-method-to-the-object-mother">Moving a build method to the Object Mother</h3>
 <p>We can take this one step further and create a <code>Man</code> property in the object mother. Combining <code>A.Person</code> and the <code>IsMan</code> method into one.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Man
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Man
     .WithName(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
     .WithAddress(
         <span style="color:#66d9ef">new</span> AddressBuilder()
@@ -200,7 +200,7 @@
 </code></pre></div><p>Be cautious with this. Don&rsquo;t use more than one (business) concept like <code>A.ManWithName(&quot;Sherlock Holmes&quot;)</code>. This could create an explosion of methods &amp; properties in your object mother class. Making it harder to maintain. Besides, combining multiple build steps is what the test data builder is for.</p>
 <h3 id="rename-methods-to-improve-flow">Rename methods to improve flow</h3>
 <p>The next step is to improve the flow of the code. In the <code>PersonBuilder</code> I&rsquo;ve renamed <code>WithName</code> to <code>Called</code> and <code>WithAddress</code> to <code>LivingAt</code>. Making the code read more like a normal sentence.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Man.Called(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Man.Called(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
     .LivingAt(
         <span style="color:#66d9ef">new</span> AddressBuilder()
             .WithAddressLine1(<span style="color:#e6db74">&#34;221B Baker Street&#34;</span>)
@@ -210,13 +210,13 @@
     .Build();
 </code></pre></div><h3 id="simplifying-address-creation">Simplifying address creation</h3>
 <p>The code to create the address still looks a bit ugly. So I&rsquo;ve refactored the <code>LivingAt</code> method to take the first and second address line in one string, separated by a comma. The <code>AddressBuilder</code> is used inside <code>LivingAt</code> to parse the string and create the address.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Man.Called(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Man.Called(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
     .LivingAt(<span style="color:#e6db74">&#34;221B Baker Street, London&#34;</span>)
     .Build();
 </code></pre></div><p>Keep this kind of logic simple or you&rsquo;ll have to test your builders too.</p>
 <h3 id="finishing-touch">Finishing touch</h3>
 <p>If you&rsquo;re using explicit types instead of the <code>var</code> keyword there&rsquo;s one more step to take. You can remove the call to <code>Build</code> by introducing an <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/implicit">implicit type conversion operator</a> in the <code>PersonBuilder</code>. This will convert a <code>PersonBuilder</code> to a <code>Person</code> by calling the <code>Build</code> method.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Man.Called(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">Person sherlock = A.Man.Called(<span style="color:#e6db74">&#34;Sherlock Holmes&#34;</span>)
     .LivingAt(<span style="color:#e6db74">&#34;221B Baker Street, London&#34;</span>);
 </code></pre></div><p>The example at the start of the blog still needed the explanation that the code creates <em><strong>a man called Sherlock Holmes living at 221B Baker Street, London</strong></em>. Now the code is self explanatory.</p>
 <h3 id="conclusion">Conclusion</h3>

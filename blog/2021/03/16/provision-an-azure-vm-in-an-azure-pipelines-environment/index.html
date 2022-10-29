@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="generator" content="Hugo 0.84.3" />
+	<meta name="generator" content="Hugo 0.92.2" />
 	
 	<title>Provision an Azure VM in an Azure Pipelines Environment | Ronald&#39;s Blog</title>
 	
@@ -17,8 +17,8 @@
 <meta property="og:description" content="In the past I&rsquo;ve created a custom Azure Pipelines task to install .NET Core on a Windows server. To test this task, I had to manually setup an environment with virtual machines. I wanted to automate this process, so I created a YAML pipeline in Azure DevOps that automatically provisions an Azure virtual machine and registers the virtual machine in an Azure Pipelines environment." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2021/03/16/provision-an-azure-vm-in-an-azure-pipelines-environment/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2021/03/16/provision-an-azure-vm-in-an-azure-pipelines-environment/cover.png"/><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2021-03-16T00:00:00&#43;01:00" />
-<meta property="article:modified_time" content="2021-06-29T16:54:29&#43;02:00" />
+<meta property="article:published_time" content="2021-03-16T00:00:00+01:00" />
+<meta property="article:modified_time" content="2021-06-29T17:00:00+01:00" />
 
 
 
@@ -233,7 +233,7 @@
 </ol>
 <h3 id="pipeline-variables">Pipeline variables</h3>
 <p>After setting up the prerequisites we can start with the YAML pipeline. The pipeline starts with the variables section.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">variables</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">variables</span>:
   <span style="color:#f92672">environmentName</span>: <span style="color:#e6db74">&#34;provision-vm-example-${{ variables[&#39;Build.SourceVersion&#39;] }}&#34;</span>
   <span style="color:#f92672">adminPassword</span>: <span style="color:#e6db74">&#34;Password12345!&#34;</span>
   <span style="color:#f92672">token</span>: <span style="color:#e6db74">&#34;my-token&#34;</span>
@@ -245,7 +245,7 @@
 <p>The <code>adminPassword</code> is used for the Administrator password of the virtual machine we&rsquo;ll create. The <code>token</code> variable should be set with the value of the token you created in the prerequisites. For demo purposes I hardcoded these in the example but you should of course add these as secret variables to your pipeline or use a secrets store.</p>
 <h3 id="provision-azure-virtual-machine-in-environment">Provision Azure virtual machine in environment</h3>
 <p>The first stage in the pipeline will provision the Azure virtual machine and register the virtual machine in the environment. The start of this stage looks as follows:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">stages</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">stages</span>:
 - <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">Provision</span>
   <span style="color:#f92672">jobs</span>:
   - <span style="color:#f92672">job</span>:
@@ -260,9 +260,9 @@
 </code></pre></div><p>We&rsquo;re using the <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-cli?view=azure-devops">Azure CLI task</a> with an inline PowerShell Core script to create the various resources in Azure through the MyAzureSubscription service connection we created earlier. I&rsquo;ve chosen Azure CLI over for example ARM templates because of its simplicity and because it has an extension which allows me to also interact with Azure DevOps.</p>
 <h4 id="provision-the-azure-virtual-machine">Provision the Azure virtual machine</h4>
 <p>The first command of the Azure CLI script is to create a resource group. It&rsquo;s the same name as the environment so we can easily match the two.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az group create --name $(environmentName) --location westeurope;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az group create --name $(environmentName) --location westeurope;
 </code></pre></div><p>Next, we create the virtual machine. With the following command a Windows Server 2019 VM will be created in the resource group.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az vm create `
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az vm create `
   --name ProvisionedVM `
   --image Win2019Datacenter `
   --admin-password <span style="color:#e6db74">&#34;</span>$(adminPassword)<span style="color:#e6db74">&#34;</span>`
@@ -289,7 +289,7 @@ The copied PowerShell script downloads a .zip file with the agent from a URL wit
 <p>If you want to add an Azure virtual machine to a deployment group instead of an environment you can use the existing Azure Pipelines Agent extension instead of using a custom PowerShell script. Have a look at <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/release/deployment-groups/howto-provision-deployment-group-agents?view=azure-devops">Provision deployment group agents</a> for more information.</p>
 </blockquote>
 <p>We can use the <code>az vm extension set</code> CLI command to execute the custom script extension. The custom script either already needs to be on the virtual machine or accessible on the internet for download. The CLI command takes a settings JSON that should look like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     <span style="color:#f92672">&#34;fileUris&#34;</span>: [
         <span style="color:#e6db74">&#34;https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/ProvisionAzureVMInAzurePipelinesEnvironment/register-server-in-environment.ps1&#34;</span>
     ],
@@ -298,7 +298,7 @@ The copied PowerShell script downloads a .zip file with the agent from a URL wit
 </code></pre></div><p>In the JSON you specify the Uris to any files you want to download and the command you want to execute. As you can see we&rsquo;re calling the <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/ProvisionAzureVMInAzurePipelinesEnvironment/register-server-in-environment.ps1">register-server-in-environment.ps1</a> passing in the organization, team project, environment and token.</p>
 <p>I advise you to make a copy of the <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/ProvisionAzureVMInAzurePipelinesEnvironment/register-server-in-environment.ps1">register-server-in-environment.ps1</a> script and host it yourself. If you&rsquo;re hosting it on GitHub, use the &lsquo;raw&rsquo; URL to the script in the settings JSON or you&rsquo;ll be downloading an HTML page from GitHub. Which won&rsquo;t work, trust me&hellip;</p>
 <p>To register the Azure virtual machine in our Azure Pipelines environment we can add the following code to the Azure CLI task&rsquo;s inline script.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">$customScriptUri = <span style="color:#e6db74">&#34;https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/ProvisionAzureVMInAzurePipelinesEnvironment/register-server-in-environment.ps1&#34;</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">$customScriptUri = <span style="color:#e6db74">&#34;https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/ProvisionAzureVMInAzurePipelinesEnvironment/register-server-in-environment.ps1&#34;</span>;
 $customScriptSettings=<span style="color:#e6db74">&#34;{`\</span><span style="color:#ae81ff">`&#34;</span><span style="color:#e6db74">fileUris`\</span><span style="color:#ae81ff">`&#34;</span><span style="color:#e6db74">:[`\</span><span style="color:#ae81ff">`&#34;</span><span style="color:#e6db74">$customScriptUri`\</span><span style="color:#ae81ff">`&#34;</span><span style="color:#e6db74">], `\</span><span style="color:#ae81ff">`&#34;</span><span style="color:#e6db74">commandToExecute`\</span><span style="color:#ae81ff">`&#34;</span><span style="color:#e6db74">:`\</span><span style="color:#ae81ff">`&#34;</span><span style="color:#e6db74">powershell.exe ./register-server-in-environment.ps1 -OrganizationUrl &#39;</span>$(System.CollectionUri)<span style="color:#e6db74">&#39; -TeamProject &#39;</span>$(System.TeamProject)<span style="color:#e6db74">&#39; -Environment &#39;</span>$(environmentName)<span style="color:#e6db74">&#39; -Token &#39;</span>$(token)<span style="color:#e6db74">&#39;`\</span><span style="color:#ae81ff">`&#34;</span><span style="color:#e6db74">}&#34;</span>;
 
 az vm extension set `
@@ -313,7 +313,7 @@ az vm extension set `
 <p>If you have a pipeline with only this stage and you run it, the registration will fail because the environment will not be automatically created by Azure DevOps. You&rsquo;ll need to created it manually or add a stage with a deployment job to your pipeline. Which is what we&rsquo;ll do next.</p>
 <h3 id="run-task-on-provisioned-virtual-machine">Run task on provisioned virtual machine</h3>
 <p>In the second stage we&rsquo;re going to use the environment with the newly provisioned Azure virtual machine. It&rsquo;s fairly straightforward if you already have experience with deployment jobs. Here&rsquo;s the YAML snippet:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">Test</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">Test</span>
   <span style="color:#f92672">dependsOn</span>: <span style="color:#ae81ff">Provision</span>
   <span style="color:#f92672">condition</span>: <span style="color:#ae81ff">succeeded()</span>
   <span style="color:#f92672">jobs</span>:
@@ -334,7 +334,7 @@ az vm extension set `
 <p>In this example my custom task <code>InstallNetCoreRuntimeAndHosting</code> is executed on the virtual machine. It will install the latest .NET Runtime &amp; Hosting bundle for .NET 6.0. You can of course execute whatever tasks or jobs you want.</p>
 <h3 id="cleanup">Cleanup</h3>
 <p>After the test stage the Azure virtual machine and Azure Pipelines environment are no longer needed. So, we can remove them. We&rsquo;re using the <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-cli?view=azure-devops">Azure CLI task</a> again. Here&rsquo;s the start of the third stage.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">Cleanup</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">Cleanup</span>
   <span style="color:#f92672">dependsOn</span>: <span style="color:#ae81ff">Test</span>
   <span style="color:#f92672">condition</span>: <span style="color:#ae81ff">succeeded()</span>
   <span style="color:#f92672">jobs</span>:
@@ -351,7 +351,7 @@ az vm extension set `
 <h4 id="delete-the-azure-pipelines-environment">Delete the Azure Pipelines environment</h4>
 <p>The first step in the PowerShell script is to delete the Azure Pipelines environment. There are no Azure Pipelines tasks at the moment to do this. Since we&rsquo;ve already been using the <code>AzureCLI</code> task we&rsquo;re going to use the <a href="https://docs.microsoft.com/en-us/azure/devops/cli/?view=azure-devops">Azure DevOps extension for Azure CLI</a>. To my surprise it was already pre-installed when using the <code>AzureCLI</code> task.</p>
 <p>Here&rsquo;s the code to remove an environment from Azure DevOps. Credits go to Colin Dembovsky for his post <a href="https://www.colinsalmcorner.com/az-devops-like-a-boss/#example-8-creating-and-deleting-yml-environments-using-invoke">az devops cli like a boss</a>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#e6db74">&#34;</span>$(token)<span style="color:#e6db74">&#34;</span> | az devops login --organization <span style="color:#e6db74">&#34;</span>$(System.CollectionUri)<span style="color:#e6db74">&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#e6db74">&#34;</span>$(token)<span style="color:#e6db74">&#34;</span> | az devops login --organization <span style="color:#e6db74">&#34;</span>$(System.CollectionUri)<span style="color:#e6db74">&#34;</span>
 
 $environmentId = az devops invoke `
   --area distributedtask `
@@ -374,7 +374,7 @@ az devops logout
 </code></pre></div><p>The script first logs in to Azure DevOps with the token created during the prerequisites step. It then queries the id of the environment and deletes it. Lastly, we log out of Azure DevOps.</p>
 <h4 id="delete-the-azure-virtual-machine">Delete the Azure virtual machine</h4>
 <p>After deleting the Azure Pipelines environment, we can delete the Azure virtual machine. Because we&rsquo;ve created a new resource group that only contains the Azure virtual machine, we can simply delete the entire resource group with the following code.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az group delete --name $(environmentName) --no-wait --yes
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az group delete --name $(environmentName) --no-wait --yes
 </code></pre></div><p>The <code>--no-wait</code> flag causes our pipeline to proceed without waiting for the resource group to be deleted. The <code>--yes</code> flag makes sure we&rsquo;re not prompted for a confirmation.</p>
 <h3 id="conclusion">Conclusion</h3>
 <p>And with that our pipeline is done. We can now automatically provision an Azure virtual machine and register it in an Azure Pipelines environment, use the virtual machine in our pipeline and cleanup everything after we&rsquo;re done.</p>

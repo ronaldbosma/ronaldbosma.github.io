@@ -2,7 +2,7 @@
 <html lang="en-us"><head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="generator" content="Hugo 0.84.3" />
+	<meta name="generator" content="Hugo 0.92.2" />
 	
 	<title>Build And Release Hugo Site Using Azure Pipelines | Ronald&#39;s Blog</title>
 	
@@ -17,8 +17,8 @@
 <meta property="og:description" content="In this post I&rsquo;ll give a step-by-step explanation on how I build and publish my Hugo blog site to GitHub Pages using Azure Pipelines." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2019/03/24/build-and-release-hugo-site-using-azure-pipelines/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2019/03/24/build-and-release-hugo-site-using-azure-pipelines/cover.jpg"/><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2019-04-15T00:00:00&#43;01:00" />
-<meta property="article:modified_time" content="2021-03-15T18:58:38&#43;01:00" />
+<meta property="article:published_time" content="2019-04-15T00:00:00+01:00" />
+<meta property="article:modified_time" content="2019-09-10T00:00:00+01:00" />
 
 
 
@@ -244,24 +244,24 @@
 </ul>
 <h4 id="32-configure-build-pipeline">3.2 Configure build pipeline</h4>
 <p>The first thing to do is <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema#triggers">configure a trigger</a>. The following will make the build pipeline trigger whenever a change is pushed to master.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">trigger</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">trigger</span>:
 - <span style="color:#ae81ff">master</span>
 </code></pre></div><p>The Hugo task we&rsquo;re going to use, uses PowerShell. So we&rsquo;ll have to use a Windows VM as a build agent.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">pool</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">pool</span>:
   <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;vs2017-win2016&#39;</span>  <span style="color:#75715e"># need a Windows host because the Hugo task uses PowerShell</span>
 </code></pre></div><p>I&rsquo;ve included the Hugo theme I use as a submodule in my blog repository. This step will <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&amp;tabs=schema#checkout">checkout the blog repository including the theme submodule</a>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">steps</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">steps</span>:
 - <span style="color:#f92672">checkout</span>: <span style="color:#ae81ff">self</span>
   <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Checkout repository including submodules&#39;</span>
   <span style="color:#f92672">submodules</span>: <span style="color:#66d9ef">true</span>  <span style="color:#75715e"># true so Hugo theme submodule is checked out</span>
 </code></pre></div><p>Next step is to generate the Hugo site. This will use the Hugo task we&rsquo;ve installed earlier. The output will be generated to the artifact staging directory.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">HugoTask@1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">HugoTask@1</span>
   <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Generate Hugo site&#39;</span>
   <span style="color:#f92672">inputs</span>:
     <span style="color:#f92672">destination</span>: <span style="color:#e6db74">&#39;$(Build.ArtifactStagingDirectory)&#39;</span>
 </code></pre></div><p><em>You can find a description of the possible task parameters <a href="https://github.com/giuliov/hugo-vsts-extension/blob/master/README.md">here</a>. Have a look at the <a href="https://github.com/giuliov/hugo-vsts-extension/blob/master/hugo-task/task.json">task.json</a> if you need the exact input names.</em></p>
 <p>The last step is to publish the generated Hugo site as an artifact of our build. This will make it possible to use the result in a release pipeline when publishing the site.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">PublishPipelineArtifact@0</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">PublishPipelineArtifact@0</span>
   <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Publish Hugo site as artifact&#39;</span>
   <span style="color:#f92672">inputs</span>:
     <span style="color:#f92672">artifactName</span>: <span style="color:#e6db74">&#39;hugo-site&#39;</span>

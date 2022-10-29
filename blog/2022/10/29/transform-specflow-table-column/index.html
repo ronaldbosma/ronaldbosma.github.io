@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Transform SpecFlow Table Column | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2022/10/29/transform-specflow-table-column/cover.jpg"/>
+<meta name="twitter:title" content="Transform SpecFlow Table Column"/>
+<meta name="twitter:description" content="In a previous blog post I wrote about a trick on how to remove technical ids from Gherkin scenarios while still using technical ids in the step definitions. The proposed solution worked well for the given scenario, but not for other cases. In this post I look at several approaches on how to solve this issue."/>
+
+	<meta property="og:title" content="Transform SpecFlow Table Column" />
+<meta property="og:description" content="In a previous blog post I wrote about a trick on how to remove technical ids from Gherkin scenarios while still using technical ids in the step definitions. The proposed solution worked well for the given scenario, but not for other cases. In this post I look at several approaches on how to solve this issue." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2022/10/29/transform-specflow-table-column/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2022/10/29/transform-specflow-table-column/cover.jpg"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2022-10-29T12:30:00+02:00" />
+<meta property="article:modified_time" content="2022-10-29T12:30:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+	 crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+	<link href="/css/medium.css" rel="stylesheet">
+	<link href="/css/additional.css" rel="stylesheet">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Transform%20SpecFlow%20Table%20Column&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2022%2f10%2f29%2ftransform-specflow-table-column%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2022%2f10%2f29%2ftransform-specflow-table-column%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2022%2f10%2f29%2ftransform-specflow-table-column%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.png" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software engineer<br>
+                                    <i class="far fa-star"></i>
+                                    Oct 29, 2022
+                                    <i class="far fa-clock clock"></i>
+                                    9 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Transform SpecFlow Table Column</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2022/10/29/transform-specflow-table-column/cover.jpg" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>In my blog post <a href="https://ronaldbosma.github.io/blog/2020/08/08/handling-technical-ids-in-gherkin-with-specflow/">Handling technical ids in Gherkin with SpecFlow</a> I wrote about a trick on how to remove technical ids from Gherkin scenarios while still using technical ids in the step definitions. The proposed solution worked well for the given scenario, but not for other cases.</p>
+<h3 id="table-of-contents">Table of contents</h3>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#use-a-test-model">Use a Test Model</a></li>
+<li><a href="#use-value-retriever-and-table-alias">Use Value Retriever and Table Alias</a></li>
+<li><a href="#use-custom-type-with-value-retriever-and-comparer">Use Custom Type with Value Retriever and Comparer</a></li>
+<li><a href="#transform-table-column">Transform Table Column</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="problem">Problem</h3>
+<p>I&rsquo;ve been working on a demo app that displays weather forecast information for different locations. The weather forecast is represented by a class that has a <code>LocationId</code> property that is a reference to a location entity. See the class below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WeatherForecast</span>
+{
+    <span style="color:#66d9ef">public</span> DateTime Date { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> LocationId { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> Temperature { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+}
+</code></pre></div><p>In my Gherkin scenario I don&rsquo;t want to use the technical location id. I want a user-friendly description like in the example below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-gherkin" data-lang="gherkin"><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">the weather forecasts
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Date</span><span style="color:#66d9ef">            |</span><span style="color:#e6db74"> Location</span><span style="color:#66d9ef">  |</span><span style="color:#e6db74"> Temperature</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 28 October 2022</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Amsterdam</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 22</span><span style="color:#66d9ef">          |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 28 October 2022</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> London</span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 8</span><span style="color:#66d9ef">           |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 28 October 2022</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Madrid</span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 31</span><span style="color:#66d9ef">          |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">the weather forecast for &#39;London&#39; on &#39;</span><span style="color:#e6db74">28</span><span style="color:#a6e22e"> October </span><span style="color:#e6db74">2022</span><span style="color:#a6e22e">&#39; is retrieved
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">the following weather forecast is returned
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Date</span><span style="color:#66d9ef">            |</span><span style="color:#e6db74"> Location</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Temperature</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 28 October 2022</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> London</span><span style="color:#66d9ef">   |</span><span style="color:#e6db74"> 8</span><span style="color:#66d9ef">           |
+</span></code></pre></div><p>The <code>Given</code> step definition uses the <code>CreateSet</code> extension method on <code>Table</code> to create a collection of weather forecasts. The <code>CompareToInstance</code> extension method is used in the <code>Then</code> step definition to assert that the correct weather forecast is returned. There&rsquo;s also a simple method to generate a location id based on the name of a location (similar to what is used in <a href="https://ronaldbosma.github.io/blog/2020/08/08/handling-technical-ids-in-gherkin-with-specflow/">Handling technical ids in Gherkin with SpecFlow</a>).</p>
+<p>See the full code below. A working example can be found in <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/TransformSpecFlowTableColumn/01-Init">this project</a>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Binding]</span>
+<span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Steps</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> WeatherForecastRepository <span style="color:#ae81ff">_</span>repository = <span style="color:#66d9ef">new</span> ();
+    <span style="color:#66d9ef">private</span> WeatherForecast? <span style="color:#ae81ff">_</span>actualWeatherForecast;
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Given(@&#34;the weather forecasts&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> GivenTheWeatherForecasts(Table table)
+    {
+        <span style="color:#66d9ef">var</span> weatherForecasts = table.CreateSet&lt;WeatherForecast&gt;();
+        <span style="color:#ae81ff">_</span>repository.Register(weatherForecasts);
+    }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [When(@&#34;the weather forecast for &#39;([^&#39;]</span>*)<span style="color:#960050;background-color:#1e0010">&#39;</span> <span style="color:#66d9ef">on</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>([^<span style="color:#960050;background-color:#1e0010">&#39;</span>]*)<span style="color:#960050;background-color:#1e0010">&#39;</span> <span style="color:#66d9ef">is</span> retrieved<span style="color:#e6db74">&#34;)]
+</span><span style="color:#e6db74"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> WhenTheWeatherForecastForLocationOnDateIsRetrieved(<span style="color:#66d9ef">string</span> location, DateTime date)
+    {
+        <span style="color:#66d9ef">int</span> locationId = location.LocationToId();
+        <span style="color:#ae81ff">_</span>actualWeatherForecast = <span style="color:#ae81ff">_</span>repository.GetByDateAndLocation(date, locationId);
+    }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Then(@&#34;the following weather forecast is returned&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ThenTheFollowingWeatherForecastIsReturned(Table table)
+    {
+        table.CompareToInstance(<span style="color:#ae81ff">_</span>actualWeatherForecast);
+    }
+}
+</code></pre></div><p>We haven&rsquo;t done anything yet to convert the location names in the tables to the location id. The location ids will be defaulted to <code>0</code> and the scenario will fail.</p>
+<p>There are a couple of ways to deal with this situation, which I describe in the rest of this blog post.</p>
+<h3 id="use-a-test-model">Use a Test Model</h3>
+<p>Introducing a &lsquo;test model&rsquo; is a common solution when the table doesn&rsquo;t match the object that is created or compared. This test model is created in the SpecFlow project. In our example it would look like the class below, where we have a <code>Location</code> property of type <code>string</code> instead of a location id.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WeatherForecastTestModel</span>
+{
+    <span style="color:#66d9ef">public</span> DateTime Date { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> Location { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; } = <span style="color:#66d9ef">null</span>!;
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> Temperature { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+}
+</code></pre></div><p>The <code>Given</code> step definition will first convert the table into a collection of <code>WeatherForecastTestModel</code>. Which is then mapped to a collection of <code>WeatherForecast</code>. We also convert the location name into a location id. See the code below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Given(@&#34;the weather forecasts&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> GivenTheWeatherForecasts(Table table)
+{
+    <span style="color:#66d9ef">var</span> weatherForecasts = table
+        .CreateSet&lt;WeatherForecastTestModel&gt;()
+        .Select(t =&gt; <span style="color:#66d9ef">new</span> WeatherForecast
+        {
+            Date = t.Date,
+            LocationId = t.Location.LocationToId(),
+            Temperature = t.Temperature
+        });
+
+    <span style="color:#ae81ff">_</span>repository.Register(weatherForecasts);
+}
+</code></pre></div><p>A similar approach can be taken in the <code>Then</code> step definition. After we have the <code>WeatherForecast</code> instance, a tool like <code>FluentAssertions</code> can be used to perform the comparison.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Then(@&#34;the following weather forecast is returned&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ThenTheFollowingWeatherForecastIsReturned(Table table)
+{
+    <span style="color:#66d9ef">var</span> testModel = table.CreateInstance&lt;WeatherForecastTestModel&gt;();
+    <span style="color:#66d9ef">var</span> expectedWeatherForecast = <span style="color:#66d9ef">new</span> WeatherForecast
+    {
+        Date = testModel.Date,
+        LocationId = testModel.Location.LocationToId(),
+        Temperature = testModel.Temperature
+    };
+
+    <span style="color:#ae81ff">_</span>actualWeatherForecast.Should().BeEquivalentTo(expectedWeatherForecast);
+}
+</code></pre></div><p>As you can see, manual mapping from the test model to the actual model is required. A tool like AutoMapper can help with this, but it&rsquo;s not great.</p>
+<p>There is another downside. The following scenario will fail because the <code>Temperature</code> column has been removed from the <code>Then</code> step.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-gherkin" data-lang="gherkin"><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">the weather forecasts
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Date</span><span style="color:#66d9ef">            |</span><span style="color:#e6db74"> Location</span><span style="color:#66d9ef">  |</span><span style="color:#e6db74"> Temperature</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 28 October 2022</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Amsterdam</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 22</span><span style="color:#66d9ef">          |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 28 October 2022</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> London</span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 8</span><span style="color:#66d9ef">           |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 28 October 2022</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Madrid</span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 31</span><span style="color:#66d9ef">          |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">the weather forecast for &#39;London&#39; on &#39;</span><span style="color:#e6db74">28</span><span style="color:#a6e22e"> October </span><span style="color:#e6db74">2022</span><span style="color:#a6e22e">&#39; is retrieved
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">the following weather forecast is returned
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Date</span><span style="color:#66d9ef">            |</span><span style="color:#e6db74"> Location</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 28 October 2022</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> London</span><span style="color:#66d9ef">   |
+</span></code></pre></div><p>This scenario would succeed when using the <code>CompareToInstance</code> method, because that method only compares the specified columns. A tool like <code>FluentAssertions</code> compares all properties though and the temperature of the expected weather forecast defaults to <code>0</code> while the actual weather forecast has a temperature of <code>8</code>.</p>
+<blockquote>
+<p>NOTE: because I&rsquo;m generating the location id based on the location name with the <code>GetHashCode</code> method, I can&rsquo;t map the location id back to the location name. Which means, I&rsquo;m also unable to map the actual weather forecast to a type of <code>WeatherForecastTestModel</code> and then use <code>CompareToInstance</code>. If you can map from id back to the name, this issue can be avoided.</p>
+</blockquote>
+<p>The full example of this solution can be found in <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/TransformSpecFlowTableColumn/02-UseTestModel">this project</a>. I&rsquo;ve removed the duplicate mapping code by using a couple of <a href="https://docs.specflow.org/projects/specflow/en/latest/Bindings/Step-Argument-Conversions.html">Step Argument Transformation</a> methods.</p>
+<h3 id="use-value-retriever-and-table-alias">Use Value Retriever and Table Alias</h3>
+<p>When using the <code>CreateSet</code> and <code>CreateInstance</code> methods, SpecFlow supports conversion of table cells with <a href="https://docs.specflow.org/projects/specflow/en/latest/Extend/Value-Retriever.html">Value Retrievers</a>. To convert the location name into an id, the following value retriever can be used.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LocationIdValueRetriever</span> : IValueRetriever
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanRetrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> keyValuePair.Key == <span style="color:#e6db74">&#34;Location&#34;</span> &amp;&amp; propertyType == <span style="color:#66d9ef">typeof</span>(<span style="color:#66d9ef">int</span>);
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">object</span> Retrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> keyValuePair.Value.LocationToId();
+    }
+}
+</code></pre></div><p>This value retriever will convert a cell&rsquo;s value when the column name is <code>Location</code> and the type to convert to is an <code>int</code> (which is the type of the location id). Because we still use <code>Location</code> as the column name, we also need to add a table alias to the <code>LocationId</code> property as shown below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WeatherForecast</span>
+{
+    <span style="color:#66d9ef">public</span> DateTime Date { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [TableAliases(&#34;Location&#34;)]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> LocationId { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> Temperature { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+}
+</code></pre></div><p>This approach has 2 disadvantages. First, we need to add the <code>TableAliases</code> attribute to our model. You probably don&rsquo;t want to do that in a class of your actual production code, because it requires a dependency on SpecFlow.</p>
+<p>The second disadvantage is that we can&rsquo;t really use this approach for the <code>Then</code> step. For comparisons SpecFlow has the notion of Value Comparers. Unfortunately, the <code>IValueComparer</code> interface is limited compared to the <code>IValueRetriever</code> interface, as you can see below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> IValueComparer
+{
+    <span style="color:#66d9ef">bool</span> CanCompare(<span style="color:#66d9ef">object</span> actualValue);
+    <span style="color:#66d9ef">bool</span> Compare(<span style="color:#66d9ef">string</span> expectedValue, <span style="color:#66d9ef">object</span> actualValue);
+}
+</code></pre></div><p>Since we don&rsquo;t know which column we&rsquo;re comparing, it&rsquo;s not really a viable option. We could convert any string to an <code>int</code> and perform the comparison, but this might result in unexpected behaviour further down the road when we have a larger code base.</p>
+<p>See <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/TransformSpecFlowTableColumn/03-UseValueRetriever">this project</a> for a full implementation of this solution.</p>
+<h3 id="use-custom-type-with-value-retriever-and-comparer">Use Custom Type with Value Retriever and Comparer</h3>
+<p>To improve on the previous solution, we can introduce a custom <code>LocationId</code> type and use it in the weather forecast. See the example below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> record <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">LocationId</span>(<span style="color:#66d9ef">int</span> locationId);
+
+<span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WeatherForecast</span>
+{
+    <span style="color:#66d9ef">public</span> DateTime Date { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [TableAliases(&#34;Location&#34;)]</span>
+    <span style="color:#66d9ef">public</span> LocationId LocationId { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> Temperature { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+}
+</code></pre></div><p>The value retriever is changed to convert to a <code>LocationId</code> instead of an <code>int</code>. Now we don&rsquo;t really need to check the column name anymore.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LocationIdValueRetriever</span> : IValueRetriever
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanRetrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> propertyType == <span style="color:#66d9ef">typeof</span>(LocationId);
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">object</span> Retrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> LocationId(keyValuePair.Value.LocationToId());
+    }
+}
+</code></pre></div><p>For the comparison, we can implement a value comparer like the one below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LocationIdValueComparer</span> : IValueComparer
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanCompare(<span style="color:#66d9ef">object</span> actualValue)
+    {
+        <span style="color:#66d9ef">return</span> actualValue <span style="color:#66d9ef">is</span> LocationId;
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> Compare(<span style="color:#66d9ef">string</span> expectedValue, <span style="color:#66d9ef">object</span> actualValue)
+    {
+        <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> LocationId(expectedValue.LocationToId());
+        <span style="color:#66d9ef">var</span> actual = (LocationId)actualValue;
+
+        <span style="color:#66d9ef">return</span> expected == actual;
+    }
+}
+</code></pre></div><p>In projects where using these custom types is common, this can be a good approach. The only downside is that we still need to add a table alias on the <code>LocationId</code> property if we want to use <code>Location</code> as the column name.</p>
+<p>A full example of this solution can be found in <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/TransformSpecFlowTableColumn/04-UseCustomTypeWithValueRetrieverAndComparer">this project</a>.</p>
+<h3 id="transform-table-column">Transform Table Column</h3>
+<p>Because of the mentioned downsides, lately I&rsquo;ve been using a different approach to solve the issue at hand. With this approach, I transform the column in the table before using the <code>Create...</code> and <code>Compare...</code> extension methods. So, the location column with location names is transformed into a location id column with location ids.</p>
+<p>I&rsquo;ve created a generic extension method for this as shown in the following code sample.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Table TransformColumn(<span style="color:#66d9ef">this</span> Table table, <span style="color:#66d9ef">string</span> oldColumn, <span style="color:#66d9ef">string</span> newColum, Func&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; transform)
+{
+    table.RenameColumn(oldColumn, newColum);
+
+    <span style="color:#66d9ef">foreach</span> (<span style="color:#66d9ef">var</span> row <span style="color:#66d9ef">in</span> table.Rows)
+    {
+        row[newColum] = transform(row[newColum]);
+    }
+
+    <span style="color:#66d9ef">return</span> table;
+}
+</code></pre></div><p>The transformation is a 2-step process. First the column is renamed from <code>Location</code> to <code>LocationId</code> with the <code>RenameColumn</code> method (provided by SpecFlow). Then we iterate over the rows and update the cell in each row using the provided <code>transform</code> function.</p>
+<p>No changes are needed to the original <code>WeatherForecast</code> class. We also don&rsquo;t need to create a value retriever and comparer. Simply call the <code>TransformColumn</code> and then execute the <code>Create...</code> or <code>Compare...</code> extension method. See the code below for the new implementation of the <code>Given</code> and <code>Then</code> step definitions.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Given(@&#34;the weather forecasts&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> GivenTheWeatherForecasts(Table table)
+{
+    <span style="color:#66d9ef">var</span> weatherForecasts = table.TransformColumn(<span style="color:#e6db74">&#34;Location&#34;</span>, <span style="color:#e6db74">&#34;LocationId&#34;</span>, (s) =&gt; s.LocationToId().ToString())
+                                .CreateSet&lt;WeatherForecast&gt;();
+
+    <span style="color:#ae81ff">_</span>repository.Register(weatherForecasts);
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[Then(@&#34;the following weather forecast is returned&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ThenTheFollowingWeatherForecastIsReturned(Table table)
+{
+    table.TransformColumn(<span style="color:#e6db74">&#34;Location&#34;</span>, <span style="color:#e6db74">&#34;LocationId&#34;</span>, (s) =&gt; s.LocationToId().ToString())
+         .CompareToInstance(<span style="color:#ae81ff">_</span>actualWeatherForecast);
+}
+</code></pre></div><p>I think this is a nice and clean approach that will help keep our Gherkin scenarios readable and our test automation code simple. There is however 1 downside. When the comparison fails because the location is wrong, you don&rsquo;t get the error message: <code>Location: Expected &lt;Madrid&gt;, Actual &lt;London&gt;</code>. Instead, you get: <code>LocationId: Expected &lt;3&gt;, Actual &lt;2&gt;</code>. This could be confusing if you don&rsquo;t know what&rsquo;s happening under the hood.</p>
+<p><a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/TransformSpecFlowTableColumn/05-TransformColumn">This project</a> has a full working example. In this project, I&rsquo;ve moved the <code>TransformColumn(&quot;Location&quot;, &quot;LocationId&quot;, (s) =&gt; s.LocationToId().ToString())</code> call into another extension method to reduce duplication.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>I&rsquo;ve described several approaches on how to remove technical ids from your Gherkin scenario&rsquo;s tables while still using ids in your code. Each has its pros and cons. Transforming a table column is a new approach for me that has worked well. I hope it can be another tool in your toolbox. If you have any other / better solutions, I hope to hear from you.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/gherkin">Gherkin</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/specflow">SpecFlow</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/specification-by-example">Specification by Example</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/atdd">ATDD</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bdd">BDD</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/test-automation">Test Automation</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/cleaner-code">Cleaner Code</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2021/05/31/handling-exceptions-in-specflow/">Handling exceptions in SpecFlow &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<script src="/js/mediumish.js"></script>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-136383708-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+    </body>
+</html>
