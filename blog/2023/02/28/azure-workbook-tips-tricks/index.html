@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Azure Workbook Tips &amp; Tricks | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/cover.png"/>
+<meta name="twitter:title" content="Azure Workbook Tips &amp; Tricks"/>
+<meta name="twitter:description" content="If you use Azure, you most likely use Application Insights for logging. You can use a dashboard to visualize your logging and gain better insights, but dashboards come with some limitations. For more flexibility Azure has worbooks. In this blog post I&rsquo;ll share some tips &amp; tricks that I&rsquo;ve gathered over the years. As a sample, we&rsquo;ll create a workbook that shows information about requests sent to an API Management instance."/>
+
+	<meta property="og:title" content="Azure Workbook Tips &amp; Tricks" />
+<meta property="og:description" content="If you use Azure, you most likely use Application Insights for logging. You can use a dashboard to visualize your logging and gain better insights, but dashboards come with some limitations. For more flexibility Azure has worbooks. In this blog post I&rsquo;ll share some tips &amp; tricks that I&rsquo;ve gathered over the years. As a sample, we&rsquo;ll create a workbook that shows information about requests sent to an API Management instance." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2023-02-28T19:30:00+01:00" />
+<meta property="article:modified_time" content="2023-02-28T19:30:00+01:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.a3d5489836b19de22a81ddc6bd21c17547d07529e67b266427378a04fa3ea727.css" integrity="sha256-o9VImDaxneIqgd3GvSHBdUfQdSnmeyZkJzeKBPo&#43;pyc=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Azure%20Workbook%20Tips%20%26%20Tricks&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2023%2f02%2f28%2fazure-workbook-tips-tricks%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2023%2f02%2f28%2fazure-workbook-tips-tricks%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2023%2f02%2f28%2fazure-workbook-tips-tricks%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.png" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software engineer<br>
+                                    <i class="far fa-star"></i>
+                                    Feb 28, 2023
+                                    <i class="far fa-clock clock"></i>
+                                    14 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Azure Workbook Tips &amp; Tricks</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>If you use Azure, you most likely use Application Insights for logging. You can use a <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/tutorial-logs-dashboards">dashboard</a> to visualize your logging and gain better insights, but dashboards come with some limitations. For more flexibility Azure has <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-overview">workbooks</a>.</p>
+<p>In this blog post I&rsquo;ll share some tips &amp; tricks that I&rsquo;ve gathered over the years. As a sample, we&rsquo;ll create a workbook that shows information about requests sent to an API Management instance.</p>
+<ul>
+<li><a href="#construct-a-query">Construct a query</a></li>
+<li><a href="#create-reusable-query">Create reusable query</a></li>
+<li><a href="#create-workbook">Create Workbook</a></li>
+<li><a href="#parameters">Parameters</a>
+<ul>
+<li><a href="#time-range-parameter">Time Range Parameter</a></li>
+<li><a href="#subscription-parameter-drop-down-from-logs">Subscription Parameter (drop down from logs)</a></li>
+<li><a href="#api-parameter-drop-down-from-logs">Api Parameter (drop down from logs)</a></li>
+<li><a href="#success-parameter-drop-down-from-json">Success Parameter (drop down from JSON)</a></li>
+</ul>
+</li>
+<li><a href="#table">Table</a>
+<ul>
+<li><a href="#request-details-in-context-pane">Request Details in Context Pane</a></li>
+<li><a href="#end-to-end-transaction-details">End-to-end Transaction Details</a></li>
+</ul>
+</li>
+<li><a href="#totals-tiles">Totals (tiles)</a></li>
+<li><a href="#master-detail-table">Master-detail Table</a>
+<ul>
+<li><a href="#export-selection-from-master-table">Export Selection from Master Table</a></li>
+<li><a href="#add-detail-table">Add Detail Table</a></li>
+<li><a href="#show-detail-table-on-selection">Show Detail Table on Selection</a></li>
+</ul>
+</li>
+<li><a href="#save-workbook">Save Workbook</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="construct-a-query">Construct a query</h3>
+<p>When you want to display data from Application Insights on a dashboard or workbook, you&rsquo;ll need to create a query. Azure uses the <a href="https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/">Kusto Query Language</a> for this.</p>
+<p>Creating such a query can be daunting if you&rsquo;re unfamiliar with the syntax. I always like to start by constructing an initial query through the transaction search screen of Application Insights.</p>
+<p>For this, open your Application Insights instance in the portal and go to Transaction Search. At the top you&rsquo;ll see &lsquo;pills&rsquo; that you can use to filter the data. By default, it will show logging from the last 24 hours for all event types. In our case, we&rsquo;re interested in requests, so unselect all event types except &lsquo;Request&rsquo;.</p>
+<p>We can add extra filters by adding new pills. You can then select the property on which to filter and the value(s).</p>
+<p>To filter on requests from our API Management instance, first select the &lsquo;Service ID&rsquo; property and then the name of your API Management instance.</p>
+<p>I also want to be able to filter on requests from specific APIs. Add another pill, select &lsquo;API Name&rsquo; as the property and select the APIs on which to filter.</p>
+<p>The result should look similar to the image below.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/transaction-search.png" alt="Transaction Search"></p>
+<p>By clicking on &lsquo;View in Logs&rsquo; you&rsquo;ll go to the Logs screen where the query we&rsquo;ve just constructed is loaded. It should look like the query below.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">union isfuzzy=true requests
+| where timestamp &gt; datetime(&quot;2023-02-24T11:12:00.662Z&quot;) and timestamp &lt; datetime(&quot;2023-02-25T11:12:00.662Z&quot;)
+| where customDimensions[&quot;Service ID&quot;] in (&quot;apim-robo-test&quot;)
+| where customDimensions[&quot;API Name&quot;] in (&quot;bar&quot;, &quot;qux&quot;)
+| order by timestamp desc
+| take 100
+</code></pre><p>The query has the filters specified in the Transaction Search screen as where clauses. It&rsquo;s also sorting the results on the timestamp and only showing the first 100 records.</p>
+<p>We&rsquo;ll optimize this query in a bit, but first have a look at the left of the Logs screen. You can find a list of tables you can query on and the columns of each table. Here&rsquo;s part of the requests table for example.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/requests-table-properties.png" alt="Requests Table Properties"></p>
+<p>The <code>timestamp</code> property is a property we can directly use in our queries because it&rsquo;s a column of the requests table. The <code>Service ID</code> and <code>API Name</code> are not default columns in the requests table because they are specific to API Management. These are stored in the <code>customDimensions</code> property and can be accessed with the syntax <code>customDimensions[&quot;Service ID&quot;]</code> and <code>customDimensions[&quot;API Name&quot;]</code>.</p>
+<p>When you specify your own custom properties to log from your application, you&rsquo;ll find them in this <code>customDimensions</code> property.</p>
+<h3 id="create-reusable-query">Create reusable query</h3>
+<p>We&rsquo;ll be reusing the same query in different parts of our workbook, so we&rsquo;re going to make a function. First, we&rsquo;ll cleanup the previously generated query to look like this:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">requests
+| where customDimensions[&quot;Service ID&quot;] == &quot;apim-robo-test&quot;
+| extend subscription = tostring(customDimensions[&quot;Subscription Name&quot;])
+    , api = tostring(customDimensions[&quot;API Name&quot;])
+    , sessionCorrelationId = tostring(customDimensions[&quot;Request-Session-Correlation-Id&quot;])
+</code></pre><p>We&rsquo;ve made the following changes:</p>
+<ul>
+<li>The <code>union isfuzzy=true</code> part is useful when querying multiple even types. Because we&rsquo;re only querying requests we&rsquo;ve removed it.</li>
+<li>The query screen provides a &lsquo;Time range&rsquo; pill that can be used to specify a time range to filter on. We will provide a similar filter in our workbook. So, the where clause on <code>timestamp</code> is removed.</li>
+<li>We&rsquo;ll only query on a single API Management instance, so the &lsquo;in&rsquo; filter has become an &lsquo;equals&rsquo;.</li>
+<li>We&rsquo;ll be adding the filter on API name in our workbook. So, it&rsquo;s removed for now.</li>
+<li>We extend the query results with the following properties from the custom dimensions array. We also convert them to strings, so they&rsquo;re easier to work with.
+<ul>
+<li>Subscription Name: the name of the subscription that was used to call an API. This will make it possible to identify who performed a request.</li>
+<li>API Name: this is the name of the API that was called.</li>
+<li>Request-Session-Correlation-Id: this is a custom dimension I&rsquo;ve added to every request so I can correlate all requests from a specific session. We&rsquo;ll use it when creating a <a href="#master-detail-table">master-detail table</a>.</li>
+</ul>
+</li>
+<li>Sorting is up to the queries using the function, so <code>| order by timestamp desc</code> can be removed.</li>
+<li>Lastly, we can remove the <code>| take 100</code> to show more results.</li>
+</ul>
+<p>To save the query as a function, choose &lsquo;Save &gt; Save as function&rsquo; and give it a name like &lsquo;ApimRequests&rsquo;.</p>
+<p>When the function is saved, you can use it in a query like this:</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/query-results.png" alt="Query Results"></p>
+<p>Because we&rsquo;ve extended the results in the function with <code>api</code>, we don&rsquo;t need to use the <code>customDimensions[&quot;API Name&quot;]</code> syntax in our query.</p>
+<h3 id="create-workbook">Create Workbook</h3>
+<p>Now that we have our query, we can start creating our workbook. Open your Application Insights instance and go to Workbooks. Azure already provides several workbooks that you can use and customize, but we&rsquo;ll start from scratch. Click on Empty <em>(A completely empty workbook)</em>. A new empty workbook opens.</p>
+<p>When you click on Add, you&rsquo;ll see that you can add different items to the workbook. We&rsquo;ll focus on parameters and queries in this workbook.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/add-items-menu.png" alt="Add Items Menu"></p>
+<h3 id="parameters">Parameters</h3>
+<p>The first thing we&rsquo;ll do is add a couple of parameters. These will allow us to filter on the data that will be displayed.</p>
+<p>Click on &lsquo;Add &gt; Add parameters&rsquo; to add a parameters section to the top of the workbook.</p>
+<h4 id="time-range-parameter">Time Range Parameter</h4>
+<p>We&rsquo;ll want to filter on a specific time range, so click on the &lsquo;Add Parameter&rsquo; button. The New Parameter screen opens to the side. Enter the parameter name &lsquo;Time&rsquo;, select &lsquo;Time range picker&rsquo; as the parameter type and make it required.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/add-parameter-time.png" alt="Add Parameter Time"></p>
+<p>Click Save to add the parameter.</p>
+<h4 id="subscription-parameter-drop-down-from-logs">Subscription Parameter (drop down from logs)</h4>
+<p>When calling API Management, we need to use a subscription for authentication. I want to be able filter on this subscription to see who performed which requests.</p>
+<p>Click on the &lsquo;Add Parameter&rsquo; button. Enter the parameter name &lsquo;Subscription&rsquo;, select &lsquo;Drop down&rsquo; as the parameter type, check the &lsquo;Allow multiple selections&rsquo; box and select &lsquo;Query&rsquo; as the source of the data.</p>
+<p>Enter the following query. As you can see, we&rsquo;re using the function that we&rsquo;ve created earlier.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">ApimRequests
+| distinct subscription
+| sort by subscription asc
+</code></pre><p>If you want to filter the results in your parameter based on the selected time in the Time parameter, select Time in the Time Range drop down.</p>
+<p>To test the query, click the Run Query button.</p>
+<blockquote>
+<p>You might have to select a time range in the Time parameter first for the query to work.</p>
+</blockquote>
+<p>The New Parameter screen should look like this.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/add-parameter-subscription.png" alt="Add Parameter Subscription"></p>
+<blockquote>
+<p>NOTE: if you scroll down in the New Parameter window, you&rsquo;ll see how you can use this parameter in a query.</p>
+</blockquote>
+<p>Click Save to add the parameter.</p>
+<h4 id="api-parameter-drop-down-from-logs">Api Parameter (drop down from logs)</h4>
+<p>As mentioned before, we also want to filter on the API that was called. As an extra requirement, I want to filter the list of APIs based on the selected subscription(s) from Subscription parameter.</p>
+<p>Click on the &lsquo;Add Parameter&rsquo; button. Enter the parameter name &lsquo;Api&rsquo;, select &lsquo;Drop down&rsquo; as the parameter type, check the &lsquo;Allow multiple selections&rsquo; box and select &lsquo;Query&rsquo; as the source of the data.</p>
+<p>Enter the following query and select Time as the Time Range.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let subscriptionFilter = dynamic([{Subscription}]);
+
+ApimRequests
+| where array_length(subscriptionFilter) == 0 or subscription in (subscriptionFilter)
+| distinct api
+| sort by api asc
+</code></pre><p>As you can see, the query is a bit more complicated.</p>
+<ul>
+<li>The <code>let subscriptionFilter = dynamic([{Subscription}]);</code> line will create an array of selected subscriptions based on the Subscription parameter. If no subscription is selected, the array is empty.</li>
+<li>The filter <code>| where array_length(subscriptionFilter) == 0 or subscription in (subscriptionFilter)</code> will show all APIs if no subscription is selected or APIs with requests that have a matching subscription if one or more are selected in the Subscription filter.</li>
+</ul>
+<p>The New Parameter screen should look like this.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/add-parameter-api.png" alt="Add Parameter Api"></p>
+<p>Run the query to test if it works. Click Save to add the parameter.</p>
+<h4 id="success-parameter-drop-down-from-json">Success parameter (drop down from JSON)</h4>
+<p>You can also use a static list to populate a drop down filter. We&rsquo;ll add another parameter to filter on successful and/or failed requests.</p>
+<p>Click on the &lsquo;Add Parameter&rsquo; button. Enter the parameter name &lsquo;Success&rsquo;, select &lsquo;Drop down&rsquo; as the parameter type. The &lsquo;Allow multiple selections&rsquo; checkbox can be left unchecked.</p>
+<p>Select &lsquo;JSON&rsquo; as the source of the data. In the JSON Input we need to add an array of values and labels. See the example below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">[
+    { <span style="color:#f92672">&#34;value&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>, <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;yes&#34;</span>},
+    { <span style="color:#f92672">&#34;value&#34;</span>: <span style="color:#e6db74">&#34;false&#34;</span>, <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;no&#34;</span>}
+]
+</code></pre></div><p>We&rsquo;ll see the items &lsquo;yes&rsquo; and &lsquo;no&rsquo; in the drop down list. These correspond to <code>true</code> and <code>false</code> respectively.</p>
+<p>The New Parameter screen should look like this.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/add-parameter-success.png" alt="Add Parameter Success"></p>
+<p>Click Save to add the parameter.</p>
+<p>Now that we&rsquo;ve added our parameters, click the &lsquo;Done Editing&rsquo; button in the &lsquo;Editing parameters item&rsquo; section. The result should look something like this.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/workbook-parameters.png" alt="Workbook Parameters"></p>
+<h3 id="table">Table</h3>
+<p>The next step is to add a table that shows the requests. Choose &lsquo;Add &gt; Add query&rsquo;.</p>
+<p>To filter the results in the table based on the selected time range of the previously created Time parameter, we can select the Time parameter in the Time Range drop down. Set the Visualization to Grid to display the results as a table.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/grid-time-range-and-visualization.png" alt="Grid Time Range and Visualization"></p>
+<p>Now add the following query.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let subscriptionFilter = dynamic([{Subscription}]);
+let apiFilter = dynamic([{Api}]);
+let successFilter = '{Success}';
+
+ApimRequests
+| where array_length(subscriptionFilter) == 0 or subscription in (subscriptionFilter)
+| where array_length(apiFilter) == 0 or api in (apiFilter)
+| where isempty(successFilter) or success == tobool(successFilter)
+| project timestamp
+    , subscription
+    , api
+    , name
+    , success
+    , resultCode
+    , duration = strcat(round(duration, 1), &quot; ms&quot;)
+    , details = itemId
+    , transaction = itemId
+    , sessionCorrelationId
+| order by timestamp desc
+</code></pre><p>The subscription and api filters are like the one in the query of the Api parameter.</p>
+<p>The Success parameter was not multiselect, so <code>let successFilter = '{Success}';</code> will be empty if nothing is selected, <code>true</code> if yes is selected and <code>false</code> if no is selected. With the filter <code>| where isempty(successFilter) or success == tobool(successFilter)</code> we either show all request or the requests that were (un)successful.</p>
+<p>With the <code>project</code> keyword we specify a list of columns to display in the table. The <code>itemId</code> is displayed twice in both the <code>details</code> and <code>transaction</code> column. We&rsquo;ll use these further on to create links to the request details.</p>
+<p>The query is executed when you click the Run Query button. You can filter the data by changing the values of the parameters. For example, select &lsquo;no&rsquo; in the Success parameter to show all failed requests.</p>
+<p>You can configure more settings in the Advanced Settings tab. I&rsquo;ve set the chart title to &lsquo;Requests&rsquo;. I also like to check the &lsquo;Show filter field above grid or tiles&rsquo; box. This will show a filter input field above the table. It can be used to further filter the results as shown below.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/table-filter-field.png" alt="Table Filter Field"></p>
+<h4 id="request-details-in-context-pane">Request Details in Context Pane</h4>
+<p>To show more information about a request, we can change the details column to show a link that opens the request details to the side.</p>
+<p>Follow these steps:</p>
+<ul>
+<li>Click on the &lsquo;Column Settings&rsquo; button in the &lsquo;Settings&rsquo; tab and select the details column</li>
+<li>Select Link in the &lsquo;Column renderer&rsquo; drop down</li>
+<li>Enter &lsquo;11ch&rsquo; as the &lsquo;Custom Column Width&rsquo;</li>
+<li>Select &lsquo;Request Details&rsquo; in the &lsquo;View to open&rsquo; drop down</li>
+<li>Enter &lsquo;details&rsquo; as the &lsquo;Link label&rsquo;</li>
+<li>Check the &lsquo;Open link in Context pane&rsquo; box</li>
+</ul>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/table-column-details.png" alt="Table Column Details"></p>
+<p>Choose &lsquo;Save and Close&rsquo; to see the results.</p>
+<p>When you click on a details link, a context pane opens to the right showing the request properties. See the example below.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/request-details.png" alt="Request Details"></p>
+<h4 id="end-to-end-transaction-details">End-to-end Transaction Details</h4>
+<p>To show the end-to-end transaction details of a request, we can change the transaction column to show a link that opens the end-to-end-transaction details.</p>
+<p>Follow these steps:</p>
+<ul>
+<li>Open the column settings again and select the transaction column</li>
+<li>Select Link in the &lsquo;Column renderer&rsquo; drop down</li>
+<li>Enter &lsquo;15ch&rsquo; as the &lsquo;Custom Column Width&rsquo;</li>
+<li>Select &lsquo;Request Details&rsquo; in the &lsquo;View to open&rsquo; drop down</li>
+<li>Enter &lsquo;transaction&rsquo; as the &lsquo;Link label&rsquo;</li>
+<li>Keep the &lsquo;Open link in Context pane&rsquo; unchecked</li>
+</ul>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/table-column-transaction.png" alt="Table Column Transaction"></p>
+<p>Choose &lsquo;Save and Close&rsquo; to see the results.</p>
+<p>When you click on a transaction link, the end-to-end transaction screen is opened. See the example below.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/end-to-end-transaction-details.png" alt="End-to-end Transaction Details"></p>
+<h3 id="totals-tiles">Totals (Tiles)</h3>
+<p>Besides tables you can also use other visualizations to display your query results. One I like to use is tiles. You can use it to for instance show the total number of requests, failures and errors per API. See the example below.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/tiles-totals.png" alt="Total Tiles"></p>
+<p>Start by adding another query to the workbook. Select Time as the Time Range, Tiles as the Visualization and Tiny as the Size.</p>
+<p>Add the following query.</p>
+<pre tabindex="0"><code>ApimRequests
+| summarize 
+        requests=strcat('Total # of requests: ', count()), 
+        failures=strcat('Total # of failures: ', countif(success==false)),
+        errors=countif(toint(resultCode)&gt;=500)
+    by api
+</code></pre><p>This query groups the results by api and counts all requests, all failed requests and all requests with result code &gt;= 500. To clarify what the different numbers are, I&rsquo;ve included a bit of text in the results.</p>
+<p>If you run the query, you&rsquo;ll notice that it doesn&rsquo;t quite look the same as the example above. We need to customize the tile.</p>
+<p>Choose Tile Settings. The api is already the title and the errors are displayed as the big number on the left.</p>
+<p>To add the total number of requests. Select the Subtitle field and select requests as the column to use. To add the total number of failures. Select the Bottom field and select failures as the column to use.</p>
+<p>You can also configure on what property to order the results. Select api as the Sort Criteria under Sort Settings and Ascending as the Sort Order.</p>
+<p>The Tile Settings screen should look like this.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/tiles-settings.png" alt="Tiles Settings"></p>
+<p>Choose &lsquo;Save and Close&rsquo;.</p>
+<p>We can add a title to the chart to clarify what is displayed. Go to Advanced Settings and set the chart title to <code>Total # of errors per API (status code &gt;=500)</code>.</p>
+<p>I usually display the totals above a table. You can move the Tiles section above the table by choosing &lsquo;Move &gt; Move up&rsquo;.</p>
+<h3 id="master-detail-table">Master-detail Table</h3>
+<p>Tables and other items provide the option to select data. We can use that selection as a filter in other items.</p>
+<p>As an example, we&rsquo;ll create a master-detail table. When a request in the master table is selected, all requests that have the same session correlation id will be displayed in the detail table. See the example below.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/master-detail-table.png" alt="Master-detail Table"></p>
+<h4 id="export-selection-from-master-table">Export Selection from Master Table</h4>
+<p>To start, Edit the current Requests table. Go to Advanced Settings and check the &lsquo;When items are selected, export parameters&rsquo; box.</p>
+<p>Click on Add parameter. Enter sessionCorrelationId as the field to export. Enter SelectedSessionCorrelationId as the parameter name.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/export-parameter-settings.png" alt="Export Parameter Settings"></p>
+<p>Choose Save. It should look like this.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/exported-parameter.png" alt="Exported Parameter"></p>
+<p>To reduce the amount of scrolling, I&rsquo;ve changed the table size from medium to small in the settings.</p>
+<p>Choose Done Editing on the editing query item.</p>
+<h4 id="add-detail-table">Add Detail Table</h4>
+<p>Choose &lsquo;Add &gt; Add query&rsquo; to add another table. Select Time as the Time Range and Grid as Visualization.</p>
+<p>Add the following query.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">ApimRequests
+| where sessionCorrelationId == '{SelectedSessionCorrelationId}'
+| project timestamp
+    , subscription
+    , api
+    , name
+    , success
+    , resultCode
+    , duration = strcat(round(duration, 1), &quot; ms&quot;)
+    , details = itemId
+    , transaction = itemId
+| order by timestamp desc
+</code></pre><p>This query looks like the previous one, but only filters on the <code>sessionCorrelationId</code> column using the exported parameter of the master table.</p>
+<p>You can customize the columns again, similar to the master table. I also like to add a chart title in which I display the selected value. You can update the chart title in the Advanced Settings with: <code>Requests for session: {SelectedSessionCorrelationId}</code>.</p>
+<h4 id="show-detail-table-on-selection">Show Detail Table on Selection</h4>
+<p>If you don&rsquo;t select an item in the master table. You&rsquo;ll see the message below in place of the details table.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/master-detail-table-no-selected-item.png" alt="Master-detail Table No Selected Item"></p>
+<p>If you don&rsquo;t like this, you can make the detail table hide when no row is selected in the master table.</p>
+<p>Open the Advanced Settings and check the &lsquo;Make this item conditionally visible&rsquo;. Choose Add Condition. Enter SelectedSessionCorrelationId as the Parameter name and select &lsquo;is not equal to&rsquo; in the Comparison drop down. Leave the Parameter value input empty.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/visibility-condition.png" alt="Visibility Condition"></p>
+<p>With this the details table is only shown when the SelectedSessionCorrelationId has a value, which it will have if a row is selected in the master table.</p>
+<h3 id="save-workbook">Save Workbook</h3>
+<p>Once you&rsquo;re done editing the workbook you can choose &lsquo;Done Editing&rsquo;. Then click the Save button. Enter a title in the Save As window and select the correct subscription, resource group &amp; location. Choose Apply and the workbook is saved.</p>
+<p>Note that parameter selections are also saved. Meaning, if you&rsquo;re filtering on for example success == no and choose Save, this selection will be saved. Whenever you or another user opens the workbook, this selection will be pre-selected.</p>
+<p>Here are links to the exported workbook and shared function:</p>
+<ul>
+<li><a href="https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/AzureWorkbookTipsAndTricks/API%20Management%20Requests.workbook">API Management Requests.workbook</a></li>
+<li><a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/AzureWorkbookTipsAndTricks/ApimRequests.kql">ApimRequests.kql</a></li>
+</ul>
+<p>In my next post I&rsquo;ll show you how to deploy this workbook using Bicep and the Azure CLI.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>As you can see, there&rsquo;s a lot you can do with workbooks, and we&rsquo;ve only scratched the surface. See these links for more information.</p>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-overview">Workbooks</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/">Kusto Query Language</a></li>
+</ul>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/application-insights">Application Insights</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/kusto">kusto</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2022/10/29/transform-specflow-table-column/">Transform SpecFlow Table Column &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-136383708-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+    </body>
+</html>

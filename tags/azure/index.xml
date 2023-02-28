@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 16 Mar 2021 00:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 28 Feb 2023 19:30:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Azure Workbook Tips &amp; Tricks</title>
+      <link>https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/</link>
+      <pubDate>Tue, 28 Feb 2023 19:30:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/</guid>
+      <description>If you use Azure, you most likely use Application Insights for logging. You can use a dashboard to visualize your logging and gain better insights, but dashboards come with some limitations. For more flexibility Azure has worbooks. In this blog post I&amp;rsquo;ll share some tips &amp;amp; tricks that I&amp;rsquo;ve gathered over the years. As a sample, we&amp;rsquo;ll create a workbook that shows information about requests sent to an API Management instance.</description>
+    </item>
+    
     <item>
       <title>Provision an Azure VM in an Azure Pipelines Environment</title>
       <link>https://ronaldbosma.github.io/blog/2021/03/16/provision-an-azure-vm-in-an-azure-pipelines-environment/</link>

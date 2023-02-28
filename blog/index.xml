@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Sat, 29 Oct 2022 12:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 28 Feb 2023 19:30:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Azure Workbook Tips &amp; Tricks</title>
+      <link>https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/</link>
+      <pubDate>Tue, 28 Feb 2023 19:30:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/</guid>
+      <description>If you use Azure, you most likely use Application Insights for logging. You can use a dashboard to visualize your logging and gain better insights, but dashboards come with some limitations. For more flexibility Azure has worbooks. In this blog post I&amp;rsquo;ll share some tips &amp;amp; tricks that I&amp;rsquo;ve gathered over the years. As a sample, we&amp;rsquo;ll create a workbook that shows information about requests sent to an API Management instance.</description>
+    </item>
+    
     <item>
       <title>Transform SpecFlow Table Column</title>
       <link>https://ronaldbosma.github.io/blog/2022/10/29/transform-specflow-table-column/</link>
