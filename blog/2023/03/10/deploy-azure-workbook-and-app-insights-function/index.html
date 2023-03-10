@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Deploy Azure Workbook and App Insights Function | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/cover.png"/>
+<meta name="twitter:title" content="Deploy Azure Workbook and App Insights Function"/>
+<meta name="twitter:description" content="In this post I explain how to deploy an Azure workbook using Bicep and set environment specific variables. I&rsquo;ll also show how to deploy a shared kusto function in Application Insights with the Azure CLI."/>
+
+	<meta property="og:title" content="Deploy Azure Workbook and App Insights Function" />
+<meta property="og:description" content="In this post I explain how to deploy an Azure workbook using Bicep and set environment specific variables. I&rsquo;ll also show how to deploy a shared kusto function in Application Insights with the Azure CLI." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2023-03-10T15:00:00+01:00" />
+<meta property="article:modified_time" content="2023-03-10T15:00:00+01:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.a3d5489836b19de22a81ddc6bd21c17547d07529e67b266427378a04fa3ea727.css" integrity="sha256-o9VImDaxneIqgd3GvSHBdUfQdSnmeyZkJzeKBPo&#43;pyc=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Deploy%20Azure%20Workbook%20and%20App%20Insights%20Function&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2023%2f03%2f10%2fdeploy-azure-workbook-and-app-insights-function%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2023%2f03%2f10%2fdeploy-azure-workbook-and-app-insights-function%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2023%2f03%2f10%2fdeploy-azure-workbook-and-app-insights-function%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.png" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software engineer<br>
+                                    <i class="far fa-star"></i>
+                                    Mar 10, 2023
+                                    <i class="far fa-clock clock"></i>
+                                    8 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Deploy Azure Workbook and App Insights Function</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>In my previous blog post <a href="/blog/2023/02/28/azure-workbook-tips-tricks/">Azure Workbook Tips &amp; Tricks</a> we created an <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-overview">Azure Workbook</a> to gain more insight into the use of our APIs hosted in Azure API Management. In this blog post I&rsquo;ll show you how to deploy this workbook with <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep">Bicep</a> and set environment specific variables. I&rsquo;ll also show how to deploy a shared kusto function in Application Insights with the Azure CLI.</p>
+<ul>
+<li><a href="#deploy-workbook-based-on-arm-template">Deploy workbook based on ARM template</a></li>
+<li><a href="#load-workbook-from-file">Load workbook from file</a></li>
+<li><a href="#define-workbook-as-bicep-object">Define workbook as Bicep object</a></li>
+<li><a href="#deploy-shared-function-in-app-insights">Deploy shared function in App Insights</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="deploy-workbook-based-on-arm-template">Deploy workbook based on ARM template</h3>
+<p>After you&rsquo;ve created your workbook, you can download an ARM Template of the workbook, which you can then convert to a Bicep script. To do this, open the workbook in Edit mode and click the Advanced Editor button.</p>
+<p><img src="../../../../../images/deploy-azure-workbook-and-app-insights-function/edit-workbook-advanced-editor.png" alt="Edit Workbook - Advanced Editor"></p>
+<p>Choose ARM Template as the Template Type and download the template. The result will look like <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/DeployAzureWorkbookAndAppInsightsFunction/arm-template/sample-arm-template.json">sample-arm-template.json</a>.</p>
+<p>The ARM template can be decompiled to a Bicep script with the following Azure CLI command.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az bicep decompile -<span style="color:#f92672">-file</span> .\sample-arm-template.json
+</code></pre></div><p>The result will be a Bicep file like the snippet below. See <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/DeployAzureWorkbookAndAppInsightsFunction/arm-template/sample-after-decompile.bicep">sample-after-decompile.bicep</a> for the full script.</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">@description('The friendly name for the workbook that is used in the Gallery or Saved List.  This name must be unique within a resource group.')
+param workbookDisplayName string = 'API Management Requests'
+
+@description('The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is \'workbook\'')
+param workbookType string = 'workbook'
+
+@description('The id of resource instance to which the workbook will be associated')
+param workbookSourceId string = '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-test/providers/microsoft.insights/components/appin-robo-test'
+
+@description('The unique guid for this workbook instance')
+param workbookId string = newGuid()
+
+resource workbookId_resource 'microsoft.insights/workbooks@2021-03-08' = {
+  name: workbookId
+  location: resourceGroup().location
+  kind: 'shared'
+  properties: {
+    displayName: workbookDisplayName
+    serializedData: '{&quot;version&quot;:&quot;Notebook/1.0&quot;,&quot;items&quot;:[{&quot;type&quot;:9,&quot;content&quot;:{&quot;version&quot;:.....&lt;long string&gt;.....'
+    version: '1.0'
+    sourceId: workbookSourceId
+    category: workbookType
+  }
+  dependsOn: []
+}
+
+output workbookId string = workbookId_resource.id
+</code></pre><p>The workbook content is set through the <code>serializedData</code> property. This is one long string that contains the entire workbook definition. Including hardcoded environment specific values, like the application insights resource id (at the end of the string).</p>
+<p>To make it deployable to multiple environments, we can replace the hardcoded application insights id with the <code>workbookSourceId</code> parameter. See the example below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#960050;background-color:#1e0010">...</span> <span style="color:#e6db74">&#34;fallbackResourceIds&#34;</span><span style="color:#960050;background-color:#1e0010">:</span>[<span style="color:#e6db74">&#34;${workbookSourceId}&#34;</span>] <span style="color:#960050;background-color:#1e0010">...</span>
+</code></pre></div><p>We can now deploy the workbook using the following Azure CLI command.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">$resourceGroupName = <span style="color:#e6db74">&#39;&lt;resource group&gt;&#39;</span>
+$applicationInsightsId = <span style="color:#e6db74">&#39;&lt;application insights id&gt;&#39;</span>
+
+az deployment group create `
+    --name <span style="color:#e6db74">&#39;sample-workbook-deployment&#39;</span> `
+    --resource-group $resourceGroupName `
+    --template<span style="color:#f92672">-file</span> <span style="color:#e6db74">&#39;./sample.bicep&#39;</span> `
+    --parameters workbookSourceId=$applicationInsightsId `
+    --verbose
+</code></pre></div><blockquote>
+<p>NOTE: when you open the deployed workbook in the Azure Portal, you might get the error <code>Failed to resolve table or column expression named 'ApimRequests'</code> because we haven&rsquo;t deployed the <code>ApimRequests</code> function yet.</p>
+</blockquote>
+<p>If you run this command multiple times, it will fail with the error <code>A Workbook with the same name already exists within this subscription</code>. The workbook id is different with every deployment, while the display name stays the same. You can fix this by generating a GUID based on a string that is the same for each deployment. See the example below.</p>
+<pre tabindex="0"><code>param workbookId string = guid('sample-workbook')
+</code></pre><p>A working sample with these changes can be found <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/DeployAzureWorkbookAndAppInsightsFunction/arm-template/sample.bicep">here</a>.</p>
+<p>The biggest downside of this solution is that the entire workbook definition is a serialized string on a single line. This makes it difficult to make minor changes directly in the definition or to see what has changed. To solve this problem, we can load the workbook definition from a separate file.</p>
+<h3 id="load-workbook-from-file">Load workbook from file</h3>
+<p>The first step is to download the workbook definition. Open the workbook in Edit mode and click the Advanced Editor button.</p>
+<p><img src="../../../../../images/deploy-azure-workbook-and-app-insights-function/edit-workbook-advanced-editor.png" alt="Edit Workbook - Advanced Editor"></p>
+<p>Choose Gallery Template as the Template Type and download the template. The result will be a JSON file containing only the definition of the workbook. It should look like <a href="https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/DeployAzureWorkbookAndAppInsightsFunction/load-workbook-from-file/sample.workbook">sample.workbook</a>.</p>
+<p>We can&rsquo;t replace the application insights id with the <code>workbookSourceId</code> parameter like we did before, so I&rsquo;ve replaced the value inside <a href="https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/DeployAzureWorkbookAndAppInsightsFunction/load-workbook-from-file/sample.workbook">sample.workbook</a> with a placeholder. You can do this for every environment specific value. See the example below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#e6db74">&#34;fallbackResourceIds&#34;</span><span style="color:#960050;background-color:#1e0010">:</span> [
+  <span style="color:#e6db74">&#34;##applicationInsightsId##&#34;</span>
+]<span style="color:#960050;background-color:#1e0010">,</span>
+</code></pre></div><p>Using the bicep script from the previous example as a starting point, we can now load the workbook definition from the file and replace the <code>##applicationInsightsId##</code> placeholder. See the snippet below.</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">var definition = loadTextContent('./sample.workbook')
+var serializedData = replace(definition, '##applicationInsightsId##', workbookSourceId)
+
+resource workbookId_resource 'microsoft.insights/workbooks@2021-03-08' = {
+  ...
+  properties: {
+    serializedData: serializedData
+    ...
+  }
+}
+</code></pre><p>As you can see, the definition is loaded from the file using the <code>loadTextContent</code> function. We then use the <code>replace</code> function to replace the placeholder. The last step is to set the <code>serializedData</code> property. See <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/DeployAzureWorkbookAndAppInsightsFunction/load-workbook-from-file/sample.bicep">sample.bicep</a> for the full sample.</p>
+<p>Using the same Azure CLI command as before, we can deploy the workbook using Bicep.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">$resourceGroupName = <span style="color:#e6db74">&#39;&lt;resource group&gt;&#39;</span>
+$applicationInsightsId = <span style="color:#e6db74">&#39;&lt;application insights id&gt;&#39;</span>
+
+az deployment group create `
+    --name <span style="color:#e6db74">&#39;sample-workbook-deployment&#39;</span> `
+    --resource-group $resourceGroupName `
+    --template<span style="color:#f92672">-file</span> <span style="color:#e6db74">&#39;./sample.bicep&#39;</span> `
+    --parameters workbookSourceId=$applicationInsightsId `
+    --verbose
+</code></pre></div><blockquote>
+<p>NOTE: when you open the deployed workbook in the Azure Portal, you might get the error <code>Failed to resolve table or column expression named 'ApimRequests'</code> because we haven&rsquo;t deployed the <code>ApimRequests</code> function yet.</p>
+</blockquote>
+<h3 id="define-workbook-as-bicep-object">Define workbook as Bicep object</h3>
+<p>I have explored another option to deploy a workbook. You can use a Bicep object for the workbook definition and place it directly in the Bicep script. The first version of this blog post was based on this solution.</p>
+<p>I&rsquo;ve found this solution to be to error prone though. Over the past weeks I encountered numerous issues with the generated Bicep and had to update the conversion script accordingly.</p>
+<p>I find that loading the workbook definition from a JSON file and doing a simple string replace on the placeholders is an easier way to deploy. It&rsquo;s less error prone and simpler to explain to other people.</p>
+<p>So, I would not recommend this solution given the disadvantages. If you&rsquo;re still interested, see this <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/DeployAzureWorkbookAndAppInsightsFunction/bicep-object/README.md">README</a>.</p>
+<h3 id="deploy-shared-function-in-app-insights">Deploy shared function in App Insights</h3>
+<p>The last step is to deploy <a href="/blog/2023/02/28/azure-workbook-tips-tricks#create-reusable-query">the shared function</a> that the workbook uses to query the API Management requests.</p>
+<p>I&rsquo;ve stored the following kusto query in a file called <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/DeployAzureWorkbookAndAppInsightsFunction/app-insights-function/ApimRequests.kql">ApimRequests.kql</a>. The environment specific API Management name has been replaced by the placeholder <code>##apimName##</code>.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">requests
+| where customDimensions[&quot;Service ID&quot;] == &quot;##apimName##&quot;
+| extend subscription = tostring(customDimensions[&quot;Subscription Name&quot;])
+    , api = tostring(customDimensions[&quot;API Name&quot;])
+    , sessionCorrelationId = tostring(customDimensions[&quot;Request-Session-Correlation-Id&quot;])
+</code></pre><p>I thought I could use a similar approach as with the workbook and use the <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/components/analyticsitems?pivots=deployment-language-bicep">analyticsItems</a> Bicep resource, but unfortunately this doesn&rsquo;t work at all. The problem has been reported on GitHub in <a href="https://github.com/Azure/bicep/issues/5518">this issue</a>.</p>
+<p>The Azure CLI doesn&rsquo;t provide any specific commands either. The only option seems to be to use the REST API. There is no page about creating an Application Insights function in <a href="https://learn.microsoft.com/en-us/rest/api/application-insights/">the REST API documentation</a>, but luckily I found <a href="https://blog.peterschen.de/create-functions-in-application-insights-through-rest-api/">this blog post</a> that describes the various operations.</p>
+<p>The following <code>PUT</code> can be used to create a function.</p>
+<pre tabindex="0"><code>PUT https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Insights/components/{applicationName}/analyticsItems/item?api-version=2015-05-01
+
+{
+    &quot;scope&quot;: &quot;shared&quot;,
+    &quot;type&quot;: &quot;function&quot;,
+    &quot;name&quot;: &quot;myFunction&quot;,
+    &quot;content&quot;: &quot;requests | order by timestamp desc&quot;,
+    &quot;properties&quot;: {
+        &quot;functionAlias&quot;: &quot;myFunction&quot;
+    }
+}
+</code></pre><p>When you execute it a second time, you&rsquo;ll get the following error though: <code>A function with the same name already exists (ID: '...')</code>. I&rsquo;ve tried several variations, but there doesn&rsquo;t seem to be a way to update an existing function. As a workaround, I first delete any existing function with the specified name before adding it again.</p>
+<p>Below is an extract of the PowerShell script I&rsquo;ve created. It uses the <code>az rest</code> command to call the REST API.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">$content = Get-Content -Path $FunctionFilePath
+$content = $content <span style="color:#f92672">-Replace</span> <span style="color:#e6db74">&#34;&#34;&#34;&#34;</span>, <span style="color:#e6db74">&#34;\&#34;&#34;&#34;</span>  <span style="color:#75715e"># Escape &#34; in the query</span>
+<span style="color:#66d9ef">foreach</span> ($key <span style="color:#66d9ef">in</span> $Placeholders.Keys)
+{
+    $content = $content <span style="color:#f92672">-Replace</span> <span style="color:#e6db74">&#34;##$key##&#34;</span>, $Placeholders[$key]
+}
+
+$functions = az rest --method get --url <span style="color:#e6db74">&#34;https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroup/providers/Microsoft.Insights/components/$AppInsightsName/analyticsItems?api-version=2015-05-01&#34;</span>
+$function = $functions | ConvertFrom-Json | Where-Object -Property <span style="color:#e6db74">&#34;name&#34;</span> -Value $FunctionName <span style="color:#f92672">-EQ</span>
+
+<span style="color:#66d9ef">if</span> ($null <span style="color:#f92672">-ne</span> $function)
+{
+    az rest --method <span style="color:#e6db74">&#34;DELETE&#34;</span> --url <span style="color:#e6db74">&#34;&#34;&#34;https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroup/providers/Microsoft.Insights/components/$AppInsightsName/analyticsItems/item?api-version=2015-05-01&amp;includeContent=true&amp;scope=shared&amp;type=function&amp;name=$FunctionName&#34;&#34;&#34;</span>
+}
+
+$requestBodyPath = Join-Path $env:TEMP <span style="color:#e6db74">&#34;create-shared-function-request-body.json&#34;</span>
+Set-Content -Path $requestBodyPath -Value <span style="color:#e6db74">@&#34;
+</span><span style="color:#e6db74">{
+</span><span style="color:#e6db74">    &#34;scope&#34;: &#34;shared&#34;,
+</span><span style="color:#e6db74">    &#34;type&#34;: &#34;function&#34;,
+</span><span style="color:#e6db74">    &#34;name&#34;: &#34;$FunctionName&#34;,
+</span><span style="color:#e6db74">    &#34;content&#34;: &#34;$content&#34;,
+</span><span style="color:#e6db74">    &#34;properties&#34;: {
+</span><span style="color:#e6db74">        &#34;functionAlias&#34;: &#34;$FunctionName&#34;
+</span><span style="color:#e6db74">    }
+</span><span style="color:#e6db74">}
+</span><span style="color:#e6db74">&#34;@</span>
+
+az rest --method <span style="color:#e6db74">&#34;PUT&#34;</span> --url <span style="color:#e6db74">&#34;https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroup/providers/Microsoft.Insights/components/$AppInsightsName/analyticsItems/item?api-version=2015-05-01&#34;</span> --headers <span style="color:#e6db74">&#34;Content-Type=application/json&#34;</span> --body <span style="color:#e6db74">&#34;@$requestBodyPath&#34;</span>
+</code></pre></div><p>As you can see. The first step is to load the file with the function query and escape any <code>&quot;</code> in the query. We then replace each placeholder with the environment specific value.</p>
+<p>Step two is to query the existing functions and check if a function with the same name already exists. If it does, we remove it.</p>
+<p>The last step is to (re)create the function. We first create a JSON file with the request body and then use the <code>az rest</code> command to execute the request.</p>
+<p>You can find a full working parameterized script <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/DeployAzureWorkbookAndAppInsightsFunction/app-insights-function/deploy-shared-function.ps1">here</a>. It can be executed with the following command.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">$placeholders = @{
+    <span style="color:#e6db74">&#34;apimName&#34;</span> = <span style="color:#e6db74">&#34;&lt;api management name&gt;&#34;</span>;
+}
+
+.\deploy-shared-function.ps1 -SubscriptionId <span style="color:#e6db74">&#34;&lt;subscription id&gt;&#34;</span> `
+    -ResourceGroup <span style="color:#e6db74">&#34;&lt;resource group with app insights&gt;&#34;</span> `
+    -AppInsightsName <span style="color:#e6db74">&#34;&lt;app insights name&gt;&#34;</span> `
+    -FunctionName <span style="color:#e6db74">&#34;ApimRequests&#34;</span> `
+    -FunctionFilePath <span style="color:#e6db74">&#34;.\ApimRequests.kql&#34;</span> `
+    -Placeholders $placeholders
+</code></pre></div><h3 id="conclusion">Conclusion</h3>
+<p>Deploying an Azure Workbook is fairly straightforward. Placing the workbook JSON in a separate file is a nice improvement that makes it easier to make small changes directly in the definition. It also makes it easier to see what has changed.</p>
+<p>Deploying a shared function in Application Insights is poorly supported, however. Using Bicep seems to be a no go at the moment. An alternative is to use the REST API. Hopefully the support will improve in the future.</p>
+<p><em>If you know a better or more elegant way to deploy a shared function. Hit me up on <a href="https://twitter.com/ronaldbosma1">Twitter</a> or <a href="https://linkedin.com/in/ronald-bosma-1346a64">LinkedIn</a>.</em></p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-cli">Azure CLI</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/application-insights">Application Insights</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/continuous-integration">Continuous Integration</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/infra-as-code">Infra as Code</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/powershell">PowerShell</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/">Azure Workbook Tips &amp; Tricks &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-136383708-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+    </body>
+</html>

@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 28 Feb 2023 19:30:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 10 Mar 2023 15:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deploy Azure Workbook and App Insights Function</title>
+      <link>https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/</link>
+      <pubDate>Fri, 10 Mar 2023 15:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/</guid>
+      <description>In this post I explain how to deploy an Azure workbook using Bicep and set environment specific variables. I&amp;rsquo;ll also show how to deploy a shared kusto function in Application Insights with the Azure CLI.</description>
+    </item>
+    
     <item>
       <title>Azure Workbook Tips &amp; Tricks</title>
       <link>https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/</link>
