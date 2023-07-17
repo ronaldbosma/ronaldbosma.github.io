@@ -309,7 +309,7 @@
 </span><span style="color:#75715e"></span>  <span style="color:#ae81ff">_</span>repositoryStub.Setup(r =&gt; r.GetBookByEAN(It.IsAny&lt;<span style="color:#66d9ef">string</span>&gt;()))
                  .Returns((<span style="color:#66d9ef">string</span> ean) =&gt; books.FirstOrDefault(b =&gt; b.EAN == ean));
 
-  <span style="color:#75715e">// More stubs can follow...
+  <span style="color:#75715e">// More calls to the stub...
 </span><span style="color:#75715e"></span>}
 </code></pre></div><p>As the application&rsquo;s functionality increases, so does the number of methods on our repository to retrieve books. Resulting in more and more setup code on our stub.</p>
 <p>By including the repository and database in the scope of the component test, it becomes much easier to setup the data specified in a <code>Given</code> step. You can directly insert it in the database and the selection of which books to retrieve is handled by the repository.</p>
