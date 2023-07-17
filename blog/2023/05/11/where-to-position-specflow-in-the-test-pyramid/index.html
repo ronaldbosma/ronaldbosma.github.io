@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Where to position SpecFlow in the Test Pyramid? | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2023/05/11/where-to-position-specflow-in-the-test-pyramid/cover.png"/>
+<meta name="twitter:title" content="Where to position SpecFlow in the Test Pyramid?"/>
+<meta name="twitter:description" content="Automated testing is an essential part of software development, and determining the appropriate scope for your tests is crucial. This is also true when automating Gherkin scenarios with SpecFlow (or Cucumber). In this post I explore the different levels of the test pyramid and describe my preferred level for SpecFlow tests."/>
+
+	<meta property="og:title" content="Where to position SpecFlow in the Test Pyramid?" />
+<meta property="og:description" content="Automated testing is an essential part of software development, and determining the appropriate scope for your tests is crucial. This is also true when automating Gherkin scenarios with SpecFlow (or Cucumber). In this post I explore the different levels of the test pyramid and describe my preferred level for SpecFlow tests." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2023/05/11/where-to-position-specflow-in-the-test-pyramid/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2023/05/11/where-to-position-specflow-in-the-test-pyramid/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2023-05-11T20:45:00+02:00" />
+<meta property="article:modified_time" content="2023-05-11T20:45:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.a3d5489836b19de22a81ddc6bd21c17547d07529e67b266427378a04fa3ea727.css" integrity="sha256-o9VImDaxneIqgd3GvSHBdUfQdSnmeyZkJzeKBPo&#43;pyc=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Where%20to%20position%20SpecFlow%20in%20the%20Test%20Pyramid%3f&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2023%2f05%2f11%2fwhere-to-position-specflow-in-the-test-pyramid%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2023%2f05%2f11%2fwhere-to-position-specflow-in-the-test-pyramid%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2023%2f05%2f11%2fwhere-to-position-specflow-in-the-test-pyramid%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.png" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software engineer<br>
+                                    <i class="far fa-star"></i>
+                                    May 11, 2023
+                                    <i class="far fa-clock clock"></i>
+                                    11 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Where to position SpecFlow in the Test Pyramid?</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2023/05/11/where-to-position-specflow-in-the-test-pyramid/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>In my software development projects we use Specification by Example to explore and document the specifications of the applications to build. We use Gherkin to describe the specifications and <a href="https://specflow.org">SpecFlow</a> to execute them. Resulting in a suite of automated (acceptance) tests.</p>
+<p>As with all automated tests, there are different levels in the test pyramid at which a Gherkin scenario can be automated using SpecFlow (or Cucumber). In this blog post I explore the different levels and describe my preferred level for SpecFlow tests.</p>
+<p>The insights I share are based on my own experience and inspired by other sources like <a href="https://martinfowler.com/tags/testing.html">Martin Fowler&rsquo;s Blog</a>.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#test-pyramid">Test Pyramid</a>
+<ul>
+<li><a href="#ui-tests">UI Tests</a></li>
+<li><a href="#service-tests">Service Tests</a></li>
+<li><a href="#unit-tests">Unit Tests</a></li>
+</ul>
+</li>
+<li><a href="#test-pyramid-extended">Test Pyramid Extended</a>
+<ul>
+<li><a href="#component-tests">Component Tests</a></li>
+</ul>
+</li>
+<li><a href="#gherkin-scenario-test-level">Gherkin scenario test level</a>
+<ul>
+<li><a href="#why-i-skip-the-controller">Why I skip the controller</a></li>
+<li><a href="#why-i-include-the-repository-and-database">Why I include the repository and database</a></li>
+</ul>
+</li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="test-pyramid">Test Pyramid</h3>
+<p>The classis test pyramid, as show in the image below, has three levels: UI, Service and Unit.</p>
+<p><img src="../../../../../images/where-to-position-specflow-in-the-test-pyramid/test-pyramid.png" alt="Test Pyramid"></p>
+<p>The higher the level in the pyramid, the higher the integration and coverage of your tests. But tests will also be slower and more fragile. The lower the level in the pyramid, the higher the isolation, speed, and stability of your tests. The coverage per test will be lower though.</p>
+<p>Considering these factors, it is recommended to have automated tests covering all levels. Most tests should be automated on the lowest level. Fewer tests will be automated on the Service level and even less on the UI level. By following this approach, a balance is created between comprehensive test coverage and efficient test execution.</p>
+<p>Let&rsquo;s first recap the test pyramid&rsquo;s key levels.</p>
+<h4 id="ui-tests">UI Tests</h4>
+<p>UI tests are end-to-end tests that interact with the system under test through the UI. These tests simulate a user interacting with the UI of the system.</p>
+<p>Everything in the following diagram is included in the scope of a UI test.</p>
+<p><img src="../../../../../images/where-to-position-specflow-in-the-test-pyramid/ui-tests-scope.png" alt="UI Tests Scope"></p>
+<p>In our example we have a separate UI that uses two APIs that are part of our system. Both APIs have their own database. The UI and the Order API also communicate with a ZIP Code API of an external third party.</p>
+<p>When automating tests at the UI level, all these components are included in the scope of test.</p>
+<p>Pros:</p>
+<ul>
+<li>Initially easy to setup with &lsquo;record &amp; playback&rsquo; tools.</li>
+<li>Coverage per test is high because it covers the UI, underlying services, databases, etc.</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Slow, resulting in long build and release times.</li>
+<li>Fragile. These tests often break due to environment-related issues. Examples include a database that temporarily times out, an external API that becomes unavailable, or a UI element that can&rsquo;t be found.</li>
+<li>Both the UI and underlying services need to be deployed before running these tests. As a result, these tests can only be executed in a release pipeline after deployment to an environment.</li>
+<li>Difficult to maintain because there is a lot to consider. You have to not only consider the UI, but also the available data in the databases and external services, among others.</li>
+</ul>
+<p>Because of the disadvantages, I usually keep the number of UI tests to a minimum. I use them as smoke tests to check if the deployment of the UI was successful and to test if the integration with underlying services works. I do this by automating the most important user scenarios and core processes.</p>
+<blockquote>
+<p>NOTE: these tests should not be confused with unit tests that test a small part of the code in the UI. When performing unit tests, all external dependencies are replaced by doubles. See <a href="#unit-tests">Unit Tests</a> for more info.</p>
+</blockquote>
+<h4 id="service-tests">Service Tests</h4>
+<p>Service tests skip the UI and talk directly to the underlying services. They interact with a REST API or send messages to a service bus, for example.</p>
+<p>The scope of these tests can cover a single service or a combination of multiple services as shown in the following diagram.</p>
+<p><img src="../../../../../images/where-to-position-specflow-in-the-test-pyramid/service-tests-scope.png" alt="Service Test Scope"></p>
+<p>When testing the Product API in our example, the scope would only be the Product API and its database. The Order API has more dependencies, so a test interacting with the Order API would also cover parts of the Product and ZIP Code API.</p>
+<p>Pros:</p>
+<ul>
+<li>Avoids dealing with the complexity that comes with UI test automation.</li>
+<li>Still covers a large part of the application per test.</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Generally faster than UI tests, but still slow compared to unit tests.</li>
+<li>Can be fragile when the service under test has dependencies to other services.</li>
+<li>Because of the external dependencies, the service(s) must be deployed to an environment. So, these tests can only be performed in a release pipeline.</li>
+</ul>
+<p>I like to use service test when UI tests are too difficult to setup or to test smaller parts of larger processes. They are also great as a smoke test.</p>
+<h4 id="unit-tests">Unit Tests</h4>
+<p>A unit test tests a single method or class. External dependencies are replaced by test doubles.</p>
+<p>Pros:</p>
+<ul>
+<li>Easy to create because of the small scope, making them easier to understand and maintain.</li>
+<li>Fast, because they run in-process.</li>
+<li>Can be run in an automated build pipeline and on a local development machine without requiring a deployment.</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Does not test the integration between different parts of an application.</li>
+<li>Sensitive to change when the code under test is refactored.</li>
+</ul>
+<p>As the classic test pyramid suggest, the bulk of your tests would normally be on this level. Keep in mind, though, that it is possible to achieve 100% test coverage with only unit tests, yet still have an application that does not function properly due to the lack of integration between its components.</p>
+<h3 id="test-pyramid-extended">Test Pyramid Extended</h3>
+<p>Considering the three levels of the classic test pyramid in relation to automating Gherkin scenarios, the scope of a unit test is often to narrow. Gherkin scenarios typically describe functionality that is implemented through the collaboration of multiple classes and methods. With proper focus, these scenarios tend to cover functionality within a single service or API, making the scope of UI and service tests too broad. Therefore, I like to introduce an additional level in the test pyramid, as depicted below.</p>
+<p><img src="../../../../../images/where-to-position-specflow-in-the-test-pyramid/test-pyramid-extended.png" alt="Test Pyramid Extended"></p>
+<h4 id="component-tests">Component Tests</h4>
+<p>As described by Martin Fowler in <a href="https://martinfowler.com/bliki/ComponentTest.html">ComponentTest</a>, a component test limits the scope to a portion of the system under test. They can be as large or small as you define your component&rsquo;s size and will replace external dependencies with test doubles.</p>
+<p>For me, a component test is executed in-process, like a unit test, but it covers a larger scope where several classes collaborate together.</p>
+<p>The diagram below illustrates a typical structure of a (.NET) Web API. The entry point is a <em>Controller</em> that defines operations on the API. It communicates with application logic through a <em>Service</em> class. Database interaction is handled by an ORM like Entity Framework, abstracted away with the <em>Repository</em> pattern.</p>
+<p><img src="../../../../../images/where-to-position-specflow-in-the-test-pyramid/component-tests-scope.png" alt="Component Test Scope"></p>
+<p>Because a component test can be as large or small as you define your component&rsquo;s size, it can either cover all parts shown in the diagram above or subset.</p>
+<p>Pros:</p>
+<ul>
+<li>Fast, because they run in-process.</li>
+<li>Can be run in an automated build pipeline and on a local development machine without requiring a deployment.</li>
+<li>Less susceptible to changes during refactoring of the code under test compared to unit tests.</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>The scope they test is larger than that of unit tests. This makes them more difficult to maintain, but still considerably easier when compared to Service and UI tests.</li>
+</ul>
+<blockquote>
+<p>NOTE: to keep my component tests fast, I tend to use an in-memory version of the database. Entity Framework not only supports SQL Server, but also has an in-memory provider and a SQLite provider that are designed with test automation in mind. See <a href="https://learn.microsoft.com/en-us/ef/core/testing/testing-without-the-database">Testing without your production database system</a> for more information.</p>
+</blockquote>
+<h3 id="gherkin-scenario-test-level">Gherkin scenario test level</h3>
+<p>I find the component test level ideal for automating most Gherkin scenarios. Their scope is not too small, as it usually is with unit tests, and I still get the advantages of in-process tests.</p>
+<p>When you automate most of your scenarios at the component level, the need for having a lot of unit tests decreases. The test pyramid will become a test tree as shown in the image below.</p>
+<p><img src="../../../../../images/where-to-position-specflow-in-the-test-pyramid/test-tree.png" alt="Test Tree"></p>
+<p>When I automate scenarios with SpecFlow I use the scope illustrated in the diagram below.</p>
+<p><img src="../../../../../images/where-to-position-specflow-in-the-test-pyramid/specflow-component-tests-scope.png" alt="SpecFlow Component Test Scope"></p>
+<p>As you can see, I skip the controller and include the database.</p>
+<h4 id="why-i-skip-the-controller">Why I skip the controller</h4>
+<p>It is not uncommon for an API to support multiple versions of a contract or different protocols, like REST and gRPC. This would result in multiple controllers, that all use the same application or business logic, as displayed below.</p>
+<p><img src="../../../../../images/where-to-position-specflow-in-the-test-pyramid/multiple-controllers.png" alt="Multiple controllers"></p>
+<p>Which controller would you use to automate your Gherkin scenario? Or would you duplicate the scenarios and implement them on every controller?</p>
+<p>In my opinion, controllers should be focused on technology specific concerns, like what status code to return from a REST API if a resource can&rsquo;t be found. It is the application and business logic, working together with the other code, that actually implement the functionality described by a Gherkin scenario. That&rsquo;s why I tend to skip the controllers in my SpecFlow scenarios.</p>
+<blockquote>
+<p>NOTE: if the functionality differs between API versions, they won&rsquo;t share the same application logic. In that case it makes sense to create separate features and/or scenarios for each version.</p>
+</blockquote>
+<h4 id="why-i-include-the-repository-and-database">Why I include the repository and database</h4>
+<p>Most of the logic described in a Gherkin scenario is located in the application and business logic, as well as in the aggregates and entities. So, in the past I excluded the repository and database from my test’s scope. Instead, I replaced the repository with a test double.</p>
+<p>There are two reasons why I have reconsidered this approach and now include the repository and database in the scope of my tests.</p>
+<h5 id="reason-1-stubbing-becomes-difficult-when-the-number-of-different-situations-to-support-grows">Reason 1: stubbing becomes difficult when the number of different situations to support grows</h5>
+<p>One of the advantages of Gherkin is  the ability to define <code>Given</code> steps that can be reused across multiple scenarios and features. For instance, you can ensure that books are present in the system by using the following Gherkin.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-gherkin" data-lang="gherkin"><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">the books
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> EAN</span><span style="color:#66d9ef">           |</span><span style="color:#e6db74"> Name</span><span style="color:#66d9ef">                                    |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9781617290084</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Specification by Example</span><span style="color:#66d9ef">                |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9781801815710</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Infrastructure as Code with Azure Bicep</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9781680504989</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> The Cucumber for Java Book</span><span style="color:#66d9ef">              |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">all books are retrieved
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">...
+</span></code></pre></div><p>In our first scenario we might need to retrieve all books. A call to <code>respository.GetAllBooks()</code> will performed by the application logic. We have to stub this call on our test double in the <code>Given</code> step definition. This could look something like the step definition code below, which uses <a href="https://github.com/moq/moq">Moq</a> to stub the call to <code>GetAllBooks</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Given(@&#34;the books&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> GivenTheBooks(IEnumerable&lt;Book&gt; books)
+{
+  <span style="color:#75715e">// Stub: get all books
+</span><span style="color:#75715e"></span>  <span style="color:#ae81ff">_</span>repositoryStub.Setup(r =&gt; r.GetAllBooks()).Returns(books);
+}
+</code></pre></div><p>In another scenario, we might need to retrieve a single book by its EAN (European Article Number). See the Gherkin below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-gherkin" data-lang="gherkin"><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">the books
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> EAN</span><span style="color:#66d9ef">           |</span><span style="color:#e6db74"> Name</span><span style="color:#66d9ef">                                    |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9781617290084</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Specification by Example</span><span style="color:#66d9ef">                |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9781801815710</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Infrastructure as Code with Azure Bicep</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9781680504989</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> The Cucumber for Java Book</span><span style="color:#66d9ef">              |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">the book with EAN &#39;</span><span style="color:#e6db74">9781801815710</span><span style="color:#a6e22e">&#39; is retrieved
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">...
+</span></code></pre></div><p>Because we&rsquo;re reusing the same <code>Given</code> step, we&rsquo;ll have to stub the call on <code>respository.GetBookByEAN(ean)</code> in the same step definition method. We&rsquo;ll also have to make sure that the correct book is returned for the specified EAN. Essentially duplicating the filter logic implemented in the repository. The result would look something like the step definition code below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Given(@&#34;the books&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> GivenTheBooks(IEnumerable&lt;Book&gt; books)
+{
+  <span style="color:#75715e">// Stub: get all books
+</span><span style="color:#75715e"></span>  <span style="color:#ae81ff">_</span>repositoryStub.Setup(r =&gt; r.GetAllBooks()).Returns(books);
+
+  <span style="color:#75715e">// Stub: get book based on EAN
+</span><span style="color:#75715e"></span>  <span style="color:#ae81ff">_</span>repositoryStub.Setup(r =&gt; r.GetBookByEAN(It.IsAny&lt;<span style="color:#66d9ef">string</span>&gt;()))
+                 .Returns((<span style="color:#66d9ef">string</span> ean) =&gt; books.FirstOrDefault(b =&gt; b.EAN == ean));
+
+  <span style="color:#75715e">// More stubs can follow...
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>As the application&rsquo;s functionality increases, so does the number of methods on our repository to retrieve books. Resulting in more and more setup code on our stub.</p>
+<p>By including the repository and database in the scope of the component test, it becomes much easier to setup the data specified in a <code>Given</code> step. You can directly insert it in the database and the selection of which books to retrieve is handled by the repository.</p>
+<h5 id="reason-2-filter-logic-is-part-of-the-scenario">Reason 2: filter logic is part of the scenario</h5>
+<p>The second reason I include the repository and database is that it&rsquo;s not uncommon that code in the repository or database is part of the scenario. We&rsquo;ve already seen an example of this when retrieving the book by its EAN. But here is another example.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-gherkin" data-lang="gherkin"><span style="color:#66d9ef">Given </span><span style="color:#a6e22e">the books
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> EAN</span><span style="color:#66d9ef">           |</span><span style="color:#e6db74"> Name</span><span style="color:#66d9ef">                                    |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9781801815710</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Infrastructure as Code with Azure Bicep</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9781617290084</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Specification by Example</span><span style="color:#66d9ef">                |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9781680504989</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> The Cucumber for Java Book</span><span style="color:#66d9ef">              |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">I search books for the phrase &#39;Specification&#39;
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">I expect the following book to be found
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> EAN</span><span style="color:#66d9ef">           |</span><span style="color:#e6db74"> Name</span><span style="color:#66d9ef">                                    |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 9781617290084</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Specification by Example</span><span style="color:#66d9ef">                |
+</span></code></pre></div><p>We&rsquo;re searching for a book. This can be implemented inside the repository by executing a filtered query on the database. If we had stubbed the repository, we would not be able to test the specified logic. Also, our stubbed logic might behave differently with respect to casing, for example.</p>
+<p>By including the database in the scope of our test we can check the filter logic.</p>
+<blockquote>
+<p>NOTE: If you rely on specific logic from, for example, SQL Server, it&rsquo;s recommended to use a real SQL Server database for that scenario instead of an in-memory database. This is because an in-memory database does not execute actual SQL queries.</p>
+</blockquote>
+<h3 id="conclusion">Conclusion</h3>
+<p>As with all test automation, when automating scenarios with SpecFlow or Cucumber, it is important to consider the appropriate scope. In my experience, the component test level is an ideal choice for automating the majority of Gherkin scenarios. Unlike unit tests, their scope is broad enough to test a complete scenario. They also offer fast feedback because they can be executed in-process on a local development machine and in an automated build pipeline, as opposed to UI and service tests.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/gherkin">Gherkin</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/specflow">SpecFlow</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/specification-by-example">Specification by Example</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/atdd">ATDD</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bdd">BDD</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/test-automation">Test Automation</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/">Deploy Azure Workbook and App Insights Function &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BGRV7RC2V8"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-BGRV7RC2V8', { 'anonymize_ip': false });
+}
+</script>
+
+    </body>
+</html>

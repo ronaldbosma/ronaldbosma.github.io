@@ -2,6 +2,36 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://ronaldbosma.github.io/tags/atdd/</loc>
+    <lastmod>2023-05-11T20:45:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/bdd/</loc>
+    <lastmod>2023-05-11T20:45:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/</loc>
+    <lastmod>2023-05-11T20:45:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/gherkin/</loc>
+    <lastmod>2023-05-11T20:45:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/</loc>
+    <lastmod>2023-05-11T20:45:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/specflow/</loc>
+    <lastmod>2023-05-11T20:45:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/specification-by-example/</loc>
+    <lastmod>2023-05-11T20:45:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/</loc>
+    <lastmod>2023-05-11T20:45:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/test-automation/</loc>
+    <lastmod>2023-05-11T20:45:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/2023/05/11/where-to-position-specflow-in-the-test-pyramid/</loc>
+    <lastmod>2023-05-11T20:45:00+02:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/application-insights/</loc>
     <lastmod>2023-03-10T15:00:00+01:00</lastmod>
   </url><url>
@@ -12,9 +42,6 @@
     <lastmod>2023-03-10T15:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/bicep/</loc>
-    <lastmod>2023-03-10T15:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/blog/</loc>
     <lastmod>2023-03-10T15:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/continuous-integration/</loc>
@@ -29,37 +56,13 @@
     <loc>https://ronaldbosma.github.io/tags/powershell/</loc>
     <lastmod>2023-03-10T15:00:00+01:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2023-03-10T15:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/</loc>
-    <lastmod>2023-03-10T15:00:00+01:00</lastmod>
-  </url><url>
     <loc>https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/</loc>
     <lastmod>2023-02-28T19:30:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/kusto/</loc>
     <lastmod>2023-02-28T19:30:00+01:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/tags/atdd/</loc>
-    <lastmod>2022-10-29T12:30:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/bdd/</loc>
-    <lastmod>2022-10-29T12:30:00+02:00</lastmod>
-  </url><url>
     <loc>https://ronaldbosma.github.io/tags/cleaner-code/</loc>
-    <lastmod>2022-10-29T12:30:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/gherkin/</loc>
-    <lastmod>2022-10-29T12:30:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/specflow/</loc>
-    <lastmod>2022-10-29T12:30:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/specification-by-example/</loc>
-    <lastmod>2022-10-29T12:30:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/test-automation/</loc>
     <lastmod>2022-10-29T12:30:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2022/10/29/transform-specflow-table-column/</loc>

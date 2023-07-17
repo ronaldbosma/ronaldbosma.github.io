@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Sat, 29 Oct 2022 12:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/gherkin/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 11 May 2023 20:45:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/gherkin/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Where to position SpecFlow in the Test Pyramid?</title>
+      <link>https://ronaldbosma.github.io/blog/2023/05/11/where-to-position-specflow-in-the-test-pyramid/</link>
+      <pubDate>Thu, 11 May 2023 20:45:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2023/05/11/where-to-position-specflow-in-the-test-pyramid/</guid>
+      <description>Automated testing is an essential part of software development, and determining the appropriate scope for your tests is crucial. This is also true when automating Gherkin scenarios with SpecFlow (or Cucumber). In this post I explore the different levels of the test pyramid and describe my preferred level for SpecFlow tests.</description>
+    </item>
+    
     <item>
       <title>Transform SpecFlow Table Column</title>
       <link>https://ronaldbosma.github.io/blog/2022/10/29/transform-specflow-table-column/</link>
