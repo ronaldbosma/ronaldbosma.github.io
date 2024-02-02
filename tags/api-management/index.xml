@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>API Management on Ronald&#39;s Blog</title>
+    <link>https://ronaldbosma.github.io/tags/api-management/</link>
+    <description>Recent content in API Management on Ronald&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Ronald Bosma - All rights reserved</copyright>
+    <lastBuildDate>Fri, 02 Feb 2024 11:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/api-management/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Validate client certificates in API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/</link>
+      <pubDate>Fri, 02 Feb 2024 11:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/</guid>
+      <description>This blog post is the start of a series on how to work with client certificates in Azure API Management to setup a mutual TLS (mTLS) connection. While Azure&amp;rsquo;s official documentation provides excellent guidance on setting up client certificates via the Azure Portal, we&amp;rsquo;ll dive into utilizing Bicep and the Azure CLI, to automate the process. In this first post, we&amp;rsquo;ll cover the basics of how to validate client certificates in API Management.</description>
+    </item>
+    
+  </channel>
+</rss>

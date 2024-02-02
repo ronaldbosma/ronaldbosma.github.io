@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Thu, 11 May 2023 20:45:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 02 Feb 2024 11:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Validate client certificates in API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/</link>
+      <pubDate>Fri, 02 Feb 2024 11:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/</guid>
+      <description>This blog post is the start of a series on how to work with client certificates in Azure API Management to setup a mutual TLS (mTLS) connection. While Azure&amp;rsquo;s official documentation provides excellent guidance on setting up client certificates via the Azure Portal, we&amp;rsquo;ll dive into utilizing Bicep and the Azure CLI, to automate the process. In this first post, we&amp;rsquo;ll cover the basics of how to validate client certificates in API Management.</description>
+    </item>
+    
     <item>
       <title>Where to position SpecFlow in the Test Pyramid?</title>
       <link>https://ronaldbosma.github.io/blog/2023/05/11/where-to-position-specflow-in-the-test-pyramid/</link>
