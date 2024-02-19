@@ -7,20 +7,29 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Fri, 02 Feb 2024 11:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 19 Feb 2024 19:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>API Management</title>
       <link>https://ronaldbosma.github.io/tags/api-management/</link>
-      <pubDate>Fri, 02 Feb 2024 11:00:00 +0100</pubDate>
+      <pubDate>Mon, 19 Feb 2024 19:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/api-management/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>Application Gateway</title>
+      <link>https://ronaldbosma.github.io/tags/application-gateway/</link>
+      <pubDate>Mon, 19 Feb 2024 19:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/application-gateway/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Azure</title>
       <link>https://ronaldbosma.github.io/tags/azure/</link>
-      <pubDate>Fri, 02 Feb 2024 11:00:00 +0100</pubDate>
+      <pubDate>Mon, 19 Feb 2024 19:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure/</guid>
       <description></description>
@@ -29,7 +38,7 @@
     <item>
       <title>Bicep</title>
       <link>https://ronaldbosma.github.io/tags/bicep/</link>
-      <pubDate>Fri, 02 Feb 2024 11:00:00 +0100</pubDate>
+      <pubDate>Mon, 19 Feb 2024 19:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
       <description></description>
@@ -38,7 +47,7 @@
     <item>
       <title>Client Certificates</title>
       <link>https://ronaldbosma.github.io/tags/client-certificates/</link>
-      <pubDate>Fri, 02 Feb 2024 11:00:00 +0100</pubDate>
+      <pubDate>Mon, 19 Feb 2024 19:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/client-certificates/</guid>
       <description></description>
@@ -47,7 +56,7 @@
     <item>
       <title>Infra as Code</title>
       <link>https://ronaldbosma.github.io/tags/infra-as-code/</link>
-      <pubDate>Fri, 02 Feb 2024 11:00:00 +0100</pubDate>
+      <pubDate>Mon, 19 Feb 2024 19:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/infra-as-code/</guid>
       <description></description>
@@ -56,7 +65,7 @@
     <item>
       <title>mTLS</title>
       <link>https://ronaldbosma.github.io/tags/mtls/</link>
-      <pubDate>Fri, 02 Feb 2024 11:00:00 +0100</pubDate>
+      <pubDate>Mon, 19 Feb 2024 19:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/mtls/</guid>
       <description></description>
@@ -65,7 +74,7 @@
     <item>
       <title>Security</title>
       <link>https://ronaldbosma.github.io/tags/security/</link>
-      <pubDate>Fri, 02 Feb 2024 11:00:00 +0100</pubDate>
+      <pubDate>Mon, 19 Feb 2024 19:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/security/</guid>
       <description></description>
@@ -95,6 +104,15 @@
       <pubDate>Thu, 11 May 2023 20:45:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/gherkin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reqnroll</title>
+      <link>https://ronaldbosma.github.io/tags/reqnroll/</link>
+      <pubDate>Thu, 11 May 2023 20:45:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/reqnroll/</guid>
       <description></description>
     </item>
     
