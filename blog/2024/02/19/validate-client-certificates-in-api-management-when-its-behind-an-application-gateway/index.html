@@ -156,7 +156,8 @@
 <ol>
 <li><a href="/blog/2024/02/02/validate-client-certificates-in-api-management/">Validate client certificates in API Management</a></li>
 <li>Validate client certificates in API Management when it&rsquo;s behind an Application Gateway <em><strong>(current)</strong></em></li>
-<li>Connect to backends using client certificates <em>(coming soon)</em></li>
+<li><a href="/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/">Securing backend connections with mTLS in API Management</a></li>
+<li>Deploying certificates into Key Vault <em>(coming soon)</em></li>
 </ol>
 <h3 id="intro">Intro</h3>
 <p>In this second post, we expand on the solution introduced in <a href="/blog/2024/02/02/validate-client-certificates-in-api-management/">the previous post</a>. We&rsquo;ll deploy API Management inside a virtual network, positioning it behind an application gateway. Utilizing an application gateway (or similar resource) in this manner is a common approach because it can provide load balancing capabilities and enhanced control over inbound and outbound traffic. Additionally, the Web Application Firewall (WAF) provides improved security by protecting against common web-based attacks and vulnerabilities, such as SQL injection and cross-site scripting (XSS).</p>
@@ -463,7 +464,7 @@ httpListeners: [
   }
 ]
 </code></pre><p>As you can see, the frontend IP configuration is linked to the previously added public IP address. We&rsquo;ll accept traffic on the standard HTTPS port <code>443</code>, so we&rsquo;ll also configure an SSL certificate. The HTTP listener connects these components together. We&rsquo;ll introduce a second listener when adding mTLS support, so we&rsquo;ll refer to this listener as the HTTPS listener for the remainder of this post.</p>
-<p>In a real-world scenario, the SSL certificate would typically be stored in Key Vault, and we would link to it from the <code>sslCertificates</code> configuration. However, for this demo, we&rsquo;ll upload it directly to the application gateway. In the next post of this series, we&rsquo;ll explore how to upload a PFX certificate to Key Vault and use it.</p>
+<p>In a real-world scenario, the SSL certificate would typically be stored in Key Vault, and we would link to it from the <code>sslCertificates</code> configuration. However, for this demo, we&rsquo;ll upload it directly to the application gateway. In the <a href="/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/#call-backend-using-mtls">next post</a> of this series, we&rsquo;ll explore how to create a certificate in Key Vault and use it.</p>
 <h5 id="ssl-certificate">SSL Certificate</h5>
 <p>For this demo, I&rsquo;m using a self-signed certificate. To create the SSL certificate, run the following PowerShell script in the same directory as your <code>main.bicep</code> file.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Settings</span>
@@ -972,6 +973,8 @@ X-ARR-ClientCert: -----BEGIN%20CERTIFICATE-----%0AMIIDRzCCAi%2BgAwIBAgIQGbcu6oSk
                     
                     
                     <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                        <a class="d-block col-md-6" href="https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/"> &laquo; Securing backend connections with mTLS in API Management</a>
                     
                     
                         <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/">Validate client certificates in API Management &raquo;</a>

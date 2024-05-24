@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 19 Feb 2024 19:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/api-management/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 May 2024 10:15:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/api-management/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Securing backend connections with mTLS in API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/</link>
+      <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/</guid>
+      <description>In this third post on working with client certificates in Azure API Management, we’ll focus on securing backend connections with mTLS. We’ll deploy two API Management instances. The first will serve as the backend and require a client certificate for authentication. The second will act as the client. We will call the client using TLS, and it will, in turn, connect to the backend using mTLS.</description>
+    </item>
+    
     <item>
       <title>Validate client certificates in API Management when it&#39;s behind an Application Gateway</title>
       <link>https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/</link>
