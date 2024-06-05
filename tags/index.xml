@@ -7,20 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Fri, 24 May 2024 10:15:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>API Management</title>
-      <link>https://ronaldbosma.github.io/tags/api-management/</link>
-      <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/api-management/</guid>
-      <description></description>
-    </item>
-    
+    <lastBuildDate>Wed, 05 Jun 2024 08:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Azure</title>
       <link>https://ronaldbosma.github.io/tags/azure/</link>
-      <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
+      <pubDate>Wed, 05 Jun 2024 08:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure/</guid>
       <description></description>
@@ -29,9 +20,27 @@
     <item>
       <title>Bicep</title>
       <link>https://ronaldbosma.github.io/tags/bicep/</link>
-      <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
+      <pubDate>Wed, 05 Jun 2024 08:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Test Automation</title>
+      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
+      <pubDate>Wed, 05 Jun 2024 08:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>API Management</title>
+      <link>https://ronaldbosma.github.io/tags/api-management/</link>
+      <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/api-management/</guid>
       <description></description>
     </item>
     
@@ -131,15 +140,6 @@
       <pubDate>Thu, 11 May 2023 20:45:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/specification-by-example/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Test Automation</title>
-      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
-      <pubDate>Thu, 11 May 2023 20:45:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
       <description></description>
     </item>
     

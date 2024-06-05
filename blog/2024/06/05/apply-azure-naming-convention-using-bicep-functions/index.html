@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Apply Azure naming convention using Bicep functions | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/cover.jpg"/>
+<meta name="twitter:title" content="Apply Azure naming convention using Bicep functions"/>
+<meta name="twitter:description" content="When deploying Azure resources, it&rsquo;s a good practice to apply a naming convention to your resources. This will help you to identify the purpose of the resource and the environment it belongs to. In this blog post, I will show you how to apply a naming convention using Bicep user-defined functions. This post also includes a short introduction to the (experimental) Bicep Testing Framework."/>
+
+	<meta property="og:title" content="Apply Azure naming convention using Bicep functions" />
+<meta property="og:description" content="When deploying Azure resources, it&rsquo;s a good practice to apply a naming convention to your resources. This will help you to identify the purpose of the resource and the environment it belongs to. In this blog post, I will show you how to apply a naming convention using Bicep user-defined functions. This post also includes a short introduction to the (experimental) Bicep Testing Framework." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/cover.jpg"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2024-06-05T08:00:00+02:00" />
+<meta property="article:modified_time" content="2024-06-05T08:00:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Apply%20Azure%20naming%20convention%20using%20Bicep%20functions&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f06%2f05%2fapply-azure-naming-convention-using-bicep-functions%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f06%2f05%2fapply-azure-naming-convention-using-bicep-functions%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f06%2f05%2fapply-azure-naming-convention-using-bicep-functions%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Jun 5, 2024
+                                    <i class="far fa-clock clock"></i>
+                                    11 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Apply Azure naming convention using Bicep functions</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/cover.jpg" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>When deploying Azure resources, it&rsquo;s a good practice to apply a naming convention to your resources. This will help you to identify the purpose of the resource and the environment it belongs to. In this blog post, I will show you how to apply a naming convention using Bicep user-defined functions. This post also includes a short introduction to the (experimental) Bicep Testing Framework.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#intro">Intro</a></li>
+<li><a href="#user-defined-functions">User-defined Functions</a>
+<ul>
+<li><a href="#get-resource-type-prefix">Get Resource Type Prefix</a></li>
+<li><a href="#abbreviate-environment">Abbreviate Environment</a></li>
+<li><a href="#abbreviate-azure-region">Abbreviate Azure Region</a></li>
+<li><a href="#sanitize-resource-name">Sanitize Resource Name</a></li>
+<li><a href="#shorten-resource-name">Shorten Resource Name</a></li>
+<li><a href="#get-resource-name">Get Resource Name</a></li>
+</ul>
+</li>
+<li><a href="#using-the-function">Using the Function</a></li>
+<li><a href="#testing-the-function">Testing the Function</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="intro">Intro</h3>
+<p>Based on <a href="https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming">Define your naming convention</a>, I&rsquo;m using the following naming convention as an example:</p>
+<p><img src="../../../../../images/apply-azure-naming-convention-using-bicep-functions/naming-convention.png" alt="Azure Naming Convention"></p>
+<p>The name of a resource consists of the following components:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource Type</td>
+<td>An abbreviation based on the resource type. For example, <code>vnet</code> for Virtual Network.</td>
+</tr>
+<tr>
+<td>Workload / Application</td>
+<td>The name of the workload or application that the resouce belongs to. For example, <code>myapp</code> for My Application.</td>
+</tr>
+<tr>
+<td>Environment</td>
+<td>An abbreviation based on the environment the resource belongs to. For example, <code>dev</code> for Development.</td>
+</tr>
+<tr>
+<td>Azure Region</td>
+<td>An abbreviation of the region where the resource is deployed. For example, <code>nwe</code> for Norway East.</td>
+</tr>
+<tr>
+<td>Instance</td>
+<td>A unique identifier for the resource. This can be a number like <code>001</code> or a named instance like <code>main</code> or <code>primary</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>In the past, I&rsquo;ve used a Bicep module for applying naming conventions. However, in this post, we&rsquo;ll leverage a relatively new feature called <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/user-defined-functions">User-defined functions in Bicep</a>, in conjunction with <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-import">Imports in Bicep</a>. This approach allows us to create a reusable function that generates resource names based on the specified convention, seamlessly integrating it into our Bicep files.</p>
+<p>From a user&rsquo;s perspective, using a user-defined function appears more elegant than utilizing a module. A function call can be condensed into a single line, whereas invoking a module requires multiple lines of code. Additionally, unlike a function, a module becomes a deployment in Azure, which creates unnecessary noise.</p>
+<p>For reference, here&rsquo;s how you would use a module to retrieve the name of a virtual network based on the naming convention:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">module vnetNameBuilder  './get-resource-name.bicep' = {
+  name: 'vnetNameBuilder'
+  params: {
+    resourceType: 'virtualNetwork'
+    workload: 'sample'
+    environment: 'dev'
+    region: 'norwayeast'
+    instance: '001'
+  }
+}
+var vnetName = vnetNameBuilder.outputs.resourceName
+</code></pre><p>And here&rsquo;s how you would do the same with a function:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">var vnetName = getResourceName('virtualNetwork', 'sample', 'dev', 'norwayeast', '001')
+</code></pre><p>That being said, creating the logic to apply the naming convention is a bit more difficult in a function than in a module. In a module, you can create a &lsquo;procedural&rsquo; script that applies the naming convention step-by-step, using variables for intermediate results. In a function, you can’t use variables; therefore, you have to call other functions to create the logic. This can be a bit more cumbersome.</p>
+<h3 id="user-defined-functions">User-defined Functions</h3>
+<p>In this section, we&rsquo;ll explore the various functions required to apply the naming convention. As you&rsquo;ll discover, much of the logic revolves around creating concise resource names, which is crucial given the limitations on name length. For instance, a Key Vault or Storage Account name can only be 24 characters long, while a Windows virtual machine name is even shorter, capped at 15 characters.</p>
+<p>You can find the end result with all functions <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/apply-azure-naming-convention-using-bicep-functions/naming-conventions.bicep">here</a>.</p>
+<h4 id="get-resource-type-prefix">Get Resource Type Prefix</h4>
+<p>We&rsquo;ll begin with the resource type prefix. I&rsquo;ve used <a href="https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations">Abbreviation recommendations for Azure resources</a> to create a mapping of resource types to prefixes for resources commonly used in my projects. While I haven&rsquo;t implemented the complete list, it can be easily extended with your own resource types and corresponding prefixes.</p>
+<p>Below is a snippet of the functions to retrieve the prefix.</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func getPrefix(resourceType string) string =&gt; getPrefixMap()[resourceType]
+
+func getPrefixMap() object =&gt; {
+  apiManagement: 'apim'
+  keyVault: 'kv'
+  resourceGroup: 'rg'
+  storageAccount: 'st'
+  virtualMachine: 'vm'
+  virtualNetwork: 'vnet'
+  ...
+}
+</code></pre><p>As mentioned before, since we can&rsquo;t use a variable to store the mapping, I&rsquo;m using the function <code>getPrefixMap</code> to return the map. This map is then used by <code>getPrefix</code> to retrieve the prefix of the specified resource type. For instance, calling <code>getPrefix('virtualNetwork')</code> will return <code>vnet</code>.</p>
+<h4 id="abbreviate-environment">Abbreviate Environment</h4>
+<p>Similar to the resource type prefix, I&rsquo;ve created a map of environment names to abbreviations. This map is used by the <code>abbreviateEnvironment</code> function to return the abbreviation of the specified environment. See the snippet below.</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func abbreviateEnvironment(environment string) string =&gt; getEnvironmentMap()[toLower(environment)]
+
+func getEnvironmentMap() object =&gt; {
+  dev: 'dev'
+  development: 'dev'
+  tst: 'tst'
+  test: 'tst'
+  acc: 'acc'
+  acceptance: 'acc'
+  prd: 'prd'
+  prod: 'prd'
+  production: 'prd'
+}
+</code></pre><h4 id="abbreviate-azure-region">Abbreviate Azure Region</h4>
+<p>Likewise, for the Azure region, I&rsquo;m using another map to abbreviate it. Below is a snippet of the functions:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func abbreviateRegion(region string) string =&gt; getRegionMap()[region]
+
+func getRegionMap() object =&gt; {
+  northeurope: 'ne'
+  norwayeast: 'nwe'
+  westcentralus: 'wcus'
+  westeurope: 'we'
+  ...
+}
+</code></pre><p>As there doesn&rsquo;t seem to be an official list of abbreviations provided by Microsoft, I&rsquo;ve used <a href="https://www.jlaundry.nz/2022/azure_region_abbreviations/">Azure Region Abbreviations</a> as my reference. This source offers multiple conventions, so you can select the one that best suits your needs. I&rsquo;ve chosen the <code>Short Name (CAF)</code> convention as it appears to be the most complete.</p>
+<h4 id="sanitize-resource-name">Sanitize Resource Name</h4>
+<p>With these functions as a basis, we can create a simple function that applies the naming convention to a resource name. Here’s an example:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func getResourceNameByConvention(resourceType string, workload string, environment string, region string, instance string) string =&gt; 
+  '${getPrefix(resourceType)}-${workload}-${abbreviateEnvironment(environment)}-${abbreviateRegion(region)}-${instance}'
+</code></pre><p>However, we don’t have complete control over the input values. We’re directly incorporating the <code>workload</code> and <code>instance</code> into the name without any processing. It&rsquo;s important to sanitize these values to ensure they don’t contain any characters that are not allowed in a resource name.</p>
+<p>Here’s a sample function that sanitizes the input values by removing a trailing hyphen, colons, commas, dots, semicolons, underscores, and white spaces. It also converts the result to lowercase.</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func sanitizeResourceName(value string) string =&gt; toLower(removeTrailingHyphen(removeColons(removeCommas(removeDots(removeSemicolons(removeUnderscores(removeWhiteSpaces(value))))))))
+
+func removeTrailingHyphen(value string) string =&gt; endsWith(value, '-') ? substring(value, 0, length(value)-1) : value
+func removeColons(value string) string =&gt; replace(value, ':', '')
+func removeCommas(value string) string =&gt; replace(value, ',', '')
+func removeDots(value string) string =&gt; replace(value, '.', '')
+func removeSemicolons(value string) string =&gt; replace(value, ';', '')
+func removeUnderscores(value string) string =&gt; replace(value, '_', '')
+func removeWhiteSpaces(value string) string =&gt; replace(value, ' ', '')
+</code></pre><p>The <code>sanitizeResourceName</code> function can be used by <code>getResourceNameByConvention</code> to sanitize the input values. Here&rsquo;s the updated function:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func getResourceNameByConvention(resourceType string, workload string, environment string, region string, instance string) string =&gt; 
+  sanitizeResourceName('${getPrefix(resourceType)}-${workload}-${abbreviateEnvironment(environment)}-${abbreviateRegion(region)}-${instance}')
+</code></pre><h4 id="shorten-resource-name">Shorten Resource Name</h4>
+<p>For most resources, this approach will suffice. However, a few resources have stricter requirements on name length, and some disallow hyphens. For instance, a Key Vault and Storage Account are limited to a maximum of 24 characters, while a Windows virtual machine’s name can only be up to 15 characters.</p>
+<p>To comply with these constraints, we need to shorten the name for these specific resources. First, we&rsquo;ll need a function to determine if a resource type needs to be shortened. We&rsquo;ll use an array of resource types that should be shortened and then check if the specified resource type is included in the list. Here are the functions:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func shouldBeShortened(resourceType string) bool =&gt; contains(getResourcesTypesToShorten(), resourceType)
+
+func getResourcesTypesToShorten() array =&gt; [
+  'keyVault'
+  'storageAccount'
+  'virtualMachine'
+]
+</code></pre><p>Next, we&rsquo;ll need a function to shorten the name. We&rsquo;ll remove any hyphens and sanitize the resource name. Here&rsquo;s the function:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func shortenString(value string) string =&gt; removeHyphens(sanitizeResourceName(value))
+func removeHyphens(value string) string =&gt; replace(value, '-', '')
+</code></pre><p>Taking into account the length of the prefix, environment, and region, this is enough for the Key Vault and Storage Account if you keep the combination of workload and instance to about 15 characters.</p>
+<p>For a Virtual Machine, we need to make the name even shorter. We can use the <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-string#uniquestring">uniqueString</a> function to generate a unique string based on the workload, environment, and region. The result won&rsquo;t be globally unique, but it&rsquo;s close enough for our purpose. The returned value is 13 characters long. For example, <code>uniqueString('sample', 'dev', 'norwayeast')</code> will result in <code>zmamywx7mjdhw</code>.</p>
+<p>I want to include the instance in the resource name, so we need to make the generated unique string a little shorter depending on the length of the instance. Using <code>substring</code>, we can remove the last characters of the unique string based on the length of the instance. Here’s the full function to create the virtual machine name:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func getVirtualMachineName(workload string, environment string, region string, instance string) string =&gt;
+  'vm${substring(uniqueString(workload, environment, region), 0, 13-length(shortenString(instance)))}${shortenString(instance)}'
+</code></pre><p>As you can see, I’m using the <code>shortenString</code> function to keep the instance name as short as possible. However, please note that if the instance name is longer than 13 characters, the substring function will throw an error. Unfortunately, it’s not yet possible to set a maximum length on parameters of a function.</p>
+<p>With this, we can create a function that will return the shortened name of a resource based on the naming convention. Here’s the function:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func getShortenedResourceName(resourceType string, workload string, environment string, region string, instance string) string =&gt;
+  resourceType == 'virtualMachine'
+    ? getVirtualMachineName(workload, environment, region, instance)
+    : shortenString(getResourceNameByConvention(resourceType, workload, environment, region, instance))
+</code></pre><h4 id="get-resource-name">Get Resource Name</h4>
+<p>Finally, we can create a function that will return the name of a resource based on the naming convention. This function will check if the resource type should be shortened and then call the appropriate function. Here’s the function:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">@export()
+func getResourceName(resourceType string, workload string, environment string, region string, instance string) string =&gt; 
+  shouldBeShortened(resourceType) 
+    ? getShortenedResourceName(resourceType, workload, environment, region, instance)
+    : getResourceNameByConvention(resourceType, workload, environment, region, instance)
+</code></pre><p>Note the <code>export</code> decorator. This is required to make the function available to other Bicep files. The final result can be found in <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/apply-azure-naming-convention-using-bicep-functions/naming-conventions.bicep">naming-conventions.bicep</a>.</p>
+<h3 id="using-the-function">Using the Function</h3>
+<p>To use the function in different Bicep files, I&rsquo;ve placed the functions in a separate Bicep file. This file can then be imported into other Bicep files. Here&rsquo;s an example of how to import the <code>getResourceName</code> function from the <code>naming-conventions.bicep</code> file:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">import { getResourceName } from './naming-conventions.bicep'
+</code></pre><p>Once the <code>getResourceName</code> function is imported, you can use it in your Bicep files. Here are some examples:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">param location string = resourceGroup().location
+param workload string
+param environment string
+
+param paramExample string = getResourceName('vnet', workload, environment, location, '001')
+
+param varExample string = getResourceName('vnet', workload, environment, location, '002')
+
+resource resourceExample 'Microsoft.Network/virtualNetworks@2023-05-01' = {
+  name: getResourceName('vnet', workload, environment, location, '003')
+  location: location
+  properties: {
+    ...
+  }
+}
+
+output outputExample string = getResourceName('vnet', workload, environment, location, '004')
+</code></pre><h3 id="testing-the-function">Testing the Function</h3>
+<p>There is quite a bit of logic necessary to get a resource name. To ensure everything works as expected, I’ve written some tests with the Bicep Testing Framework. The blog post <a href="https://rios.engineer/exploring-the-bicep-test-framework-%F0%9F%A7%AA/">Exploring the awesome Bicep Test Framework</a> explains how to use the framework, but I&rsquo;ll cover the basics here.</p>
+<p>Currently, the testing framework is still experimental, so you&rsquo;ll need to enable it in your Bicep config file. You need to create a <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/apply-azure-naming-convention-using-bicep-functions/bicepconfig.json">bicepconfig.json</a> file and add the following configuration:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;experimentalFeaturesEnabled&#34;</span>: {
+        <span style="color:#f92672">&#34;testFramework&#34;</span>: <span style="color:#66d9ef">true</span>,
+        <span style="color:#f92672">&#34;assertions&#34;</span>: <span style="color:#66d9ef">true</span>
+  }
+}
+</code></pre></div><p>Our <code>getResourceName</code> function can&rsquo;t be directly invoked from a Bicep test. Instead, we&rsquo;ll need to create a Bicep module that calls the function and asserts the result. To do this, create a file called <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/apply-azure-naming-convention-using-bicep-functions/test-get-resource-name.bicep">test-get-resource-name.bicep</a> and add the following Bicep:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">// Arrange
+
+import { getResourceName } from './naming-conventions.bicep'
+
+param resourceType string
+param workload string
+param environment string
+param region string
+param instance string
+
+param expectedResult string
+
+// Act
+var actualResult = getResourceName(resourceType, workload, environment, region, instance)
+
+// Assert
+assert assertResult = actualResult == expectedResult
+</code></pre><p>As you can see, the module:</p>
+<ul>
+<li>Imports the function <code>getResourceName</code>.</li>
+<li>Defines parameters for the input values of the function.</li>
+<li>Defines a parameter for the expected result.</li>
+<li>Calls the <code>getResourceName</code> function.</li>
+<li>Asserts that the actual result is equal to the expected result.</li>
+</ul>
+<p>Now, create a file called <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/apply-azure-naming-convention-using-bicep-functions/tests.bicep">tests.bicep</a> that will contain the tests. Here&rsquo;s an example of a test that checks if the name of a virtual network is created correctly:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">test testPrefixVirtualNetwork 'test-get-resource-name.bicep' = {
+  params: {
+    resourceType: 'virtualNetwork'
+    workload: 'sample'
+    environment: 'dev'
+    region: 'norwayeast'
+    instance: '001'
+    expectedResult: 'vnet-sample-dev-nwe-001'
+  }
+}
+</code></pre><p>To execute the tests, run the following command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bicep test .<span style="color:#ae81ff">\t</span>ests.bicep
+</code></pre></div><p>The test results will look like this:</p>
+<p><img src="../../../../../images/apply-azure-naming-convention-using-bicep-functions/bicep-test-results.png" alt="Bicep Test Results"></p>
+<p>In this example the test <code>testPrefixResourceGroup</code> has failed. The output could be improved by adding the actual and expected result. I&rsquo;m hoping the Bicep team will add this in the future.</p>
+<p>You can find the full suite of tests in <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/apply-azure-naming-convention-using-bicep-functions/tests.bicep">tests.bicep</a>.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>I think <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/user-defined-functions">User-defined functions in Bicep</a> are a powerful feature to help you create reusable logic, like applying a naming convention. Due to their current limitations, functions can be a bit tricky when creating more complex logic. But for me, using a function to apply a naming convention is a definite improvement over using a module, because it results in much cleaner code.</p>
+<p>The <a href="https://rios.engineer/exploring-the-bicep-test-framework-%F0%9F%A7%AA/">Bicep Testing Framework</a> is also a great addition to Bicep. It allows you to write tests for your Bicep files and ensure everything works as expected. I hope the Bicep team will continue to improve the framework and add more features, such as better output for failed tests.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/test-automation">Test Automation</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/">Securing backend connections with mTLS in API Management &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
