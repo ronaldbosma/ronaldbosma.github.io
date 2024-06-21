@@ -232,6 +232,9 @@ resource workbookId_resource 'microsoft.insights/workbooks@2021-03-08' = {
   }
 }
 </code></pre><p>As you can see, the definition is loaded from the file using the <code>loadTextContent</code> function. We then use the <code>replace</code> function to replace the placeholder. The last step is to set the <code>serializedData</code> property. See <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/DeployAzureWorkbookAndAppInsightsFunction/load-workbook-from-file/sample.bicep">sample.bicep</a> for the full sample.</p>
+<blockquote>
+<p>If you want to know more about how to replace multiple placeholders in a string, see <a href="/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function">Replace placeholders in string with user-defined Bicep function</a>.</p>
+</blockquote>
 <p>Using the same Azure CLI command as before, we can deploy the workbook using Bicep.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">$resourceGroupName = <span style="color:#e6db74">&#39;&lt;resource group&gt;&#39;</span>
 $applicationInsightsId = <span style="color:#e6db74">&#39;&lt;application insights id&gt;&#39;</span>

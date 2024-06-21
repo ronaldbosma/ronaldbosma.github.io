@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Wed, 05 Jun 2024 08:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 21 Jun 2024 15:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Replace placeholders in string with user-defined Bicep function</title>
+      <link>https://ronaldbosma.github.io/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function/</link>
+      <pubDate>Fri, 21 Jun 2024 15:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function/</guid>
+      <description>When you have a string value in Bicep with multiple placeholders that you want to replace, it can be tricky to find a good way to do this. In this blog post, I will show you how you can replace placeholders in a string with a couple of user-defined functions.</description>
+    </item>
+    
     <item>
       <title>Apply Azure naming convention using Bicep functions</title>
       <link>https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/</link>

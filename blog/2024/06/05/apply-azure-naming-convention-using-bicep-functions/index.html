@@ -336,7 +336,7 @@ resource resourceExample 'Microsoft.Network/virtualNetworks@2023-05-01' = {
 
 output outputExample string = getResourceName('vnet', workload, environment, location, '004')
 </code></pre><h3 id="testing-the-function">Testing the Function</h3>
-<p>There is quite a bit of logic necessary to get a resource name. To ensure everything works as expected, I’ve written some tests with the Bicep Testing Framework. The blog post <a href="https://rios.engineer/exploring-the-bicep-test-framework-%F0%9F%A7%AA/">Exploring the awesome Bicep Test Framework</a> explains how to use the framework, but I&rsquo;ll cover the basics here.</p>
+<p>There is quite a bit of logic necessary to get a resource name. To ensure everything works as expected, I’ve written some tests with the Bicep Testing Framework. The blog post <a href="https://rios.engineer/exploring-the-bicep-test-framework-%F0%9F%A7%AA/">Exploring the awesome Bicep Test Framework</a> by Dan Rios explains how to use the framework, but I&rsquo;ll cover the basics here.</p>
 <p>Currently, the testing framework is still experimental, so you&rsquo;ll need to enable it in your Bicep config file. You need to create a <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/apply-azure-naming-convention-using-bicep-functions/bicepconfig.json">bicepconfig.json</a> file and add the following configuration:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     <span style="color:#f92672">&#34;experimentalFeaturesEnabled&#34;</span>: {
@@ -415,6 +415,8 @@ assert assertResult = actualResult == expectedResult
                     
                     
                     <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                        <a class="d-block col-md-6" href="https://ronaldbosma.github.io/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function/"> &laquo; Replace placeholders in string with user-defined Bicep function</a>
                     
                     
                         <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/">Securing backend connections with mTLS in API Management &raquo;</a>
