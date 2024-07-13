@@ -11,6 +11,9 @@
     <loc>https://ronaldbosma.github.io/blog/</loc>
     <lastmod>2024-06-21T15:00:00+02:00</lastmod>
   </url><url>
+    <loc>https://ronaldbosma.github.io/tags/infra-as-code/</loc>
+    <lastmod>2024-06-21T15:00:00+02:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function/</loc>
     <lastmod>2024-06-21T15:00:00+02:00</lastmod>
   </url><url>
@@ -30,9 +33,6 @@
     <lastmod>2024-05-24T10:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/client-certificates/</loc>
-    <lastmod>2024-05-24T10:15:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/infra-as-code/</loc>
     <lastmod>2024-05-24T10:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/mtls/</loc>
