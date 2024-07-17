@@ -7,7 +7,34 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Fri, 21 Jun 2024 15:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 17 Jul 2024 08:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reqnroll</title>
+      <link>https://ronaldbosma.github.io/tags/reqnroll/</link>
+      <pubDate>Wed, 17 Jul 2024 08:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/reqnroll/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>SpecFlow</title>
+      <link>https://ronaldbosma.github.io/tags/specflow/</link>
+      <pubDate>Wed, 17 Jul 2024 08:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/specflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Test Automation</title>
+      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
+      <pubDate>Wed, 17 Jul 2024 08:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Azure</title>
       <link>https://ronaldbosma.github.io/tags/azure/</link>
@@ -32,15 +59,6 @@
       <pubDate>Fri, 21 Jun 2024 15:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/infra-as-code/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Test Automation</title>
-      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
-      <pubDate>Fri, 21 Jun 2024 15:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
       <description></description>
     </item>
     
@@ -113,24 +131,6 @@
       <pubDate>Thu, 11 May 2023 20:45:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/gherkin/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Reqnroll</title>
-      <link>https://ronaldbosma.github.io/tags/reqnroll/</link>
-      <pubDate>Thu, 11 May 2023 20:45:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/reqnroll/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>SpecFlow</title>
-      <link>https://ronaldbosma.github.io/tags/specflow/</link>
-      <pubDate>Thu, 11 May 2023 20:45:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/specflow/</guid>
       <description></description>
     </item>
     

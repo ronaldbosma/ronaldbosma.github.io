@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Reqnroll Parsable Value Retriever and Comparer | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2024/07/17/reqnroll-parsable-value-retriever-and-comparer/cover.jpeg"/>
+<meta name="twitter:title" content="Reqnroll Parsable Value Retriever and Comparer"/>
+<meta name="twitter:description" content="In this blog post, we&rsquo;ll explore how to use the IParsable&lt;T&gt; interface to build a generic Reqnroll value retriever and comparer. We&rsquo;ll start by creating custom value retrievers and comparers, then develop a reusable solution with generics, and finally, we&rsquo;ll use reflection to make it even more generic. (This solution also works for its predecessor, SpecFlow, when using .NET 7 or higher.)"/>
+
+	<meta property="og:title" content="Reqnroll Parsable Value Retriever and Comparer" />
+<meta property="og:description" content="In this blog post, we&rsquo;ll explore how to use the IParsable&lt;T&gt; interface to build a generic Reqnroll value retriever and comparer. We&rsquo;ll start by creating custom value retrievers and comparers, then develop a reusable solution with generics, and finally, we&rsquo;ll use reflection to make it even more generic. (This solution also works for its predecessor, SpecFlow, when using .NET 7 or higher.)" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/07/17/reqnroll-parsable-value-retriever-and-comparer/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/07/17/reqnroll-parsable-value-retriever-and-comparer/cover.jpeg"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2024-07-17T08:00:00+02:00" />
+<meta property="article:modified_time" content="2024-07-17T08:00:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Reqnroll%20Parsable%20Value%20Retriever%20and%20Comparer&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f07%2f17%2freqnroll-parsable-value-retriever-and-comparer%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f07%2f17%2freqnroll-parsable-value-retriever-and-comparer%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f07%2f17%2freqnroll-parsable-value-retriever-and-comparer%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Jul 17, 2024
+                                    <i class="far fa-clock clock"></i>
+                                    13 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Reqnroll Parsable Value Retriever and Comparer</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2024/07/17/reqnroll-parsable-value-retriever-and-comparer/cover.jpeg" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>The introduction of .NET 7 has brought us the <a href="https://learn.microsoft.com/en-us/dotnet/api/system.iparsable-1?view=net-8.0">IParsable<!-- raw HTML omitted --></a> interface, a generic interface that defines static <code>Parse</code> and <code>TryParse</code> methods. This interface is used to parse a string into an instance of the implementing type. Common types like <code>string</code>, <code>int</code> and <code>DateTime</code> all implement this interface.</p>
+<p>If you have a custom type that needs to be parsed from a string, you can implement this interface yourself. This is useful because it allows for reusable parsing logic. In this blog post, we&rsquo;ll see how to use the <code>IParsable&lt;T&gt;</code> interface to build a generic <a href="https://reqnroll.net/">Reqnroll</a> value retriever and comparer.</p>
+<blockquote>
+<p>Reqnroll is the successor to SpecFlow, designed for automating Gherkin scenarios in .NET with C#. The solution provided in this blog post can also work with SpecFlow when using .NET 7 or higher.</p>
+</blockquote>
+<p>As you might already know, when working with tables in Gherkin scenarios, you can use the <a href="https://docs.reqnroll.net/latest/automation/datatable-helpers.html">DataTable Helper</a> extension methods <code>CreateInstance&lt;T&gt;</code> and <code>CreateSet&lt;T&gt;</code> to convert a table into a single object or a list of objects. Similarly, the <code>CompareToInstance&lt;T&gt;</code> and <code>CompareToSet&lt;T&gt;</code> extension methods can be used to compare objects to a table with expected data.</p>
+<p>These extension methods work great when your properties are only simple types like <code>string</code>, <code>int</code> and <code>DateTime</code>. But what if you have a custom type that needs to be converted or compared? This is where <a href="https://docs.reqnroll.net/latest/extend/value-retrievers.html">Value Retrievers and Value Comparers</a> come in. They allow you to define custom logic for converting and comparing custom types.</p>
+<blockquote>
+<p>If you&rsquo;re unfamiliar with the Reqnroll DataTable Helper extension methods or Value Retrievers and Comparers, I recommend reading the <a href="https://docs.reqnroll.net/latest/automation/datatable-helpers.html">DataTable Helpers documentation</a> and <a href="https://docs.reqnroll.net/latest/extend/value-retrievers.html">Value Retrievers documentation</a> first.</p>
+</blockquote>
+<p>As you&rsquo;ll see, the combination of the <code>IParsable&lt;T&gt;</code> interface and Reqnroll&rsquo;s value retrievers and value comparers can be a powerful tool for creating generic parsing logic. In this blog post, we&rsquo;ll start by creating a custom type that implements the <code>IParsable&lt;T&gt;</code> interface. We&rsquo;ll then use this type in a Gherkin scenario to convert and compare it with a table. Finally, we&rsquo;ll create a generic solution to handle any type that implements the <code>IParsable&lt;T&gt;</code> interface.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#intro">Intro</a></li>
+<li><a href="#custom-value-retrievers-and-comparers">Custom Value Retrievers and Comparers</a></li>
+<li><a href="#generic-parsable-value-retriever-and-comparer">Generic Parsable Value Retriever and Comparer</a></li>
+<li><a href="#parsable-value-retriever-and-comparer-with-reflection">Parsable Value Retriever and Comparer with Reflection</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="intro">Intro</h3>
+<p>Let&rsquo;s start with some Gherkin first. We&rsquo;ll be using the following scenario to convert a table into a list of <code>WeatherForecast</code> objects and compare them with another table:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-gherkin" data-lang="gherkin"><span style="color:#66d9ef">Scenario:</span><span style="color:#a6e22e"> Create weather forecasts from a table and compare them with another table
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">
+</span><span style="color:#66d9ef">When </span><span style="color:#a6e22e">the following table is converted into weather forecasts
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Date</span><span style="color:#66d9ef">          |</span><span style="color:#e6db74"> Minimum Temperature</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Maximum Temperature</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 13 April 2024</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 13 °C</span><span style="color:#66d9ef">               |</span><span style="color:#e6db74"> 23 °C</span><span style="color:#66d9ef">               |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 14 April 2024</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 10 °C</span><span style="color:#66d9ef">               |</span><span style="color:#e6db74"> 59 °F</span><span style="color:#66d9ef">               |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 15 April 2024</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 7 °C</span><span style="color:#66d9ef">                |                     |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">Then </span><span style="color:#a6e22e">the following weather forecasts are created
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> Date</span><span style="color:#66d9ef">          |</span><span style="color:#e6db74"> Minimum Temperature</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> Maximum Temperature</span><span style="color:#66d9ef"> |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 13 April 2024</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 13 °C</span><span style="color:#66d9ef">               |</span><span style="color:#e6db74"> 23 °C</span><span style="color:#66d9ef">               |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 14 April 2024</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 10 °C</span><span style="color:#66d9ef">               |</span><span style="color:#e6db74"> 59 °F</span><span style="color:#66d9ef">               |</span><span style="color:#a6e22e">
+</span><span style="color:#a6e22e"></span><span style="color:#66d9ef">    |</span><span style="color:#e6db74"> 15 April 2024</span><span style="color:#66d9ef"> |</span><span style="color:#e6db74"> 7 °C</span><span style="color:#66d9ef">                |                     |
+</span></code></pre></div><p>In the <code>When</code> step, we&rsquo;ll use the <code>CreateSet&lt;T&gt;</code> method to convert the <code>DataTable</code> into a list of <code>WeatherForecast</code> objects. In the <code>Then</code> step, we&rsquo;ll use the <code>CompareToSet&lt;T&gt;</code> method to compare the expected weather forecasts with the actual weather forecasts. The implemented step definitions are shown below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">private</span> IEnumerable&lt;WeatherForecast&gt;? <span style="color:#ae81ff">_</span>actualWeatherForecasts;
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[When(&#34;the following table is converted into weather forecasts&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> WhenTheFollowingTableIsConvertedIntoWeatherForecasts(DataTable dataTable)
+{
+    <span style="color:#ae81ff">_</span>actualWeatherForecasts = dataTable.CreateSet&lt;WeatherForecast&gt;();
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[Then(&#34;the following weather forecasts are created&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ThenTheFollowingWeatherForecastsAreCreated(DataTable dataTable)
+{
+    dataTable.CompareToSet(<span style="color:#ae81ff">_</span>actualWeatherForecasts);
+}
+</code></pre></div><p>The <code>WeatherForecast</code> class is defined as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WeatherForecast</span>
+{
+    <span style="color:#66d9ef">public</span> DateOnly Date { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> Temperature MinimumTemperature { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; } = <span style="color:#66d9ef">null</span>!;
+    <span style="color:#66d9ef">public</span> Temperature? MaximumTemperature { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+}
+</code></pre></div><p>As you can see, the <code>WeatherForecast</code> class has a <code>DateOnly</code> property and two <code>Temperature</code> properties. The <code>MaximumTemperature</code> property is nullable to check if our solution can handle <code>null</code> values.</p>
+<p>The <a href="https://learn.microsoft.com/en-us/dotnet/api/system.dateonly?view=net-8.0">DateOnly</a> type was introduced in .NET 6 to represent a date without time. Currently, Reqnroll cannot convert it out-of-the-box.</p>
+<p>The <code>Temperature</code> type is a custom type that can represent a temperature in both Celsius and Fahrenheit. It is a record that implements the <code>IParsable&lt;T&gt;</code> interface and is defined as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">enum</span> TemperatureUnit
+{
+    Celsius,
+    Fahrenheit
+}
+
+<span style="color:#66d9ef">public</span> record Temperature : IParsable&lt;Temperature&gt;
+{
+    <span style="color:#75715e">// Regex to parse a temperature string
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> <span style="color:#66d9ef">static</span> Regex TemperatureRegex = <span style="color:#66d9ef">new</span>(<span style="color:#e6db74">@&#34;^(-?\d+) (°C|°F)$&#34;</span>);
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> Degrees { <span style="color:#66d9ef">get</span>; init; }
+    <span style="color:#66d9ef">public</span> TemperatureUnit Unit { <span style="color:#66d9ef">get</span>; init; }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Temperature Parse(<span style="color:#66d9ef">string</span> s, IFormatProvider? provider)
+    {
+        <span style="color:#66d9ef">var</span> isValidTemperature = TryParse(s, provider, <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">var</span> result);
+        <span style="color:#66d9ef">if</span> (isValidTemperature &amp;&amp; result <span style="color:#66d9ef">is</span> not <span style="color:#66d9ef">null</span>)
+        {
+            <span style="color:#66d9ef">return</span> result;
+        }
+        <span style="color:#66d9ef">else</span>
+        {
+            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> FormatException(<span style="color:#e6db74">$&#34;The value &#39;{s}&#39; is not in the correct format.&#34;</span>);
+        }
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">bool</span> TryParse([NotNullWhen(<span style="color:#66d9ef">true</span>)] <span style="color:#66d9ef">string?</span> s, IFormatProvider? provider, [MaybeNullWhen(<span style="color:#66d9ef">false</span>)] <span style="color:#66d9ef">out</span> Temperature result)
+    {
+        result = <span style="color:#66d9ef">null</span>;
+
+        <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">string</span>.IsNullOrWhiteSpace(s))
+        {
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+        }
+        
+        <span style="color:#66d9ef">var</span> regexMatches = TemperatureRegex.Matches(s);
+        <span style="color:#66d9ef">if</span> (regexMatches.Count != <span style="color:#ae81ff">1</span>)
+        {
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+        }
+
+        <span style="color:#66d9ef">var</span> degrees = <span style="color:#66d9ef">int</span>.Parse(regexMatches[<span style="color:#ae81ff">0</span>].Groups[<span style="color:#ae81ff">1</span>].Value);
+        <span style="color:#66d9ef">var</span> unit = regexMatches[<span style="color:#ae81ff">0</span>].Groups[<span style="color:#ae81ff">2</span>].Value;
+
+        result = <span style="color:#66d9ef">new</span> Temperature
+        {
+            Degrees = degrees,
+            Unit = unit == <span style="color:#e6db74">&#34;°C&#34;</span> ? TemperatureUnit.Celsius : TemperatureUnit.Fahrenheit
+        };
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+    }
+}
+</code></pre></div><p>The <code>Temperature</code> record has a <code>Degrees</code> property that represents the temperature in degrees and a <code>Unit</code> property that represents the unit of the temperature, which is Celsius or Fahrenheit.</p>
+<p>The <code>Parse</code> and <code>TryParse</code> methods implement the <code>IParsable&lt;T&gt;</code> interface and are used to parse a string into a <code>Temperature</code> instance. They use a regular expression to extract the degrees and the unit, which is represented by <code>°C</code> or <code>°F</code>. Example include are <code>10 °C</code> and <code>59 °F</code>.</p>
+<p>Now, if we were to run our scenario as is, we would get the following error:</p>
+<pre tabindex="0"><code>Test method ReqnrollParsableValueRetrieverAndComparer.Init.InitFeature.CreateWeatherForecastsFromATableAndCompareThemWithAnotherTable threw exception: 
+Reqnroll.ComparisonException: 
+  | Date          | Minimum Temperature | Maximum Temperature |
+- | 13 April 2024 | 13 °C               | 23 °C               |
+- | 14 April 2024 | 50 °F               | 59 °F               |
+- | 15 April 2024 | 7 °C                |                     |
++ | 1/1/0001      |                     |                     |
++ | 1/1/0001      |                     |                     |
++ | 1/1/0001      |                     |                     |
+</code></pre><p>This error occurs because Reqnroll is unable to properly create and compare the <code>WeatherForecast</code> objects from the table. Instead, the date has a value of <code>1/1/0001</code> and the temperature values are empty. This is because Reqnroll doesn&rsquo;t know how to parse the <code>DateOnly</code> and <code>Temperature</code> types from the table.</p>
+<h3 id="custom-value-retrievers-and-comparers">Custom Value Retrievers and Comparers</h3>
+<p>To solve this issue, we can implement custom value retrievers and comparers for the <code>DateOnly</code> and <code>Temperature</code> types. We&rsquo;ll start by implementing the <code>DateOnlyValueRetriever</code> class:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DateOnlyValueRetriever</span> : IValueRetriever
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanRetrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> propertyType == <span style="color:#66d9ef">typeof</span>(DateOnly) &amp;&amp; DateOnly.TryParse(keyValuePair.Value, <span style="color:#66d9ef">out</span> <span style="color:#ae81ff">_</span>);
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">object</span> Retrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> DateOnly.Parse(keyValuePair.Value);
+    }
+}
+</code></pre></div><p>Every value retriever implements the <code>IValueRetriever</code> interface. Reqnroll will call the <code>CanRetrieve</code> method to determine if the <code>DateOnlyValueRetriever</code> can retrieve the value. If the property type is <code>DateOnly</code> and the value can be parsed to a <code>DateOnly</code> instance, the <code>CanRetrieve</code> method will return <code>true</code>. The <code>Retrieve</code> method is then called to parse the value to a <code>DateOnly</code> instance.</p>
+<p>The <code>DateOnlyValueComparer</code> class is implemented as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DateOnlyValueComparer</span> : IValueComparer
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanCompare(<span style="color:#66d9ef">object</span> actualValue)
+    {
+        <span style="color:#66d9ef">return</span> actualValue <span style="color:#66d9ef">is</span> DateOnly;
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> Compare(<span style="color:#66d9ef">string</span> expectedValue, <span style="color:#66d9ef">object</span> actualValue)
+    {
+        <span style="color:#66d9ef">var</span> isExpectedDate = DateOnly.TryParse(expectedValue, <span style="color:#66d9ef">out</span> DateOnly expectedDate);
+        <span style="color:#66d9ef">return</span> isExpectedDate &amp;&amp; actualValue.Equals(expectedDate);
+    }
+}
+</code></pre></div><p>Similar to the value retriever, the value comparer needs to implement the <code>IValueComparer</code> interface. Reqnroll will call the <code>CanCompare</code> method to determine if the <code>DateOnlyValueComparer</code> can compare the value. If the actual value is of type <code>DateOnly</code>, the <code>CanCompare</code> method will return <code>true</code>. The <code>Compare</code> method is then called to compare the expected value with the actual value. If the expected value cannot be parse to a <code>DateOnly</code>, <code>false</code> will be returned. Otherwise, the actual value will be compared with the expected value.</p>
+<p>And here are the implementations for the <code>TemperatureValueRetriever</code> and <code>TemperatureValueComparer</code> classes:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TemperatureValueRetriever</span> : IValueRetriever
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanRetrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> propertyType == <span style="color:#66d9ef">typeof</span>(Temperature) &amp;&amp; Temperature.TryParse(keyValuePair.Value, <span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">out</span> <span style="color:#ae81ff">_</span>);
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">object</span> Retrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> Temperature.Parse(keyValuePair.Value, <span style="color:#66d9ef">null</span>);
+    }
+}
+
+
+<span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TemperatureValueComparer</span> : IValueComparer
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanCompare(<span style="color:#66d9ef">object</span> actualValue)
+    {
+        <span style="color:#66d9ef">return</span> actualValue <span style="color:#66d9ef">is</span> Temperature;
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> Compare(<span style="color:#66d9ef">string</span> expectedValue, <span style="color:#66d9ef">object</span> actualValue)
+    {
+        <span style="color:#66d9ef">var</span> isExpectedTemperature = Temperature.TryParse(expectedValue, <span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">out</span> Temperature? expectedTemperature);
+        <span style="color:#66d9ef">return</span> isExpectedTemperature &amp;&amp; actualValue.Equals(expectedTemperature);
+    }
+}
+</code></pre></div><p>As you can see, the implementations are exactly the same as for the <code>DateOnlyValueRetriever</code> and <code>DateOnlyValueComparer</code> classes, but now for the <code>Temperature</code> type.</p>
+<p>The last step is to register the custom value retrievers and comparers. We can use a <code>BeforeTestRun</code> hook as shown in the following code snippet:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[BeforeTestRun]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> BeforeTestRun()
+{
+    Service.Instance.ValueRetrievers.Register(<span style="color:#66d9ef">new</span> DateOnlyValueRetriever());
+    Service.Instance.ValueRetrievers.Register(<span style="color:#66d9ef">new</span> TemperatureValueRetriever());
+
+    Service.Instance.ValueComparers.Register(<span style="color:#66d9ef">new</span> DateOnlyValueComparer());
+    Service.Instance.ValueComparers.Register(<span style="color:#66d9ef">new</span> TemperatureValueComparer());
+}
+</code></pre></div><p>With these changes, the scenario will now run successfully and the expected and actual weather forecasts will be created and compared correctly. You can find a working sample in the <code>01-Init</code> project of <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/reqnroll-parsable-value-retriever-and-comparer">this solution</a>.</p>
+<h3 id="generic-parsable-value-retriever-and-comparer">Generic Parsable Value Retriever and Comparer</h3>
+<p>As you&rsquo;ve seen, the implementations of the <code>DateOnlyValueRetriever</code> and <code>TemperatureValueRetriever</code> are very similar. The same goes for the <code>DateOnlyValueComparer</code> and <code>TemperatureValueComparer</code>. Because both the <code>DateOnly</code> and <code>Temperature</code> types implement the <code>IParsable&lt;T&gt;</code> interface, we can create a generic <code>ParsableValueRetriever&lt;T&gt;</code> and <code>ParsableValueComparer&lt;T&gt;</code> class to reduce the amount of code.</p>
+<p>Here&rsquo;s the implementation of the <code>ParsableValueRetriever&lt;T&gt;</code> class:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ParsableValueRetriever</span>&lt;T&gt; : IValueRetriever <span style="color:#66d9ef">where</span> T : IParsable&lt;T&gt;
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanRetrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">typeof</span>(IParsable&lt;T&gt;).IsAssignableFrom(propertyType) &amp;&amp;
+                T.TryParse(keyValuePair.Value, CultureInfo.CurrentCulture, <span style="color:#66d9ef">out</span> <span style="color:#ae81ff">_</span>);
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">object</span> Retrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> T.Parse(keyValuePair.Value, CultureInfo.CurrentCulture);
+    }
+}
+</code></pre></div><p>In the <code>CanRetrieve</code> method we check if the property type implements <code>IParsable&lt;T&gt;</code> and if the value can be parsed to a <code>T</code> instance. If true, the <code>Retrieve</code> method is called to parse the value to a <code>T</code> instance.</p>
+<p>And here&rsquo;s the implementation of the <code>ParsableValueComparer&lt;T&gt;</code> class:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ParsableValueComparer</span>&lt;T&gt; : IValueComparer <span style="color:#66d9ef">where</span> T : IParsable&lt;T&gt;
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanCompare(<span style="color:#66d9ef">object</span> actualValue)
+    {
+        <span style="color:#66d9ef">return</span> actualValue <span style="color:#66d9ef">is</span> IParsable&lt;T&gt;;
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> Compare(<span style="color:#66d9ef">string</span> expectedValue, <span style="color:#66d9ef">object</span> actualValue)
+    {
+        <span style="color:#66d9ef">var</span> isParsed = T.TryParse(expectedValue, CultureInfo.CurrentCulture, <span style="color:#66d9ef">out</span> T? expectedObject);
+        <span style="color:#66d9ef">return</span> isParsed &amp;&amp; actualValue.Equals(expectedObject);
+    }
+}
+</code></pre></div><p>In the <code>CanCompare</code> method we check if the actual value implements <code>IParsable&lt;T&gt;</code>. If true, the <code>Compare</code> method is called to compare the expected value with the actual value.</p>
+<p>Take note that we’re relying on the <code>Equals</code> method of <code>T</code> to compare the actual and expected values. Since <code>Temperature</code> is a record, this works out-of-the-box.</p>
+<p>With these generic implementations, we can now register the <code>ParsableValueRetriever&lt;T&gt;</code> and <code>ParsableValueComparer&lt;T&gt;</code> classes for the <code>DateOnly</code> and <code>Temperature</code> types in the <code>BeforeTestRun</code> hook as shown below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[BeforeTestRun]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> BeforeTestRun()
+{
+    Service.Instance.ValueRetrievers.Register(<span style="color:#66d9ef">new</span> ParsableValueRetriever&lt;DateOnly&gt;());
+    Service.Instance.ValueRetrievers.Register(<span style="color:#66d9ef">new</span> ParsableValueRetriever&lt;Temperature&gt;());
+
+    Service.Instance.ValueComparers.Register(<span style="color:#66d9ef">new</span> ParsableValueComparer&lt;DateOnly&gt;());
+    Service.Instance.ValueComparers.Register(<span style="color:#66d9ef">new</span> ParsableValueComparer&lt;Temperature&gt;());
+}
+</code></pre></div><p>With these two generic classes, we can now convert and compare every type that implements the <code>IParsable&lt;T&gt;</code> interface, reducing the amount of code and making it easier to add new types in the future. The only downside to this solution is that we have to register the value retriever and comparer for each type separately.</p>
+<p>You can find a working sample in the <code>02-GenericTypes</code> project of <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/reqnroll-parsable-value-retriever-and-comparer">this solution</a>.</p>
+<h3 id="parsable-value-retriever-and-comparer-with-reflection">Parsable Value Retriever and Comparer with Reflection</h3>
+<p>We can go one step further. In the previous solution we had to register the value retriever and comparer for each type separately. Instead, we can use reflection to implement the value retriever and comparer so it can handle any type that implements the <code>IParsable&lt;T&gt;</code> interface.</p>
+<p>Here&rsquo;s the implementation for the <code>ParsableValueRetriever</code> class:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ParsableValueRetriever</span> : IValueRetriever
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanRetrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> GenericParsableParser.ImplementsSupportedIParsable(propertyType) &amp;&amp;
+               GenericParsableParser.TryParse(propertyType, keyValuePair.Value, <span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">out</span> <span style="color:#ae81ff">_</span>);
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">object</span> Retrieve(KeyValuePair&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt; keyValuePair, Type targetType, Type propertyType)
+    {
+        <span style="color:#66d9ef">return</span> GenericParsableParser.Parse(propertyType, keyValuePair.Value, CultureInfo.CurrentCulture);
+    }
+}
+</code></pre></div><p>The logic remains the same as before. It checks if the property type implements the <code>IParsable&lt;T&gt;</code> interface and if the value can be parsed to a <code>T</code> instance. If <code>true</code>, the <code>Retrieve</code> method is called to parse the value to a <code>T</code> instance.</p>
+<p>And here&rsquo;s the implementation for the <code>ParsableValueComparer</code> class:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ParsableValueComparer</span> : IValueComparer
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> CanCompare(<span style="color:#66d9ef">object</span> actualValue)
+    {
+        <span style="color:#66d9ef">return</span> actualValue != <span style="color:#66d9ef">null</span> &amp;&amp; GenericParsableParser.ImplementsSupportedIParsable(actualValue.GetType());
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> Compare(<span style="color:#66d9ef">string</span> expectedValue, <span style="color:#66d9ef">object</span> actualValue)
+    {
+        <span style="color:#66d9ef">var</span> isParsed = GenericParsableParser.TryParse(actualValue.GetType(), expectedValue, CultureInfo.CurrentCulture, <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">object?</span> expectedObject);
+        <span style="color:#66d9ef">return</span> isParsed &amp;&amp; actualValue.Equals(expectedObject);
+    }
+}
+</code></pre></div><p>Once again, the logic is very similar to before. An additional check is included in the <code>CanCompare</code> method to ensure that the actual value is not <code>null</code>, as we need to determine the type of the actual value. If the actual value implements the <code>IParsable&lt;T&gt;</code> interface, the <code>Compare</code> method is called to compare the expected value with the actual value.</p>
+<p>Both classes use the <code>GenericParsableParser</code> class, which contains a couple of handy helper methods. First, the <code>ImplementsSupportedIParsable</code> method is used to check if the type implements the <code>IParsable&lt;T&gt;</code> interface. The implementation is shown below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">bool</span> ImplementsSupportedIParsable(Type type)
+{
+    <span style="color:#66d9ef">return</span> type.GetInterfaces().Any(i =&gt;
+        i.IsGenericType &amp;&amp;
+        i.GetGenericTypeDefinition() == <span style="color:#66d9ef">typeof</span>(IParsable&lt;&gt;) &amp;&amp;
+        <span style="color:#75715e">// IParsable&lt;string&gt; is exluded because we can&#39;t dynamically create an instance of string
+</span><span style="color:#75715e"></span>        i.GetGenericArguments()[<span style="color:#ae81ff">0</span>] != <span style="color:#66d9ef">typeof</span>(<span style="color:#66d9ef">string</span>)
+    );
+}
+</code></pre></div><p>Since <code>ImplementsSupportedIParsable</code> will return <code>true</code> for all types that implement the <code>IParsable&lt;T&gt;</code> interface, it also returns <code>true</code> for common types like <code>string</code>, <code>int</code> and <code>DateTime</code>. However, I found that the parsing logic doesn&rsquo;t work well with strings, so these are excluded.</p>
+<p>Next is the <code>Parse</code> method, which is used to parse a string to an instance of the implementing type. It relies on the <code>TryParse</code> method to perform the actual parsing.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">object</span> Parse(Type targetType, <span style="color:#66d9ef">string</span> s, IFormatProvider? formatProvider)
+{
+    <span style="color:#66d9ef">if</span> (TryParse(targetType, s, formatProvider, <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">object?</span> result))
+    {
+        <span style="color:#66d9ef">return</span> result;
+    }
+    <span style="color:#66d9ef">else</span>
+    {
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> ArgumentException(<span style="color:#e6db74">$&#34;Unable to parse &#39;{s}&#39; to type {targetType}&#34;</span>);
+    }
+}
+</code></pre></div><p>The <code>TryParse</code> function is where the real reflection magic happens.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">bool</span> TryParse(Type targetType, [NotNullWhen(<span style="color:#66d9ef">true</span>)] <span style="color:#66d9ef">string?</span> s, IFormatProvider? formatProvider, [MaybeNullWhen(<span style="color:#66d9ef">false</span>)] <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">object</span> result)
+{
+    <span style="color:#75715e">// Check if the target type implements IParsable&lt;TSelf&gt;
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (!ImplementsSupportedIParsable(targetType))
+    {
+        result = <span style="color:#66d9ef">null</span>;
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+    }
+
+    <span style="color:#75715e">// Get the IParsable&lt;TSelf&gt; interface implemented by the target type
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> parsableInterface = targetType
+        .GetInterfaces()
+        .FirstOrDefault(i =&gt; i.IsGenericType &amp;&amp; i.GetGenericTypeDefinition() == <span style="color:#66d9ef">typeof</span>(IParsable&lt;&gt;));
+
+    <span style="color:#66d9ef">if</span> (parsableInterface == <span style="color:#66d9ef">null</span>)
+    {
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> ArgumentException(<span style="color:#e6db74">$&#34;Type {targetType} does not implement IParsable&lt;TSelf&gt;&#34;</span>);
+    }
+
+    <span style="color:#75715e">// Get the type parameter TSelf of IParsable&lt;TSelf&gt;
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> parsableType = parsableInterface.GetGenericArguments().Single();
+
+    <span style="color:#75715e">// Create an instance of TSelf
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> parsableInstance = Activator.CreateInstance(parsableType);
+    <span style="color:#66d9ef">if</span> (parsableInstance == <span style="color:#66d9ef">null</span>)
+    {
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Exception(<span style="color:#e6db74">$&#34;Unable to create instance of type {parsableType}&#34;</span>);
+    }
+
+    <span style="color:#75715e">// Get the TryParse method of TSelf with signature: TryParse(String, IFormatProvider, out TSelf)
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> parseMethod = parsableType.GetMethod(<span style="color:#e6db74">&#34;TryParse&#34;</span>, [<span style="color:#66d9ef">typeof</span>(<span style="color:#66d9ef">string</span>), <span style="color:#66d9ef">typeof</span>(CultureInfo), parsableType.MakeByRefType()]);
+    <span style="color:#66d9ef">if</span> (parseMethod == <span style="color:#66d9ef">null</span>)
+    {
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Exception(<span style="color:#e6db74">$&#34;Unable to get method with signature TryParse(String, IFormatProvider, out TSelf) from type {parsableType}&#34;</span>);
+    }
+
+    <span style="color:#75715e">// Invoke the TryParse method
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">object?</span>[] parameters = [s, formatProvider, <span style="color:#66d9ef">null</span>];
+    <span style="color:#66d9ef">var</span> tryParseResult = (<span style="color:#66d9ef">bool?</span>)parseMethod.Invoke(parsableInstance, parameters);
+    <span style="color:#66d9ef">if</span> (tryParseResult == <span style="color:#66d9ef">null</span>)
+    {
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Exception(<span style="color:#e6db74">$&#34;TryParse method on type {parsableType} unexpectedly returned null for value: {s}&#34;</span>);
+    }
+
+    <span style="color:#75715e">// Set result to the parsed result if TryParse was successful
+</span><span style="color:#75715e"></span>    result = (<span style="color:#66d9ef">bool</span>)tryParseResult ? parameters[<span style="color:#ae81ff">2</span>] : <span style="color:#66d9ef">null</span>;
+
+    <span style="color:#66d9ef">return</span> (<span style="color:#66d9ef">bool</span>)tryParseResult;
+}
+</code></pre></div><p>The <code>TryParse</code> method executes the following steps:</p>
+<ol>
+<li>It checks if the target type implements a supported version of the <code>IParsable&lt;T&gt;</code> interface.</li>
+<li>It gets the <code>IParsable&lt;T&gt;</code> interface implemented by the target type.</li>
+<li>From the <code>IParsable&lt;T&gt;</code> interface, it retrieves the type parameter <code>T</code>.</li>
+<li>It creates an instance of <code>T</code>.</li>
+<li>It gets the <code>TryParse</code> method of <code>T</code>.</li>
+<li>It invokes the <code>TryParse</code> method.</li>
+<li>If the <code>TryParse</code> was successful, it sets the result to the parsed value and returns <code>true</code>.</li>
+</ol>
+<p>The last step is to register the <code>ParsableValueRetriever</code> and <code>ParsableValueComparer</code> classes in the <code>BeforeTestRun</code> hook as shown below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[BeforeTestRun]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> BeforeTestRun()
+{
+    Service.Instance.ValueRetrievers.Register(<span style="color:#66d9ef">new</span> ParsableValueRetriever());
+    Service.Instance.ValueComparers.Register(<span style="color:#66d9ef">new</span> ParsableValueComparer());
+}
+</code></pre></div><p>With this, the <code>ParsableValueRetriever</code> and <code>ParsableValueComparer</code> classes can now handle any type that implements the <code>IParsable&lt;T&gt;</code> interface. You can find a working sample in the <code>03-Reflection</code> project of <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/reqnroll-parsable-value-retriever-and-comparer">this solution</a>.</p>
+<blockquote>
+<p>As an alternative to using reflection inside the value retriever and comparer, you could also scan your assemblies for all types implementing <code>IParsable&lt;T&gt;</code> and register an instance of <code>ParsableValueRetriever&lt;T&gt;</code> and <code>ParsableValueComparer&lt;T&gt;</code> for each of them.</p>
+</blockquote>
+<h3 id="conclusion">Conclusion</h3>
+<p>With the introduction of the <code>IParsable&lt;T&gt;</code> interface in .NET 7, it has become much easier to create generic parsing logic. By combining this interface with Reqnroll&rsquo;s value retrievers and comparers, we can create a generic solution to convert and compare any type that implements the <code>IParsable&lt;T&gt;</code> interface. Using reflection, we can make this solution more generic and handle any type that implements the <code>IParsable&lt;T&gt;</code> interface. However, because not everybody is a fan of reflection, I&rsquo;ll let you decide which solution you prefer.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/reqnroll">Reqnroll</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/specflow">SpecFlow</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/test-automation">Test Automation</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function/">Replace placeholders in string with user-defined Bicep function &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

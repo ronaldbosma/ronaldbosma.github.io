@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Fri, 21 Jun 2024 15:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 17 Jul 2024 08:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reqnroll Parsable Value Retriever and Comparer</title>
+      <link>https://ronaldbosma.github.io/blog/2024/07/17/reqnroll-parsable-value-retriever-and-comparer/</link>
+      <pubDate>Wed, 17 Jul 2024 08:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2024/07/17/reqnroll-parsable-value-retriever-and-comparer/</guid>
+      <description>In this blog post, we&amp;rsquo;ll explore how to use the &lt;code&gt;IParsable&amp;lt;T&amp;gt;&lt;/code&gt; interface to build a generic Reqnroll value retriever and comparer. We&amp;rsquo;ll start by creating custom value retrievers and comparers, then develop a reusable solution with generics, and finally, we&amp;rsquo;ll use reflection to make it even more generic. (This solution also works for its predecessor, SpecFlow, when using .NET 7 or higher.)</description>
+    </item>
+    
     <item>
       <title>Replace placeholders in string with user-defined Bicep function</title>
       <link>https://ronaldbosma.github.io/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function/</link>
