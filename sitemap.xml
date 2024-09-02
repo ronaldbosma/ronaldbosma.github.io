@@ -2,8 +2,32 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://ronaldbosma.github.io/tags/api-management/</loc>
+    <lastmod>2024-09-02T19:30:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/azure/</loc>
+    <lastmod>2024-09-02T19:30:00+02:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/blog/</loc>
-    <lastmod>2024-07-17T08:00:00+02:00</lastmod>
+    <lastmod>2024-09-02T19:30:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/infra-as-code/</loc>
+    <lastmod>2024-09-02T19:30:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/psrule/</loc>
+    <lastmod>2024-09-02T19:30:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/</loc>
+    <lastmod>2024-09-02T19:30:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/</loc>
+    <lastmod>2024-09-02T19:30:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/test-automation/</loc>
+    <lastmod>2024-09-02T19:30:00+02:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/</loc>
+    <lastmod>2024-09-02T19:30:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/reqnroll/</loc>
     <lastmod>2024-07-17T08:00:00+02:00</lastmod>
@@ -11,25 +35,10 @@
     <loc>https://ronaldbosma.github.io/blog/2024/07/17/reqnroll-parsable-value-retriever-and-comparer/</loc>
     <lastmod>2024-07-17T08:00:00+02:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2024-07-17T08:00:00+02:00</lastmod>
-  </url><url>
     <loc>https://ronaldbosma.github.io/tags/specflow/</loc>
     <lastmod>2024-07-17T08:00:00+02:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/tags/</loc>
-    <lastmod>2024-07-17T08:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/test-automation/</loc>
-    <lastmod>2024-07-17T08:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/azure/</loc>
-    <lastmod>2024-06-21T15:00:00+02:00</lastmod>
-  </url><url>
     <loc>https://ronaldbosma.github.io/tags/bicep/</loc>
-    <lastmod>2024-06-21T15:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/infra-as-code/</loc>
     <lastmod>2024-06-21T15:00:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function/</loc>
@@ -37,9 +46,6 @@
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/</loc>
     <lastmod>2024-06-05T08:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/api-management/</loc>
-    <lastmod>2024-05-24T10:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/client-certificates/</loc>
     <lastmod>2024-05-24T10:15:00+02:00</lastmod>

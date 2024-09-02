@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Validate API Management policies with PSRule | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/cover.png"/>
+<meta name="twitter:title" content="Validate API Management policies with PSRule"/>
+<meta name="twitter:description" content="I&rsquo;ve been working with Azure API Management for a while now, and one of the challenges I&rsquo;ve faced is finding a reliable way to validate the XML policies I write. While tools like SonarQube are excellent for code quality checks, they don&rsquo;t support the specific checks required for Azure API Management policies. In this blog post, I&rsquo;ll demonstrate how to use PSRule to validate your Azure API Management policies effectively."/>
+
+	<meta property="og:title" content="Validate API Management policies with PSRule" />
+<meta property="og:description" content="I&rsquo;ve been working with Azure API Management for a while now, and one of the challenges I&rsquo;ve faced is finding a reliable way to validate the XML policies I write. While tools like SonarQube are excellent for code quality checks, they don&rsquo;t support the specific checks required for Azure API Management policies. In this blog post, I&rsquo;ll demonstrate how to use PSRule to validate your Azure API Management policies effectively." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2024-09-02T19:30:00+02:00" />
+<meta property="article:modified_time" content="2024-09-02T19:30:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Validate%20API%20Management%20policies%20with%20PSRule&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f09%2f02%2fvalidate-api-management-policies-with-psrule%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f09%2f02%2fvalidate-api-management-policies-with-psrule%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f09%2f02%2fvalidate-api-management-policies-with-psrule%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Sep 2, 2024
+                                    <i class="far fa-clock clock"></i>
+                                    22 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Validate API Management policies with PSRule</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working with Azure API Management for a while now, and one of the challenges I&rsquo;ve faced is finding a reliable way to validate the XML policies I write. When working with .NET, tools like SonarQube are available for code quality checks, but these tools don&rsquo;t support the specific checks I want to perform on the policies used in Azure API Management.</p>
+<p>After some searching, I discovered <a href="https://microsoft.github.io/PSRule">PSRule</a>—a cross-platform PowerShell module designed to validate infrastructure as code (IaC) files and objects using PowerShell rules. PSRule was created by Bernie White and is hosted on Microsoft&rsquo;s GitHub account <a href="https://github.com/microsoft/PSRule">here</a>. It&rsquo;s also integrated into <a href="https://learn.microsoft.com/en-us/azure/defender-for-cloud/iac-vulnerabilities#view-details-and-remediation-information-for-applied-iac-rules">Microsoft Defender for Cloud</a> as part of Template Analyzer.</p>
+<p>In this blog post, I&rsquo;ll demonstrate how to use PSRule to validate your Azure API Management policies.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#import-policies-using-convention">Import policies using convention</a></li>
+<li><a href="#implement-first-rule-inbound-section-should-start-with-base-policy">Implement first rule: inbound section should start with base policy</a></li>
+<li><a href="#filter-on-scope">Filter on scope</a></li>
+<li><a href="#more-rules">More rules</a>
+<ul>
+<li><a href="#policy-files-should-specify-the-scope">Policy files should specify the scope</a></li>
+<li><a href="#the-subscription-key-header-is-removed">The subscription key header is removed</a></li>
+<li><a href="#a-backend-entity-is-used">A backend entity is used</a></li>
+</ul>
+</li>
+<li><a href="#handle-invalid-xml-syntax">Handle invalid XML syntax</a></li>
+<li><a href="#suppressions">Suppressions</a></li>
+<li><a href="#psrule-for-azure">PSRule for Azure</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="requirements">Requirements</h3>
+<p>I usually use <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep">Bicep</a> to deploy my policies. While it&rsquo;s possible to specify policies directly within a Bicep file, I prefer to store them in separate files. This approach makes the policies easier to manage and maintain. I typically use the <code>.cshtml</code> file extension for these policy files, as it enables IntelliSense for policies when using the <a href="https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-apimanagement">Azure API Management for VS Code</a> extension. So, PSRule will need to recognize these <code>.cshtml</code> files as API Management policies.</p>
+<p>As you may know, policies in API Management can be applied at different <a href="https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-policies#scopes">scopes</a>. We&rsquo;ll be creating several custom rules, some of which will apply to all scopes, while others will be specific to certain scopes. Since the policies themselves don&rsquo;t indicate their scope, we&rsquo;ll use the file names to determine this. For example, a file named <code>test.api.cshtml</code> will apply to the API scope, while a file named <code>test.operation.cshtml</code> will apply to the operation scope.</p>
+<p>We&rsquo;ll create the following custom rules:</p>
+<ol>
+<li>The inbound section should always start with a <code>base</code> policy to ensure that critical logic, such as security checks, is applied first. This rule should apply to all scopes except for the global scope and policy fragments.</li>
+<li>Files with the <code>.cshtml</code> extension should follow the naming convention and specify the scope.</li>
+<li>The subscription key header (<code>Ocp-Apim-Subscription-Key</code>) should be removed in the inbound section of the global policy to prevent it from being forwarded to the backend.</li>
+<li>The <code>set-backend-service</code> policy should use a backend entity (by setting the <code>backend-id</code> attribute) to make the backend configuration reusable and easier to maintain.</li>
+<li>Files containing API Management policies should have valid XML syntax.</li>
+</ol>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>Follow the instructions on <a href="https://microsoft.github.io/PSRule/v2/install/">Install PSRule</a> to install PSRule. Please note that this blog post is written using version <code>2.9.0</code> of PSRule.</p>
+<p>We&rsquo;ll also need some sample policies to test our rules against. You can download them <a href="https://github.com/ronaldbosma/blog-code-examples/raw/master/validate-apim-policies-with-psrule/start-sample-policies.zip">here</a>.</p>
+<p>To get started, create a new root folder and unzip the sample policies into this folder. After unzipping, your folder structure should look like this:</p>
+<pre tabindex="0"><code>/your-root
+    /src
+        /good
+            global.cshtml
+            good.api.cshtml
+        /bad
+            global.cshtml
+            bad.api.cshtml
+</code></pre><p>Examine the different policy files provided. The files located in the <code>good</code> folder conform to the rules that we will establish, while those in the <code>bad</code> folder do not.</p>
+<h3 id="import-policies-using-convention">Import policies using convention</h3>
+<p>At this moment in time, PSRule doesn&rsquo;t support loading XML files out-of-the-box. I&rsquo;ve created an issue for this on Github, which can be found <a href="https://github.com/microsoft/PSRule/issues/1537">here</a>. Luckily, PSRule is extensible, and Bernie White, the creator of PSRule, has provided a sample in my issue that we can use to load XML files. It uses a <a href="https://microsoft.github.io/PSRule/stable/concepts/PSRule/en-US/about_PSRule_Conventions/">convention</a>.</p>
+<p>Conventions, rules and other PSRule relates files are commonly stored in a <code>.ps-rule</code> folder in the root of your repository as described <a href="https://microsoft.github.io/PSRule/v2/authoring/storing-rules/">here</a>. You can create this folder in your root.</p>
+<p>Inside the <code>.ps-rule</code> folder, create a file named <code>APIM.Policy.Conventions.Rule.ps1</code> (<em>the <code>.Rule.ps1</code> extension is required for PSRule to recognize the file</em>). Add the following code to the file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: Imports the APIM XML policy file for analysis. File names should match: *.cshtml</span>
+Export-PSRuleConvention <span style="color:#e6db74">&#34;APIM.Policy.Conventions.Import&#34;</span> -Initialize {
+
+    $policies = @()
+    $policyFiles = Get-ChildItem -Path <span style="color:#e6db74">&#34;.&#34;</span> -Include <span style="color:#e6db74">&#34;*.cshtml&#34;</span> -Recurse <span style="color:#f92672">-File</span>
+
+    <span style="color:#66d9ef">foreach</span> ($policyFile <span style="color:#66d9ef">in</span> $policyFiles) {
+        <span style="color:#75715e"># Use the relative path of the file as the object name, this makes it easier to e.g. apply suppressions.</span>
+        <span style="color:#75715e"># Also replace backslashes with forward slashes, so the path doesn&#39;t differ between Windows and Linux.</span>
+        <span style="color:#75715e"># Example: ./src/my.api.cshtml</span>
+        $name = ($policyFile.FullName | Resolve-Path -Relative).Replace(<span style="color:#e6db74">&#39;\&#39;</span>, <span style="color:#e6db74">&#39;/&#39;</span>)
+
+        $policies += <span style="color:#66d9ef">[PSCustomObject]</span>@{
+            Name = $name
+            Content = <span style="color:#66d9ef">[Xml]</span>(Get-Content -Path $policyFile.FullName -Raw)
+        }
+    }
+
+    $PSRule.ImportWithType(<span style="color:#e6db74">&#34;APIM.Policy&#34;</span>, $policies);
+}
+</code></pre></div><p>This convention will select all files with the <code>.cshtml</code> extension and create a custom object containing the file&rsquo;s name and its XML content.</p>
+<p>The object&rsquo;s name is used by PSRule to identify it in the output and suppressions. I recommend using the relative path for the name, as it simplifies management. Additionally, any <code>\</code> in the path is replaced with <code>/</code> to ensure consistency across different platforms.</p>
+<p>At the end of the convention, the policies are imported with the <code>APIM.Policy</code> type. We&rsquo;ll use this type to ensure our rules apply only to API Management policies and not to other file types or objects.</p>
+<p>The final step is to include the convention in the PSRule configuration. Create a file named <code>ps-rule.yml</code> inside the <code>.ps-rule</code> folder and add the following content:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">binding</span>:
+  <span style="color:#f92672">preferTargetInfo</span>: <span style="color:#66d9ef">true</span> <span style="color:#75715e"># This will make sure the specified target type is used for the APIM Policies</span>
+  
+<span style="color:#75715e"># Include the APIM policy convention to load the policy XML files</span>
+<span style="color:#f92672">convention</span>:
+  <span style="color:#f92672">include</span>:
+  - <span style="color:#e6db74">&#39;APIM.Policy.Conventions.Import&#39;</span>
+</code></pre></div><p>Setting <code>preferTargetInfo</code> to <code>true</code> ensures that PSRule uses the <code>APIM.Policy</code> type for our policies. The convention <code>APIM.Policy.Conventions.Import</code> is included to actually import the policies.</p>
+<h3 id="implement-first-rule-inbound-section-should-start-with-base-policy">Implement first rule: inbound section should start with base policy</h3>
+<p>If you execute PSRule from the root folder now using the following command, you will receive the message <code>WARNING: Could not find a matching rule. Please check that Path, Name and Tag parameters are correct</code> because we haven&rsquo;t created any rules yet.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Invoke-PSRule -InputPath <span style="color:#e6db74">&#34;.\src\&#34;</span> -Option <span style="color:#e6db74">&#34;.\.ps-rule\ps-rule.yaml&#34;</span>
+</code></pre></div><p>Let&rsquo;s start with the first rule:</p>
+<p><em>The inbound section should always start with a <code>base</code> policy to ensure that critical logic, such as security checks, is applied first. This rule should apply to all scopes except for the global scope and policy fragments.</em></p>
+<p>Create a new file named <code>APIM.Policy.Rule.ps1</code> in the <code>.ps-rule</code> folder and add the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: The first policy inside the inbound section should be the base policy to make sure important logic like security checks are applied first.</span>
+Rule <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span> -Type <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> {
+    $policy = $TargetObject.Content.DocumentElement
+    
+    $Assert.HasField($policy, <span style="color:#e6db74">&#34;inbound&#34;</span>)
+    $Assert.HasField($policy.inbound, <span style="color:#e6db74">&#34;base&#34;</span>)
+    $Assert.HasFieldValue($policy, <span style="color:#e6db74">&#34;inbound.FirstChild.Name&#34;</span>, <span style="color:#e6db74">&#34;base&#34;</span>)
+}
+</code></pre></div><p>The <a href="https://microsoft.github.io/PSRule/v2/concepts/PSRule/en-US/about_PSRule_Rules/">Rule</a> keyword is used to define a new rule named <code>APIM.Policy.InboundBasePolicy</code>. This rule applies to the <code>APIM.Policy</code> type specified in our convention. This ensures that the rule is only executed on API Management policies, while other files and objects are ignored.</p>
+<p>The <code>Synopsis</code> comment provides a brief description of the rule and appears in the PSRule output to describe its purpose. More information on documenting rules can be found <a href="https://microsoft.github.io/PSRule/v2/concepts/PSRule/en-US/about_PSRule_Docs/">here</a>.</p>
+<p>The <a href="https://microsoft.github.io/PSRule/v2/concepts/PSRule/en-US/about_PSRule_Variables/#targetobject">$TargetObject</a> represents the object processed by the rule. In this case, it refers to the custom object created in the convention for each <code>.cshtml</code> file. The <code>Content</code> property contains the XML content of the policy file and is of type <a href="https://learn.microsoft.com/en-us/dotnet/api/system.xml.xmldocument?view=net-8.0">XmlDocument</a>.</p>
+<p>Using various <a href="https://microsoft.github.io/PSRule/v2/concepts/PSRule/en-US/about_PSRule_Assert/">assertion methods</a> provided by PSRule, we check that the inbound section exists, that the base policy is present within the inbound section, and that it is the first policy in that section.</p>
+<p>When you run PSRule again, the output should look similar to this:</p>
+<p><img src="../../../../../images/validate-apim-policies-with-psrule/output-inboundbasepolicy-1.png" alt="Output"></p>
+<p>As shown, the rule was executed on all policy files. Only the <code>good.api.cshtml</code> file conforms to the rule and passes, while all other files fail the rule.</p>
+<p>Although the <code>.cshtml</code> files are processed, you might see warnings from PSRule indicating that no matching rules were found. This is likely because we are importing these files using a custom convention. To suppress warnings, add the following to the end of the <code>ps-rule.yaml</code> configuration file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">execution</span>:
+  <span style="color:#75715e"># Ignore warnings for resources and objects that don&#39;t have any rules.</span>
+  <span style="color:#f92672">unprocessedObject</span>: <span style="color:#ae81ff">Ignore</span>
+  <span style="color:#f92672">ruleSuppressed</span>: <span style="color:#ae81ff">Ignore</span>
+</code></pre></div><h3 id="filter-on-scope">Filter on scope</h3>
+<p>The <code>APIM.Policy.InboundBasePolicy</code> rule should have been skipped for the two global policy files because the <code>base</code> policy cannot be used at the global scope, as there is no higher level. We can add a filter to the rule to exclude the global scope, but first, we need to determine the scope of the policy during the import.</p>
+<p>Open <code>APIM.Policy.Conventions.Rule.ps1</code> and replace its contents with the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: Imports the APIM XML policy file for analysis. File names should match: *.cshtml</span>
+Export-PSRuleConvention <span style="color:#e6db74">&#34;APIM.Policy.Conventions.Import&#34;</span> -Initialize {
+
+    $policies = @()
+    $policyFiles = Get-ChildItem -Path <span style="color:#e6db74">&#34;.&#34;</span> -Include <span style="color:#e6db74">&#34;*.cshtml&#34;</span> -Recurse <span style="color:#f92672">-File</span>
+
+    <span style="color:#66d9ef">foreach</span> ($policyFile <span style="color:#66d9ef">in</span> $policyFiles) {
+        <span style="color:#75715e"># Use the relative path of the file as the object name, this makes it easier to e.g. apply suppressions.</span>
+        <span style="color:#75715e"># Also replace backslashes with forward slashes, so the path doesn&#39;t differ between Windows and Linux.</span>
+        <span style="color:#75715e"># Example: ./src/my.api.cshtml</span>
+        $name = ($policyFile.FullName | Resolve-Path -Relative).Replace(<span style="color:#e6db74">&#39;\&#39;</span>, <span style="color:#e6db74">&#39;/&#39;</span>)
+
+        <span style="color:#75715e"># Determine the scope of the policy based on the file name.</span>
+        $scope = $null
+        <span style="color:#66d9ef">if</span> ($policyFile.Name <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;global.cshtml&#34;</span>) { $scope = <span style="color:#e6db74">&#34;Global&#34;</span> }
+        <span style="color:#66d9ef">elseif</span> ($policyFile.Name.EndsWith(<span style="color:#e6db74">&#34;.workspace.cshtml&#34;</span>)) { $scope = <span style="color:#e6db74">&#34;Workspace&#34;</span> }
+        <span style="color:#66d9ef">elseif</span> ($policyFile.Name.EndsWith(<span style="color:#e6db74">&#34;.product.cshtml&#34;</span>)) { $scope = <span style="color:#e6db74">&#34;Product&#34;</span> }
+        <span style="color:#66d9ef">elseif</span> ($policyFile.Name.EndsWith(<span style="color:#e6db74">&#34;.api.cshtml&#34;</span>)) { $scope = <span style="color:#e6db74">&#34;API&#34;</span> }
+        <span style="color:#66d9ef">elseif</span> ($policyFile.Name.EndsWith(<span style="color:#e6db74">&#34;.operation.cshtml&#34;</span>)) { $scope = <span style="color:#e6db74">&#34;Operation&#34;</span> }
+        <span style="color:#66d9ef">elseif</span> ($policyFile.Name.EndsWith(<span style="color:#e6db74">&#34;.fragment.cshtml&#34;</span>)) { $scope = <span style="color:#e6db74">&#34;Fragment&#34;</span> }
+
+        <span style="color:#75715e"># Only create a policy object to analyse if the scope is recognized.</span>
+        <span style="color:#66d9ef">if</span> ($null <span style="color:#f92672">-ne</span> $scope) {
+            $policies += <span style="color:#66d9ef">[PSCustomObject]</span>@{
+                Name = $name
+                Scope = $scope
+                Content = <span style="color:#66d9ef">[Xml]</span>(Get-Content -Path $policyFile.FullName -Raw)
+            }
+        }
+    }
+
+    $PSRule.ImportWithType(<span style="color:#e6db74">&#34;APIM.Policy&#34;</span>, $policies);
+}
+</code></pre></div><p>We determine the scope of the policy based on the file name and store it in the <code>Scope</code> property of the custom object. If the scope cannot be determined, no object is created. <em>(In the next section, we will create another rule to ensure that all <code>.cshtml</code> files have a valid scope.)</em></p>
+<p>Now, we can add a filter to the <code>APIM.Policy.InboundBasePolicy</code> rule to exclude the global scope and policy fragments. Open <code>APIM.Policy.Rule.ps1</code> and replace its contents with the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: The first policy inside the inbound section should be the base policy... to make sure important logic like security checks are applied first.</span>
+Rule <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span> `
+    -If { $TargetObject.Scope <span style="color:#f92672">-ne</span> <span style="color:#e6db74">&#34;Global&#34;</span> <span style="color:#f92672">-and</span> $TargetObject.Scope <span style="color:#f92672">-ne</span> <span style="color:#e6db74">&#34;Fragment&#34;</span> } `
+    -Type <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> `
+{
+    $policy = $TargetObject.Content.DocumentElement
+    
+    $Assert.HasField($policy, <span style="color:#e6db74">&#34;inbound&#34;</span>)
+    $Assert.HasField($policy.inbound, <span style="color:#e6db74">&#34;base&#34;</span>)
+    $Assert.HasFieldValue($policy, <span style="color:#e6db74">&#34;inbound.FirstChild.Name&#34;</span>, <span style="color:#e6db74">&#34;base&#34;</span>)
+}
+</code></pre></div><p>The new <code>-If</code> parameter ensures that the rule is only executed if the scope is neither <code>Global</code> nor <code>Fragment</code>.</p>
+<p>Run PSRule again. The output should now display results only for the API-scoped files, as shown below:</p>
+<p><img src="../../../../../images/validate-apim-policies-with-psrule/output-inboundbasepolicy-2.png" alt="Output"></p>
+<p>And with that, our first rule is done.</p>
+<h3 id="more-rules">More rules</h3>
+<p>In this section, we&rsquo;ll create a couple more rules to further validate the API Management policies.</p>
+<h4 id="policy-files-should-specify-the-scope">Policy files should specify the scope</h4>
+<p>As mentioned in the previous section, we need to verify that each <code>.cshtml</code> file has a valid scope. To achieve this, we will create the following rule:</p>
+<p><em>Files with the <code>.cshtml</code> extension should follow the naming convention and specify the scope.</em></p>
+<p>First, create a new file that does not specify a scope in its name. Navigate to the <code>bad</code> folder, create a file named <code>unknown-scope.cshtml</code>, and add the following content: <code>&lt;policies/&gt;</code>. When you run PSRule, this file should be ignored because we haven&rsquo;t created a rule for it yet.</p>
+<p>Next, open <code>APIM.Policy.Rule.ps1</code> and add the following rule:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: APIM policy file name should specify the scope. The name should be global.cshtml or end with: .workspace.cshtml, .product.cshtml, .api.cshtml, .operation.cshtml, or .fragment.cshtml.</span>
+Rule <span style="color:#e6db74">&#34;APIM.Policy.FileExtension&#34;</span> -Type <span style="color:#e6db74">&#34;.cshtml&#34;</span> {
+    
+    $knownScope = $TargetObject.Name <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;global.cshtml&#34;</span> <span style="color:#f92672">-or</span> `
+                  $TargetObject.Name.EndsWith(<span style="color:#e6db74">&#34;.workspace.cshtml&#34;</span>) <span style="color:#f92672">-or</span> 
+                  $TargetObject.Name.EndsWith(<span style="color:#e6db74">&#34;.product.cshtml&#34;</span>) <span style="color:#f92672">-or</span> 
+                  $TargetObject.Name.EndsWith(<span style="color:#e6db74">&#34;.api.cshtml&#34;</span>) <span style="color:#f92672">-or</span> 
+                  $TargetObject.Name.EndsWith(<span style="color:#e6db74">&#34;.operation.cshtml&#34;</span>) <span style="color:#f92672">-or</span> 
+                  $TargetObject.Name.EndsWith(<span style="color:#e6db74">&#34;.fragment.cshtml&#34;</span>)
+
+    <span style="color:#66d9ef">if</span> ($knownScope) {
+        $Assert.Pass()
+    } <span style="color:#66d9ef">else</span> {
+        $Assert.Fail(<span style="color:#e6db74">&#34;Unknown API Management policy scope. Expected file name global.cshtml or name ending with: .workspace.cshtml, .product.cshtml, .api.cshtml, .operation.cshtml, or .fragment.cshtml&#34;</span>)
+    }
+}
+</code></pre></div><p>As you can see, the <code>-Type</code> parameter filters <code>.cshtml</code> files directly, unlike the previous rule, which filtered based on the <code>APIM.Policy</code> type. This rule is executed on all <code>.cshtml</code> files, even if our convention did not import them as <code>APIM.Policy</code> objects.</p>
+<p>The rule verifies if the file name specifies a valid scope. It passes if the file name is <code>global.cshtml</code> or ends with <code>.workspace.cshtml</code>, <code>.product.cshtml</code>, <code>.api.cshtml</code>, <code>.operation.cshtml</code>, or <code>.fragment.cshtml</code>. Otherwise, it fails.</p>
+<p>When you execute PSRule again, you should see that the <code>APIM.Policy.FileExtension</code> rule is applied to each <code>.cshtml</code> file. The <code>unknown-scope.cshtml</code> file should fail this rule.</p>
+<blockquote>
+<p>To output only the failures, add the <code>-Outcome Fail</code> parameter. If you are interested in the results of a specific rule, use the <code>-Name</code> parameter. For example: <code>-Name &quot;APIM.Policy.FileExtension&quot;</code>.</p>
+</blockquote>
+<h4 id="the-subscription-key-header-is-removed">The subscription key header is removed</h4>
+<p>One of the features of API Management is that it forwards all headers to the backend by default. While this is useful, it can also pose a security risk. For instance, the API Management subscription key header (<code>Ocp-Apim-Subscription-Key</code>) is forwarded to the backend, even though the backend usually doesn&rsquo;t need to know this key, especially when dealing with external backends. To mitigate this risk, we should remove this header in the inbound section of the global policy.</p>
+<p>We&rsquo;ll create the following rule to ensure this:</p>
+<p><em>The subscription key header (<code>Ocp-Apim-Subscription-Key</code>) should be removed in the inbound section of the global policy to prevent it from being forwarded to the backend.</em></p>
+<p>The rule should check that the following policy is present in the inbound section of the global policy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;set-header</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;Ocp-Apim-Subscription-Key&#34;</span> <span style="color:#a6e22e">exists-action=</span><span style="color:#e6db74">&#34;delete&#34;</span> <span style="color:#f92672">/&gt;</span>
+</code></pre></div><p>The sample <code>global.cshtml</code> files you&rsquo;ve downloaded already include this scenario, so we can proceed to create the new rule immediately. Open <code>APIM.Policy.Rule.ps1</code> and add the following rule:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: The subscription key header (Ocp-Apim-Subscription-Key) should be removed in the inbound section of the global policy to prevent it from being forwarded to the backend.</span>
+Rule <span style="color:#e6db74">&#34;APIM.Policy.RemoveSubscriptionKeyHeader&#34;</span> -If { $TargetObject.Scope <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;Global&#34;</span> } -Type <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> {
+    $policy = $TargetObject.Content.DocumentElement
+    
+    $Assert.HasField($policy, <span style="color:#e6db74">&#34;inbound&#34;</span>)
+    
+    <span style="color:#75715e"># Select all set-header policies that remove the Ocp-Apim-Subscription-Key header.</span>
+    <span style="color:#75715e"># We only check direct children of the inbound section, because the header should always be removed and not optionally (e.g. when it&#39;s nested in a choose.when).</span>
+    <span style="color:#75715e"># The expression is surround by @(...) because the result is a XmlElement if only one occurence is found, but we want an array.</span>
+    $removeSubscriptionKeyPolicies = @( $policy.inbound.ChildNodes | Where-Object { 
+        $_.LocalName <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;set-header&#34;</span> <span style="color:#f92672">-and</span> 
+        $_.name <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;Ocp-Apim-Subscription-Key&#34;</span> <span style="color:#f92672">-and</span> 
+        $_.<span style="color:#e6db74">&#34;exists-action&#34;</span> <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;delete&#34;</span> 
+    } )
+
+    <span style="color:#66d9ef">if</span> ($removeSubscriptionKeyPolicies.Count <span style="color:#f92672">-eq</span> 0) {
+        $Assert.Fail(<span style="color:#e6db74">&#34;Unable to find a set-header policy that removes the Ocp-Apim-Subscription-Key header as a direct child of the inbound section.&#34;</span>)
+    } <span style="color:#66d9ef">else</span> {
+        $Assert.Pass()
+    }
+}
+</code></pre></div><p>The rule is executed on every object of type <code>APIM.Policy</code> where the scope is <code>Global</code>. It checks the inbound section for a <code>set-header</code> policy that deletes the <code>Ocp-Apim-Subscription-Key</code> header. If this policy is present, the rule passes; otherwise, it fails.</p>
+<p>When you run PSRule again, you should see that the <code>APIM.Policy.RemoveSubscriptionKeyHeader</code> rule is applied to the <code>global.cshtml</code> files. The output should indicate that the rule passes for the <code>./src/good/global.cshtml</code> file and fails for the <code>./src/bad/global.cshtml</code> file.</p>
+<h4 id="a-backend-entity-is-used">A backend entity is used</h4>
+<p>In API Management, there are several methods to configure the backend service. I prefer creating a separate backend entity in API Management to manage the service URL and other settings, such as authentication. This approach makes the backend configuration reusable, easier to maintain, and it is also validated by various <a href="https://learn.microsoft.com/en-us/azure/api-management/policy-reference#azure-api-management">Azure Policies</a>.</p>
+<p>We&rsquo;ll introduce the following rule to validate the use of backend entities:</p>
+<p><em>The <code>set-backend-service</code> policy should use a backend entity (by setting the <code>backend-id</code> attribute) to make the backend configuration reusable and easier to maintain.</em></p>
+<p>Here are two samples of the <code>set-backend-service</code> policy: the first is valid, and the second is not:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;!-- Good --&gt;</span>
+<span style="color:#f92672">&lt;set-backend-service</span> <span style="color:#a6e22e">backend-id=</span><span style="color:#e6db74">&#34;test&#34;</span> <span style="color:#f92672">/&gt;</span>
+
+<span style="color:#75715e">&lt;!-- Bad --&gt;</span>
+<span style="color:#f92672">&lt;set-backend-service</span> <span style="color:#a6e22e">base-url=</span><span style="color:#e6db74">&#34;https://test.nl&#34;</span> <span style="color:#f92672">/&gt;</span>
+</code></pre></div><p>The sample <code>*.api.cshtml</code> files you&rsquo;ve downloaded already include this scenario, so we can proceed to create the new rule immediately. Open <code>APIM.Policy.Rule.ps1</code> and add the following rule:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: A set-backend-service policy should use a backend entity (by setting the backend-id attribute) so it&#39;s reusable and easier to maintain.</span>
+Rule <span style="color:#e6db74">&#34;APIM.Policy.UseBackendEntity&#34;</span> `
+    -If { $TargetObject.Content.DocumentElement.SelectNodes(<span style="color:#e6db74">&#34;.//*[local-name()=&#39;set-backend-service&#39;]&#34;</span>).Count <span style="color:#f92672">-ne</span> 0  } `
+    -Type <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> `
+{
+    $policy = $TargetObject.Content.DocumentElement
+
+    <span style="color:#75715e"># Select all set-backend-service policies</span>
+    $setBackendServicePolicies = $policy.SelectNodes(<span style="color:#e6db74">&#34;.//*[local-name()=&#39;set-backend-service&#39;]&#34;</span>)
+
+    <span style="color:#75715e"># Check that each set-backend-service policy has the backend-id attribute set</span>
+    <span style="color:#66d9ef">foreach</span> ($setBackendServicePolicy <span style="color:#66d9ef">in</span> $setBackendServicePolicies) {
+        $Assert.HasField($setBackendServicePolicy, <span style="color:#e6db74">&#34;backend-id&#34;</span>)
+    }
+}
+</code></pre></div><p>The rule is executed on every object of type <code>APIM.Policy</code>, regardless of the scope. To ensure the rule only applies to policy files containing a <code>set-backend-service</code> policy, we use the condition: <code>$TargetObject.Content.DocumentElement.SelectNodes(&quot;.//*[local-name()='set-backend-service']&quot;).Count -ne 0</code>. This condition performs an XPath query to find all <code>set-backend-service</code> policies in the XML content of the policy file.</p>
+<p>The rule itself checks that each <code>set-backend-service</code> policy includes the <code>backend-id</code> attribute. If this attribute is present, the rule passes; otherwise, it fails.</p>
+<p>When you run PSRule again, you should see the <code>APIM.Policy.UseBackendEntity</code> rule applied to all <code>.cshtml</code> files that include a <code>set-backend-service</code> policy. The output should show that the rule passes for files in the <code>good</code> folder and fails for those in the <code>bad</code> folder.</p>
+<h3 id="handle-invalid-xml-syntax">Handle invalid XML syntax</h3>
+<p>After creating a few rules, I decided to run them on an actual code base. However, I encountered an error indicating that the XML in at least one of the files was invalid. As a result, none of the rules for the <code>APIM.Policy</code> type were executed because the convention failed to import the policies. Only the <code>APIM.Policy.FileExtension</code> rule ran, as it is not dependent on the convention.</p>
+<p>The problem occurs because API Management accepts invalid XML when using policy expressions. Here are two examples to illustrate this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;!-- This will result in an error when loading the policy as XML, because of the use of &lt; and &gt; in the policy expression --&gt;</span>
+<span style="color:#f92672">&lt;set-body&gt;</span>@{
+    return context.Request.Body.As<span style="color:#f92672">&lt;string&gt;</span>();
+}<span style="color:#f92672">&lt;/set-body&gt;</span>
+
+
+<span style="color:#f92672">&lt;choose&gt;</span>
+    <span style="color:#75715e">&lt;!-- This will result in an error when loading the policy as XML, because of the use of &#34; inside the attribute value --&gt;</span>
+    <span style="color:#f92672">&lt;when</span> <span style="color:#a6e22e">condition=</span><span style="color:#e6db74">&#34;@(context.Response.StatusCode.ToString() == &#34;</span><span style="color:#960050;background-color:#1e0010">200&#34;)&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#75715e">&lt;!-- Do something --&gt;</span>
+    <span style="color:#f92672">&lt;/when&gt;</span>
+<span style="color:#f92672">&lt;/choose&gt;</span>
+</code></pre></div><p>The <code>set-body</code> snippet is invalid due to the <code>&lt;string&gt;</code> generic, which is interpreted as a start XML tag that lacks a closing tag. The second snippet is invalid because of the double quotes inside the <code>condition</code> attribute value. Even the examples in the official documentation contain invalid XML. See the <a href="https://learn.microsoft.com/en-us/azure/api-management/set-body-policy#examples">set-body policy examples</a>.</p>
+<p>The easiest way to ensure valid XML inside an element is to use <code>&lt;![CDATA[]]&gt;</code>. The first snippet would look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;set-body&gt;</span><span style="color:#75715e">&lt;![CDATA[@{
+</span><span style="color:#75715e">    return context.Request.Body.As&lt;string&gt;();
+</span><span style="color:#75715e">}]]&gt;</span><span style="color:#f92672">&lt;/set-body&gt;</span>
+</code></pre></div><p>I was initially concerned that API Management might not handle this syntax properly, but it does. The policy expression is executed as expected.</p>
+<p>For attribute values, there are a couple of solutions. You can surround the value with single quotes: <code>'{value}'</code>. When you upload the policy to API Management, it will automatically convert the single quotes to double quotes. Another solution is to use <code>&amp;quot;</code> within the attribute value. Here are two examples:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;choose&gt;</span>
+    <span style="color:#f92672">&lt;when</span> <span style="color:#a6e22e">condition=</span><span style="color:#e6db74">&#39;@(context.Response.StatusCode.ToString() == &#34;200&#34;)&#39;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#75715e">&lt;!-- Do something --&gt;</span>
+    <span style="color:#f92672">&lt;/when&gt;</span>
+    <span style="color:#f92672">&lt;when</span> <span style="color:#a6e22e">condition=</span><span style="color:#e6db74">&#34;@(context.Response.StatusCode.ToString() == &amp;quot;200&amp;quot;)&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#75715e">&lt;!-- Do something --&gt;</span>
+    <span style="color:#f92672">&lt;/when&gt;</span>
+<span style="color:#f92672">&lt;/choose&gt;</span>
+</code></pre></div><p>To test this yourself, download <a href="https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/validate-apim-policies-with-psrule/src/bad/invalid-xml-1.operation.cshtml">invalid-xml-1.operation.cshtml</a> and <a href="https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/validate-apim-policies-with-psrule/src/bad/invalid-xml-2.operation.cshtml">invalid-xml-2.operation.cshtml</a>, and place them in the <code>bad</code> folder.</p>
+<p>Also download <a href="https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/validate-apim-policies-with-psrule/src/good/good.operation.cshtml">good.operation.cshtml</a> and place it in the <code>good</code> folder. This file includes the suggested solutions for the invalid XML syntax.</p>
+<p>When you run PSRule again, you might initially think everything is working because you see output for the <code>APIM.Policy.FileExtension</code> rule. However, if you scroll to the top of the output, you&rsquo;ll find an error indicating that a policy file with invalid XML could not be loaded:</p>
+<pre tabindex="0"><code>Invoke-PSRule: Cannot convert value &quot;&lt;policies&gt;
+    &lt;inbound&gt;
+        &lt;base /&gt;
+        &lt;!-- This will result in an error when loading the policy as XML, because of the use of &lt; and &gt; in the policy expression --&gt;
+        &lt;set-body&gt;@{
+            return context.Request.Body.As&lt;string&gt;();
+        }&lt;/set-body&gt;
+    &lt;/inbound&gt;
+    ... TRUNCATED ...
+&lt;/policies&gt;&quot; to type &quot;System.Xml.XmlDocument&quot;. Error: &quot;The 'string' start tag on line 7 position 44 does not match the end tag of 'set-body'. Line 8, position 12.&quot;
+</code></pre><p>To handle policy files with invalid XML syntax gracefully, we need to adjust the convention. Additionally, we should report on files with invalid XML, as they won&rsquo;t be processed by the other rules. Open <code>APIM.Policy.Conventions.Rule.ps1</code> and replace its contents with the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: Imports the APIM XML policy file for analysis. File names should match: *.cshtml</span>
+Export-PSRuleConvention <span style="color:#e6db74">&#34;APIM.Policy.Conventions.Import&#34;</span> -Initialize {
+
+    $policies = @()
+    $policyFilesWithInvalidXml = @()
+
+    $policyFiles = Get-ChildItem -Path <span style="color:#e6db74">&#34;.&#34;</span> -Include <span style="color:#e6db74">&#34;*.cshtml&#34;</span> -Recurse <span style="color:#f92672">-File</span>
+
+    <span style="color:#66d9ef">foreach</span> ($policyFile <span style="color:#66d9ef">in</span> $policyFiles) {
+        <span style="color:#75715e"># Use the relative path of the file as the object name, this makes it easier to e.g. apply suppressions.</span>
+        <span style="color:#75715e"># Also replace backslashes with forward slashes, so the path doesn&#39;t differ between Windows and Linux.</span>
+        <span style="color:#75715e"># Example: ./src/my.api.cshtml</span>
+        $name = ($policyFile.FullName | Resolve-Path -Relative).Replace(<span style="color:#e6db74">&#39;\&#39;</span>, <span style="color:#e6db74">&#39;/&#39;</span>)
+
+        <span style="color:#75715e"># Determine the scope of the policy based on the file name.</span>
+        $scope = $null
+        <span style="color:#66d9ef">if</span> ($policyFile.Name <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;global.cshtml&#34;</span>) { $scope = <span style="color:#e6db74">&#34;Global&#34;</span> }
+        <span style="color:#66d9ef">elseif</span> ($policyFile.Name.EndsWith(<span style="color:#e6db74">&#34;.workspace.cshtml&#34;</span>)) { $scope = <span style="color:#e6db74">&#34;Workspace&#34;</span> }
+        <span style="color:#66d9ef">elseif</span> ($policyFile.Name.EndsWith(<span style="color:#e6db74">&#34;.product.cshtml&#34;</span>)) { $scope = <span style="color:#e6db74">&#34;Product&#34;</span> }
+        <span style="color:#66d9ef">elseif</span> ($policyFile.Name.EndsWith(<span style="color:#e6db74">&#34;.api.cshtml&#34;</span>)) { $scope = <span style="color:#e6db74">&#34;API&#34;</span> }
+        <span style="color:#66d9ef">elseif</span> ($policyFile.Name.EndsWith(<span style="color:#e6db74">&#34;.operation.cshtml&#34;</span>)) { $scope = <span style="color:#e6db74">&#34;Operation&#34;</span> }
+        <span style="color:#66d9ef">elseif</span> ($policyFile.Name.EndsWith(<span style="color:#e6db74">&#34;.fragment.cshtml&#34;</span>)) { $scope = <span style="color:#e6db74">&#34;Fragment&#34;</span> }
+
+        <span style="color:#75715e"># Only create a policy object to analyse if the scope is recognized.</span>
+        <span style="color:#75715e"># The &#39;APIM.Policy.FileExtension&#39; rule will report on unknown file extensions.</span>
+        <span style="color:#66d9ef">if</span> ($null <span style="color:#f92672">-ne</span> $scope) {
+            <span style="color:#66d9ef">try</span> {
+                $policies += <span style="color:#66d9ef">[PSCustomObject]</span>@{
+                    Name = $name
+                    Scope = $scope
+                    Content = <span style="color:#66d9ef">[Xml]</span>(Get-Content -Path $policyFile.FullName -Raw)
+                }
+            }
+            <span style="color:#66d9ef">catch</span> {
+                <span style="color:#75715e"># Add policy files with invalid XML to a separate list, so we can report them in a separate rule.</span>
+                <span style="color:#75715e"># By adding them as a different type, we don&#39;t have to exclude them from every APIM Policy rule that expects valid XML.</span>
+                $policyFilesWithInvalidXml += <span style="color:#66d9ef">[PSCustomObject]</span>@{
+                    Name = $name
+                    Error = $_.Exception.Message
+                }
+            }
+        }
+    }
+
+    $PSRule.ImportWithType(<span style="color:#e6db74">&#34;APIM.Policy&#34;</span>, $policies);
+    $PSRule.ImportWithType(<span style="color:#e6db74">&#34;APIM.PolicyWithInvalidXml&#34;</span>, $policyFilesWithInvalidXml);
+}
+</code></pre></div><p>This snippet includes several changes compared to the previous version:</p>
+<ol>
+<li>A new array called <code>$policyFilesWithInvalidXml</code> is created at the top. This array will hold the <code>.cshtml</code> files with invalid XML.</li>
+<li>The creation of the custom object has been placed inside a <code>try-catch</code> block. If the XML content of the policy file cannot be loaded, an exception is thrown. This exception is caught, and a new custom object is created with the file name and the exception message. This object is then added to the <code>$policyFilesWithInvalidXml</code> array.</li>
+<li>At the end, the files with invalid XML are imported as a new type <code>APIM.PolicyWithInvalidXml</code>.</li>
+</ol>
+<p>By importing files with invalid XML as a separate type, <code>APIM.PolicyWithInvalidXml</code>, we can apply the <code>-Type &quot;APIM.Policy&quot;</code> filter to our validation rules without worrying about invalid XML, making it easier to create new rules.</p>
+<p>To report on policy files with invalid XML, we&rsquo;ll create a new rule. Open <code>APIM.Policy.Rule.ps1</code> and add the following rule:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: A policy file should contain valid XML</span>
+Rule <span style="color:#e6db74">&#34;APIM.Policy.ValidXml&#34;</span> -Type <span style="color:#e6db74">&#34;APIM.Policy&#34;</span>, <span style="color:#e6db74">&#34;APIM.PolicyWithInvalidXml&#34;</span> {
+    <span style="color:#66d9ef">if</span> ($PSRule.TargetType <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;APIM.Policy&#34;</span>) {
+        $Assert.Pass()
+    } <span style="color:#66d9ef">else</span> {
+        $Assert.Fail($TargetObject.Error)
+    }
+}
+</code></pre></div><p>As you can see, the rule is executed for both <code>APIM.Policy</code> and <code>APIM.PolicyWithInvalidXml</code> types. When the type is <code>APIM.Policy</code>, it indicates that the XML content was loaded successfully, and the rule passes. On the other hand, if the type is <code>APIM.PolicyWithInvalidXml</code>, the rule fails and reports the error message as the reason.</p>
+<blockquote>
+<p>By filtering on both types, the <code>APIM.Policy.ValidXml</code> rule will report a <code>Pass</code> for policy files with valid XML, which I prefer. Alternatively, you can choose to only report on invalid XML by running the rule exclusively for the <code>APIM.PolicyWithInvalidXml</code> type and having it always fail.</p>
+</blockquote>
+<p>When you run PSRule again, you should see that all our custom rules are executed again. The <code>APIM.Policy.ValidXml</code> rule will fail for <code>invalid-xml-1.operation.cshtml</code> and <code>invalid-xml-2.operation.cshtml</code>, while succeeding for all other policy files.</p>
+<h3 id="suppressions">Suppressions</h3>
+<p>In some cases, you might not want to execute a rule for a specific policy file or folder. PSRule supports <a href="https://microsoft.github.io/PSRule/v2/concepts/PSRule/en-US/about_PSRule_Options/#suppression">suppressions</a> to help manage these scenarios.</p>
+<p>You can exclude an entire rule from the <code>ps-rule.yaml</code> configuration file. For example, to exclude the <code>APIM.Policy.FileExtension</code> rule for all <code>.cshtml</code> files, add the following configuration:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">rule</span>:
+  <span style="color:#f92672">exclude</span>:
+  <span style="color:#75715e"># Ignore the following rule for all resources</span>
+  - <span style="color:#ae81ff">APIM.Policy.FileExtension</span>
+</code></pre></div><p>Alternatively, you can suppress a rule for specific files. To exclude the <code>APIM.Policy.RemoveSubscriptionKeyHeader</code> rule for the <code>./src/bad/global.cshtml</code> file, add the following to the <code>ps-rule.yaml</code> configuration file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">suppression</span>:
+  <span style="color:#f92672">APIM.Policy.RemoveSubscriptionKeyHeader</span>:
+  - <span style="color:#e6db74">&#39;./src/bad/global.cshtml&#39;</span>
+</code></pre></div><p>You can create more complex suppressions using a <a href="https://microsoft.github.io/PSRule/v2/concepts/PSRule/en-US/about_PSRule_SuppressionGroups/">suppression group</a>. To set this up, add a file named <code>APIM.Policy.Suppressions.Rule.yaml</code> to the <code>.ps-rule</code> folder and include the following content:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+<span style="color:#75715e"># Synopsis: Suppress APIM policy rules for all files in the &#39;src/bad&#39; folder</span>
+<span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">github.com/microsoft/PSRule/v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">SuppressionGroup</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;SuppressAPIMPolicyRulesForFilesInBadFolder&#39;</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">rule</span>:
+  - <span style="color:#e6db74">&#39;APIM.Policy.FileExtension&#39;</span>
+  - <span style="color:#e6db74">&#39;APIM.Policy.InboundBasePolicy&#39;</span>
+  - <span style="color:#e6db74">&#39;APIM.Policy.UseBackendEntity&#39;</span>
+  - <span style="color:#e6db74">&#39;APIM.Policy.ValidXml&#39;</span>
+  <span style="color:#f92672">if</span>:
+    <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;.&#39;</span>
+    <span style="color:#f92672">contains</span>:
+    - <span style="color:#e6db74">&#39;src/bad/&#39;</span>
+</code></pre></div><p>This suppression group will suppress the <code>APIM.Policy.FileExtension</code>, <code>APIM.Policy.InboundBasePolicy</code>, <code>APIM.Policy.UseBackendEntity</code>, and <code>APIM.Policy.ValidXml</code> rules for all files in the <code>src/bad</code> folder.</p>
+<p>If you want to exclude rules based on a specific scope, you can use the following <code>if</code> condition:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">if</span>:
+  <span style="color:#f92672">field</span>: <span style="color:#e6db74">&#39;scope&#39;</span>
+  <span style="color:#f92672">equals</span>: <span style="color:#e6db74">&#39;Global&#39;</span>
+</code></pre></div><p>See <a href="https://microsoft.github.io/PSRule/v2/concepts/PSRule/en-US/about_PSRule_Expressions/">the documentation</a> for more examples of expressions you can use.</p>
+<h3 id="psrule-for-azure">PSRule for Azure</h3>
+<p>Microsoft has developed a module built on top of PSRule for validating Azure Infrastructure as Code resources, known as <a href="https://azure.github.io/PSRule.Rules.Azure/">PSRule for Azure</a>. This module includes a standard set of rules for various Azure resources. My colleague Caspar Eldermans has written a <a href="https://blogs.infosupport.com/validating-azure-bicep-templates-with-psrule/">blog post</a> about using this module for validating Azure Bicep templates.</p>
+<p>This module also includes several rules specifically for API Management policies. For instance, the <a href="https://azure.github.io/PSRule.Rules.Azure/en/rules/Azure.APIM.PolicyBase/">Azure.APIM.PolicyBase</a> rule ensures that each section of a policy contains a <code>base</code> policy. Here&rsquo;s the implementation of this rule:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: Base element for any policy element in a section should be configured.</span>
+Rule <span style="color:#e6db74">&#39;Azure.APIM.PolicyBase&#39;</span> -Ref <span style="color:#e6db74">&#39;AZR-000371&#39;</span> -Type <span style="color:#e6db74">&#39;Microsoft.ApiManagement/service&#39;</span>, <span style="color:#e6db74">&#39;Microsoft.ApiManagement/service/apis&#39;</span>, <span style="color:#e6db74">&#39;Microsoft.ApiManagement/service/apis/resolvers&#39;</span>, <span style="color:#e6db74">&#39;Microsoft.ApiManagement/service/apis/operations&#39;</span>, <span style="color:#e6db74">&#39;Microsoft.ApiManagement/service/apis/resolvers/policies&#39;</span>, <span style="color:#e6db74">&#39;Microsoft.ApiManagement/service/products/policies&#39;</span>, <span style="color:#e6db74">&#39;Microsoft.ApiManagement/service/apis/policies&#39;</span>,
+<span style="color:#e6db74">&#39;Microsoft.ApiManagement/service/apis/operations/policies&#39;</span> -If { $Null <span style="color:#f92672">-ne</span> (GetAPIMPolicyNode -Node <span style="color:#e6db74">&#39;policies&#39;</span> -IgnoreGlobal) } -Tag @{ release = <span style="color:#e6db74">&#39;GA&#39;</span>; ruleSet = <span style="color:#e6db74">&#39;2023_06&#39;</span>; <span style="color:#e6db74">&#39;Azure.WAF/pillar&#39;</span> = <span style="color:#e6db74">&#39;Security&#39;</span>; } {
+    $policies = GetAPIMPolicyNode -Node <span style="color:#e6db74">&#39;policies&#39;</span> -IgnoreGlobal
+    <span style="color:#66d9ef">foreach</span> ($policy <span style="color:#66d9ef">in</span> $policies) {
+        Write-Debug <span style="color:#e6db74">&#34;Got policy: </span>$($policy.OuterXml)<span style="color:#e6db74">&#34;</span>
+        
+        $Assert.HasField($policy.inbound, <span style="color:#e6db74">&#39;base&#39;</span>).PathPrefix(<span style="color:#e6db74">&#39;inbound&#39;</span>)
+        $Assert.HasField($policy.backend, <span style="color:#e6db74">&#39;base&#39;</span>).PathPrefix(<span style="color:#e6db74">&#39;backend&#39;</span>)
+        $Assert.HasField($policy.outbound, <span style="color:#e6db74">&#39;base&#39;</span>).PathPrefix(<span style="color:#e6db74">&#39;outbound&#39;</span>)
+        $Assert.HasField($policy.<span style="color:#e6db74">&#39;on-error&#39;</span>, <span style="color:#e6db74">&#39;base&#39;</span>).PathPrefix(<span style="color:#e6db74">&#39;on-error&#39;</span>)
+    }
+}
+</code></pre></div><p>The implementation of the rule is quite similar to the ones described in this post. However, the filtering is based on the resource type used in Bicep or ARM templates. The module has a <a href="https://github.com/Azure/PSRule.Rules.Azure/blob/main/src/PSRule.Rules.Azure/rules/Conventions.Rule.ps1">similar PSRule convention</a> to the one described here. Instead of loading an entire file, it splits the Bicep file or ARM template into separate objects, one for each resource, allowing for rules to be applied to specific resources.</p>
+<p>To create a custom rule for an API Management policy, you would apply the rule to resources that can have a policy and use the <code>GetAPIMPolicyNode</code> function to retrieve the policy XML content. This approach is similar to the rules we&rsquo;ve created so far and means that the rules we&rsquo;ve created for policy validation can also be implemented using the PSRule for Azure module.</p>
+<p>Some advantages of using PSRule for Azure are:</p>
+<ul>
+<li>Supports inline policies defined in Bicep files.</li>
+<li>Integrates well with Bicep and ARM templates.</li>
+</ul>
+<p>Some disadvantages are:</p>
+<ul>
+<li>May not work for ARM templates if policies are loaded from external files.</li>
+<li>Does not support other deployment tools like Terraform.</li>
+<li>Faces similar issues with invalid XML syntax as the solution described in this post.</li>
+</ul>
+<p>The choice between the approach described in this post and using PSRule for Azure depends on your specific needs. Note that you can also use the method outlined here to validate API Management policies and leverage PSRule for Azure for Bicep or ARM configurations.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>PSRule is a powerful tool for managing the quality of your Azure API Management policies. By creating custom rules, you can validate your policies against your own standards.</p>
+<p>You can find a fully working sample <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/validate-apim-policies-with-psrule">here</a>. The full sample includes a few additional rules and sample policies for further exploration. It also contains automated tests for each rule, which I will cover in the next blog post.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/infra-as-code">Infra as Code</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/psrule">PSRule</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/test-automation">Test Automation</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2024/07/17/reqnroll-parsable-value-retriever-and-comparer/">Reqnroll Parsable Value Retriever and Comparer &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
