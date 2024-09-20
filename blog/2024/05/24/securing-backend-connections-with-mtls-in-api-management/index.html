@@ -205,7 +205,7 @@ It uses the <code>az ad signed-in-user show</code> command to retrieve your id. 
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">https://&lt;your-apim-backend-instance&gt;.azure-api.net/internal-status-0123456789abcdef
 </code></pre></div><p>Calling the backend API Management instance should either return a 403 Forbidden response immediately or request a client certificate. This is because the backend requires mTLS.</p>
 <blockquote>
-<p>Take note that while the default health endpoint for a Consumption tier API Management instance is <code>/internal-status-0123456789abcdef</code>, it is <code>/status-0123456789abcdef</code> for other tiers.
+<p>Take note that while the default health endpoint for a Consumption tier API Management instance is <code>/internal-status-0123456789abcdef</code>, it is <code>/status-0123456789abcdef</code> for other tiers. 
 Also, if you&rsquo;re not using the Consumption tier, the default health endpoint will not require mTLS. Instead, you&rsquo;ll need to create your own API in the backend API Management instance that requires mTLS. See the post <a href="/blog/2024/02/02/validate-client-certificates-in-api-management/">Validate client certificates in API Management</a> in this series for more information.</p>
 </blockquote>
 <h3 id="add-api-and-backend-configuration">Add API and backend configuration</h3>
@@ -404,6 +404,14 @@ resource clientCertificateSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' 
                         </li>
                         
                         <li>
+                        <a href="/tags/apim-mtls">APIM mTLS</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
                         <a href="/tags/bicep">Bicep</a>
                         </li>
                         
@@ -461,6 +469,8 @@ resource clientCertificateSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' 
 			
 			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
 			
+			<a class="mt-1 mb-1" href="/tags/apim-mtls">apim-mtls</a>
+			
 			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
 			
 			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
@@ -472,6 +482,8 @@ resource clientCertificateSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' 
 			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
 			
 			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
 			
 			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
 			

@@ -27,6 +27,15 @@
     </item>
     
     <item>
+      <title>Azure Integration Services</title>
+      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
+      <pubDate>Mon, 02 Sep 2024 19:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Infra as Code</title>
       <link>https://ronaldbosma.github.io/tags/infra-as-code/</link>
       <pubDate>Mon, 02 Sep 2024 19:30:00 +0200</pubDate>
@@ -77,6 +86,15 @@
       <pubDate>Fri, 21 Jun 2024 15:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>APIM mTLS</title>
+      <link>https://ronaldbosma.github.io/tags/apim-mtls/</link>
+      <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/apim-mtls/</guid>
       <description></description>
     </item>
     

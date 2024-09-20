@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Azure Integration Services on Ronald&#39;s Blog</title>
+    <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
+    <description>Recent content in Azure Integration Services on Ronald&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Ronald Bosma - All rights reserved</copyright>
+    <lastBuildDate>Mon, 02 Sep 2024 19:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-integration-services/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Validate API Management policies with PSRule</title>
+      <link>https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/</link>
+      <pubDate>Mon, 02 Sep 2024 19:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/</guid>
+      <description>I&amp;rsquo;ve been working with Azure API Management for a while now, and one of the challenges I&amp;rsquo;ve faced is finding a reliable way to validate the XML policies I write. While tools like SonarQube are excellent for code quality checks, they don&amp;rsquo;t support the specific checks required for Azure API Management policies. In this blog post, I&amp;rsquo;ll demonstrate how to use PSRule to validate your Azure API Management policies effectively.</description>
+    </item>
+    
+    <item>
+      <title>Securing backend connections with mTLS in API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/</link>
+      <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/</guid>
+      <description>In this third post on working with client certificates in Azure API Management, we’ll focus on securing backend connections with mTLS. We’ll deploy two API Management instances. The first will serve as the backend and require a client certificate for authentication. The second will act as the client. We will call the client using TLS, and it will, in turn, connect to the backend using mTLS.</description>
+    </item>
+    
+    <item>
+      <title>Validate client certificates in API Management when it&#39;s behind an Application Gateway</title>
+      <link>https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/</link>
+      <pubDate>Mon, 19 Feb 2024 19:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/</guid>
+      <description>In this second post, we expand on the solution from the previous post. We&amp;rsquo;ll deploy API Management inside a virtual network, positioning it behind an application gateway. We&amp;rsquo;ll configure the application gateway with an mTLS listener to validate client certificates and forward them to API Management for further processing. This approach can also be used with other types of backends, such as an ASP.NET Web API.</description>
+    </item>
+    
+    <item>
+      <title>Validate client certificates in API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/</link>
+      <pubDate>Fri, 02 Feb 2024 11:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/</guid>
+      <description>This blog post is the start of a series on how to work with client certificates in Azure API Management to setup a mutual TLS (mTLS) connection. While Azure&amp;rsquo;s official documentation provides excellent guidance on setting up client certificates via the Azure Portal, we&amp;rsquo;ll dive into utilizing Bicep and the Azure CLI, to automate the process. In this first post, we&amp;rsquo;ll cover the basics of how to validate client certificates in API Management.</description>
+    </item>
+    
+  </channel>
+</rss>
