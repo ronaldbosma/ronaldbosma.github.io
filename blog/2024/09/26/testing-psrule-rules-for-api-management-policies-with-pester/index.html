@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Testing PSRule Rules for API Management Policies with Pester | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2024/09/26/testing-psrule-rules-for-api-management-policies-with-pester/cover.png"/>
+<meta name="twitter:title" content="Testing PSRule Rules for API Management Policies with Pester"/>
+<meta name="twitter:description" content="In my previous blog post, I demonstrated how to use PSRule to validate Azure API Management policies by defining several custom rules, each with specific logic. As a fan of Test Driven Development, I created these rules following a test-first approach. In this post, I’ll walk you through how to write automated tests for these PSRule rules using Pester, a popular testing framework for PowerShell."/>
+
+	<meta property="og:title" content="Testing PSRule Rules for API Management Policies with Pester" />
+<meta property="og:description" content="In my previous blog post, I demonstrated how to use PSRule to validate Azure API Management policies by defining several custom rules, each with specific logic. As a fan of Test Driven Development, I created these rules following a test-first approach. In this post, I’ll walk you through how to write automated tests for these PSRule rules using Pester, a popular testing framework for PowerShell." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/09/26/testing-psrule-rules-for-api-management-policies-with-pester/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/09/26/testing-psrule-rules-for-api-management-policies-with-pester/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2024-09-26T16:00:00+02:00" />
+<meta property="article:modified_time" content="2024-09-26T16:00:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Testing%20PSRule%20Rules%20for%20API%20Management%20Policies%20with%20Pester&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f09%2f26%2ftesting-psrule-rules-for-api-management-policies-with-pester%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f09%2f26%2ftesting-psrule-rules-for-api-management-policies-with-pester%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2024%2f09%2f26%2ftesting-psrule-rules-for-api-management-policies-with-pester%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Sep 26, 2024
+                                    <i class="far fa-clock clock"></i>
+                                    18 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Testing PSRule Rules for API Management Policies with Pester</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2024/09/26/testing-psrule-rules-for-api-management-policies-with-pester/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>In my previous blog post, <a href="/blog/2024/09/02/validate-api-management-policies-with-psrule/">Validate API Management Policies with PSRule</a>, I demonstrated how to use <a href="https://microsoft.github.io/PSRule">PSRule</a> to validate Azure API Management policies. We defined a PSRule convention along with several custom rules, each containing specific logic.</p>
+<p>As a fan of Test Driven Development (TDD), I created these rules following a test-first approach. In this post, I&rsquo;ll walk you through how to write automated tests for these PSRule rules using <a href="https://pester.dev/">Pester</a>, a popular testing and mocking framework for PowerShell.</p>
+<p>While a deep dive into Pester’s concepts is beyond the scope of this post, if you&rsquo;re new to the tool, I highly recommend checking out the <a href="https://pester.dev/docs/quick-start">Quick Start</a> guide in the official documentation.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#unit-tests-for-apimpolicyinboundbasepolicy">Unit Tests for APIM.Policy.InboundBasePolicy</a>
+<ul>
+<li><a href="#should-pass-if-base-policy-is-the-only-policy-in-the-inbound-section">Should pass if base policy is the only policy in the inbound section</a></li>
+<li><a href="#should-fail-if-the-inbound-section-is-missing">Should fail if the inbound section is missing</a></li>
+<li><a href="#should-fail-if-the-base-policy-is-missing-from-the-inbound-section">Should fail if the base policy is missing from the inbound section</a></li>
+<li><a href="#should-not-apply-to-global">Should not apply to global</a></li>
+<li><a href="#other-scenarios">Other scenarios</a></li>
+</ul>
+</li>
+<li><a href="#refactor-tests">Refactor tests</a>
+<ul>
+<li><a href="#policy-object-creation">Policy object creation</a></li>
+<li><a href="#execute-psrule">Execute PSRule</a></li>
+<li><a href="#assertions">Assertions</a></li>
+<li><a href="#update-tests">Update tests</a></li>
+</ul>
+</li>
+<li><a href="#test-convention">Test convention</a></li>
+<li><a href="#run-tests-in-azure-pipeline">Run tests in Azure pipeline</a></li>
+</ul>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>If you haven&rsquo;t installed PSRule yet, follow the instructions on the official <a href="https://microsoft.github.io/PSRule/v2/install/">Install PSRule</a> page. Please note that this blog post uses version <code>2.9.0</code> of PSRule.</p>
+<p>To install Pester, refer to the <a href="https://pester.dev/docs/introduction/installation">Installation and Update</a> guide. The sample tests in this post are based on Pester <code>v5</code>.</p>
+<p>You&rsquo;ll also need the rules, policies and related files from the previous blog post. You can download them <a href="https://github.com/ronaldbosma/blog-code-examples/raw/master/validate-apim-policies-with-psrule/start-testing-psrule-rules-for-apim-policies-with-pester.zip">here</a>. To get started, create a new folder and unzip the files into it. After extraction, your folder structure should look like this:</p>
+<pre tabindex="0"><code>/your-root
+    /.ps-rule
+        APIM.Policy.Conventions.Rule.ps1
+        APIM.Policy.Rule.ps1
+        APIM.Policy.Suppressions.Rule.yaml
+        ps-rule.yaml
+    /src
+        /bad
+            bad.api.cshtml
+            bad.fragment.cshtml
+            ...
+        /good
+            global.cshtml
+            good.api.cshtml
+            ...
+        /suppressed
+            global.cshtml
+            suppressed-unknown-scope.cshtml
+            ...
+</code></pre><p>Open a PowerShell terminal and run the following command to verify that the custom rules are executed correctly:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Invoke-PSRule -InputPath <span style="color:#e6db74">&#34;.\src\&#34;</span> -Option <span style="color:#e6db74">&#34;.\.ps-rule\ps-rule.yaml&#34;</span>
+</code></pre></div><p>You should see rules following the naming convention <code>APIM.Policy.*</code> being executed.</p>
+<h3 id="unit-tests-for-apimpolicyinboundbasepolicy">Unit Tests for APIM.Policy.InboundBasePolicy</h3>
+<p>In the previous blog post, we created a rule named <code>APIM.Policy.InboundBasePolicy</code>, which implements the following logic:</p>
+<p><em>The inbound section should always start with a <code>base</code> policy to ensure that critical logic, such as security checks, is applied first. This rule should apply to all scopes except for the global scope and policy fragments.</em></p>
+<p>This rule is implemented in the <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/.ps-rule/APIM.Policy.Rule.ps1">/.ps-rule/APIM.Policy.Rule.ps1</a> file and includes the following logic:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: The first policy inside the inbound section should be the base policy to make sure important logic like security checks are applied first.</span>
+Rule <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span> -If { $TargetObject.Scope <span style="color:#f92672">-ne</span> <span style="color:#e6db74">&#34;Global&#34;</span> <span style="color:#f92672">-and</span> $TargetObject.Scope <span style="color:#f92672">-ne</span> <span style="color:#e6db74">&#34;Fragment&#34;</span> } -Type <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> {
+    $policy = $TargetObject.Content.DocumentElement
+    
+    $Assert.HasField($policy, <span style="color:#e6db74">&#34;inbound&#34;</span>)
+    $Assert.HasField($policy.inbound, <span style="color:#e6db74">&#34;base&#34;</span>)
+    $Assert.HasFieldValue($policy, <span style="color:#e6db74">&#34;inbound.FirstChild.Name&#34;</span>, <span style="color:#e6db74">&#34;base&#34;</span>)
+}
+</code></pre></div><p>To ensure that the tests work, we&rsquo;ll simulate a Test Driven Development (TDD) approach. Locate the <code>APIM.Policy.InboundBasePolicy</code> rule in your <code>APIM.Policy.Rule.ps1</code> file and replace it with the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: The first policy inside the inbound section should be the base policy to make sure important logic like security checks are applied first.</span>
+Rule <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span> <span style="color:#75715e">&lt;#-If { $TargetObject.Scope -ne &#34;Global&#34; -and $TargetObject.Scope -ne &#34;Fragment&#34; }#&gt;</span> -Type <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> {
+    $policy = $TargetObject.Content.DocumentElement
+    
+    <span style="color:#75715e"># $Assert.Pass()</span>
+    <span style="color:#75715e"># $Assert.HasField($policy, &#34;inbound&#34;)</span>
+    <span style="color:#75715e"># $Assert.HasField($policy.inbound, &#34;base&#34;)</span>
+    <span style="color:#75715e"># $Assert.HasFieldValue($policy, &#34;inbound.FirstChild.Name&#34;, &#34;base&#34;)</span>
+}
+</code></pre></div><p>As you can see, we&rsquo;ve commented out the <code>-If</code> parameter to ensure that the rule always executes. We&rsquo;ve also commented out the assertions, so the rule will always fail but without providing a specific reason.</p>
+<p>Next, create a new <code>tests</code> folder in your root directory. Inside this folder, create a new file named <code>APIM.Policy.InboundBasePolicy.Tests.ps1</code>. Notice that the file name mirrors the rule name, with <code>.Tests</code> appended. While the rules themselves are bundled together in a single file, I prefer to create a separate test file for each rule. This makes it easier to find and maintain the tests.</p>
+<p>Now, add the following code to <code>APIM.Policy.InboundBasePolicy.Tests.ps1</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">BeforeAll {
+    <span style="color:#75715e"># Setup error handling</span>
+    $ErrorActionPreference = <span style="color:#e6db74">&#39;Stop&#39;</span>;
+    Set-StrictMode -Version latest;
+
+    <span style="color:#66d9ef">if</span> ($Env:SYSTEM_DEBUG <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#39;true&#39;</span>) {
+        $VerbosePreference = <span style="color:#e6db74">&#39;Continue&#39;</span>;
+    }
+}
+
+Describe <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span> {
+
+}
+</code></pre></div><p>This is the basic structure of a Pester test file that we&rsquo;ll use. In the <code>BeforeAll</code> section, we configure error handling and enable verbose logging. This block runs once before the tests are executed.</p>
+<p>The <code>Describe</code> block is used to group related tests. In this case, it groups all tests for the <code>APIM.Policy.InboundBasePolicy</code> rule.</p>
+<h4 id="should-pass-if-base-policy-is-the-only-policy-in-the-inbound-section">Should pass if base policy is the only policy in the inbound section</h4>
+<p>Let’s begin with the first scenario to test this rule:</p>
+<p><em>APIM.Policy.InboundBasePolicy should pass if base policy is the only policy in the inbound section</em></p>
+<p>Locate the <code>Describe</code> block and add the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">    It <span style="color:#e6db74">&#34;Should pass if base policy is the only policy in the inbound section&#34;</span> {
+        $policy = <span style="color:#66d9ef">[PSCustomObject]</span>@{
+            PSTypeName = <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> <span style="color:#75715e"># This is necessary for the -Type filter on a Rule to work</span>
+            Name = <span style="color:#e6db74">&#34;test.api.cshtml&#34;</span>
+            Scope = <span style="color:#e6db74">&#34;API&#34;</span>
+            Content = <span style="color:#66d9ef">[xml]</span><span style="color:#e6db74">@&#34;
+</span><span style="color:#e6db74">                &lt;policies&gt;
+</span><span style="color:#e6db74">                    &lt;inbound&gt;
+</span><span style="color:#e6db74">                        &lt;base /&gt;
+</span><span style="color:#e6db74">                    &lt;/inbound&gt;
+</span><span style="color:#e6db74">                &lt;/policies&gt;
+</span><span style="color:#e6db74">&#34;@</span>
+        } 
+
+        $result = Invoke-PSRule -InputObject $policy -Name <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span> -Path <span style="color:#e6db74">&#34;$PSScriptRoot/../.ps-rule&#34;</span> -Option <span style="color:#e6db74">&#34;$PSScriptRoot/../.ps-rule/ps-rule.yaml&#34;</span>
+
+        $result | Should <span style="color:#f92672">-not</span> -BeNullOrEmpty
+        $result.IsSuccess() | Should -Be $True
+    }
+</code></pre></div><p>As you can see, the <code>It</code> block is used to define a test, followed by the scenario name.</p>
+<p>The test begins by creating a custom object that represents an API-scoped policy. The structure of this object matches what we create in our <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/.ps-rule/APIM.Policy.Conventions.Rule.ps1">custom convention</a>. The <code>PSTypeName</code> property is important, because it&rsquo;s used by PSRule to determine the object&rsquo;s type when using the <code>-Type</code> filter on a rule. The policy XML is defined in the <code>Content</code> property, which, in this case, contains only an inbound section with a base policy.</p>
+<blockquote>
+<p>Note that you could also create a <code>.cshtml</code> file for each scenario and execute the rule against these files. However, I prefer to include the XML policy content directly in the test, as this allows me to see at a glance what the test does, without needing to open multiple files.</p>
+</blockquote>
+<p>Next, we execute PSRule on the custom object. Until now, we&rsquo;ve used the <code>-InputPath</code> parameter to analyze all files in a specific folder. By using the <code>-InputObject</code> parameter, we can run PSRule on a single object. The <code>-Name</code> parameter specifies the rule to execute, which is helpful since we have multiple rules defined and want to run only one. To load our custom rules, we use the <code>-Path</code> parameter to indicate the path to the <code>.ps-rule</code> folder and the <code>-Option</code> parameter for the PSRule configuration file.</p>
+<p>Finally, we assert that the result is not empty and that the rule passed. For more information on assertions, see the <a href="https://pester.dev/docs/assertions/">Pester documentation</a>.</p>
+<p>To execute the test with Pester, open a <strong>new</strong> terminal window, navigate to the <code>tests</code> folder, and run the following command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Invoke-Pester <span style="color:#e6db74">&#34;.\APIM.Policy.InboundBasePolicy.Tests.ps1&#34;</span>
+</code></pre></div><p>The test should fail and the output should resemble the following:</p>
+<p><img src="../../../../../images/testing-psrule-rules-for-apim-policies-with-pester/test-results-failure.png" alt="Test Results with Failure"></p>
+<blockquote>
+<p>If the test failed with an error message like <code>The resource '.\APIM.Policy.BackendBasePolicy' is using a duplicate resource identifier. A resource with the identifier '.\APIM.Policy.BackendBasePolicy' already exists. Each resource must have a unique name, ref, and aliases. See https://aka.ms/ps-rule/naming for guidance on naming within PSRule</code>, open a <strong>new</strong> terminal window, navigate to the <code>tests</code> folder, and run the command again. Sometimes, running PSRule and executing the tests from the same terminal can cause issues.</p>
+</blockquote>
+<p>The test failed with the reason <code>Expected $true, but got $false</code> because the rule failed, but we expected it to pass. To resolve this, locate the <code>APIM.Policy.InboundBasePolicy</code> rule in <code>APIM.Policy.Rule.ps1</code> and uncomment the <code>$Assert.Pass()</code> line.</p>
+<p>When you rerun the test, it should pass, and the output should resemble the following:</p>
+<p><img src="../../../../../images/testing-psrule-rules-for-apim-policies-with-pester/test-results-pass.png" alt="Test Results with Success"></p>
+<h4 id="should-fail-if-the-inbound-section-is-missing">Should fail if the inbound section is missing</h4>
+<p>Let’s implement a second test for the following scenario:</p>
+<p><em>APIM.Policy.InboundBasePolicy should fail if the inbound section is missing</em></p>
+<blockquote>
+<p>Note that when the inbound section is missing, API Management will automatically create it with the <code>base</code> policy included. However, I prefer to enforce that the inbound section, along with the <code>base</code> policy, is explicitly defined.</p>
+</blockquote>
+<p>Add the following test to the <code>Describe</code> block:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">It <span style="color:#e6db74">&#34;Should fail if the inbound section is missing&#34;</span> {
+    $policy = <span style="color:#66d9ef">[PSCustomObject]</span>@{
+        PSTypeName = <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> <span style="color:#75715e"># This is necessary for the -Type filter on a Rule to work</span>
+        Name = <span style="color:#e6db74">&#34;test.api.cshtml&#34;</span>
+        Scope = <span style="color:#e6db74">&#34;API&#34;</span>
+        Content = <span style="color:#66d9ef">[xml]</span><span style="color:#e6db74">&#34;&lt;policies&gt;&lt;/policies&gt;&#34;</span>
+    } 
+
+    $result = Invoke-PSRule -InputObject $policy -Name <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span> -Path <span style="color:#e6db74">&#34;$PSScriptRoot/../.ps-rule&#34;</span> -Option <span style="color:#e6db74">&#34;$PSScriptRoot/../.ps-rule/ps-rule.yaml&#34;</span>
+
+    $result | Should <span style="color:#f92672">-not</span> -BeNullOrEmpty
+    $result.IsSuccess() | Should -Be $False
+    $result.Reason.Length | Should -BeGreaterOrEqual 1
+    $result.Reason[0] | Should -BeLike <span style="color:#e6db74">&#34;*inbound*not exist*&#34;</span>
+}
+</code></pre></div><p>This test is similar to the first one, but the inbound section is missing, causing the policy to not comply with the rule. At the end of the test, we assert that the result is not empty, that the rule failed, and that the reason contains the expected message. By using the <code>-BeLike</code> assertion, we can leverage wildcards to match the message, making the test more robust against changes.</p>
+<p>When you run the tests, the new test should fail. To make it pass, remove <code>$Assert.Pass()</code> and uncomment <code>$Assert.HasField($policy, &quot;inbound&quot;)</code>.</p>
+<h4 id="should-fail-if-the-base-policy-is-missing-from-the-inbound-section">Should fail if the base policy is missing from the inbound section</h4>
+<p>Let&rsquo;s implement another test for the following scenario:</p>
+<p><em>APIM.Policy.InboundBasePolicy should fail if the base policy is missing from the inbound section</em></p>
+<p>Add the following test to the <code>Describe</code> block:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">    It <span style="color:#e6db74">&#34;Should fail if the base policy is missing from the inbound section&#34;</span> {
+        $policy = <span style="color:#66d9ef">[PSCustomObject]</span>@{
+            PSTypeName = <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> <span style="color:#75715e"># This is necessary for the -Type filter on a Rule to work</span>
+            Name = <span style="color:#e6db74">&#34;test.api.cshtml&#34;</span>
+            Scope = <span style="color:#e6db74">&#34;API&#34;</span>
+            Content = <span style="color:#66d9ef">[xml]</span><span style="color:#e6db74">@&#34;
+</span><span style="color:#e6db74">                &lt;policies&gt;
+</span><span style="color:#e6db74">                    &lt;inbound&gt;
+</span><span style="color:#e6db74">                        &lt;not-base /&gt;
+</span><span style="color:#e6db74">                    &lt;/inbound&gt;
+</span><span style="color:#e6db74">                &lt;/policies&gt;
+</span><span style="color:#e6db74">&#34;@</span>
+        } 
+
+        $result = Invoke-PSRule -InputObject $policy -Name <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span> -Path <span style="color:#e6db74">&#34;$PSScriptRoot/../.ps-rule&#34;</span> -Option <span style="color:#e6db74">&#34;$PSScriptRoot/../.ps-rule/ps-rule.yaml&#34;</span>
+
+        $result | Should <span style="color:#f92672">-not</span> -BeNullOrEmpty
+        $result.IsSuccess() | Should -Be $False
+        $result.Reason.Length | Should -BeGreaterOrEqual 1
+        $result.Reason[0] | Should -BeLike <span style="color:#e6db74">&#34;*base*not exist*&#34;</span>
+    }
+</code></pre></div><p>This test is again very similar to the previous one. The only differences are the XML policy content and the expected reason message.</p>
+<p>When you run the tests, the new test should fail. To make it pass, uncomment <code>$Assert.HasField($policy.inbound, &quot;base&quot;)</code>.</p>
+<h4 id="should-not-apply-to-global">Should not apply to global</h4>
+<p>Finally, let&rsquo;s implement a test for the following scenario:</p>
+<p><em>APIM.Policy.InboundBasePolicy should not apply to global</em></p>
+<p>Add the following test to the <code>Describe</code> block:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">It <span style="color:#e6db74">&#34;Should not apply to global&#34;</span> {
+    $policy = <span style="color:#66d9ef">[PSCustomObject]</span>@{
+        PSTypeName = <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> <span style="color:#75715e"># This is necessary for the -Type filter on a Rule to work</span>
+        Name = <span style="color:#e6db74">&#34;global.cshtml&#34;</span>
+        Scope = <span style="color:#e6db74">&#34;Global&#34;</span>
+        Content = <span style="color:#66d9ef">[xml]</span><span style="color:#e6db74">&#34;&lt;policies&gt;&lt;/policies&gt;&#34;</span>
+    } 
+
+    $result = Invoke-PSRule -InputObject $policy -Name <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span> -Path <span style="color:#e6db74">&#34;$PSScriptRoot/../.ps-rule&#34;</span> -Option <span style="color:#e6db74">&#34;$PSScriptRoot/../.ps-rule/ps-rule.yaml&#34;</span>
+
+    $result | Should -BeNull
+}
+</code></pre></div><p>This test is slightly different from the previous ones. On the custom object, the scope of the policy is set to <code>Global</code> and the name to <code>global.cshtml</code>. Since the rule should not be executed for this policy, we assert that the result is null.</p>
+<p>When you run the tests, the new test should fail. To make it pass, uncomment the if condition <code>-If { $TargetObject.Scope -ne &quot;Global&quot; -and $TargetObject.Scope -ne &quot;Fragment&quot; }</code> behind the rule name by removing the <code>&lt;#</code> and <code>#&gt;</code> characters.</p>
+<h4 id="other-scenarios">Other scenarios</h4>
+<p>The assertion <code>$Assert.HasFieldValue($policy, &quot;inbound.FirstChild.Name&quot;, &quot;base&quot;)</code> is still commented out in the rule, indicating that we are missing at least one scenario. If you look at the implementation of the rule, you&rsquo;ll see that there are additional scenarios that are useful to test. We could add tests for the following scenarios:</p>
+<ul>
+<li>Should pass if base policy is the first policy in the inbound section</li>
+<li>Should fail if base policy is NOT the first policy in the inbound section</li>
+<li>Should fail if the inbound section is empty</li>
+<li>Should apply to workspace</li>
+<li>Should apply to product</li>
+<li>Should apply to operation</li>
+<li>Should not apply to policy fragment</li>
+</ul>
+<p>Before we add these scenarios, we will first refactor the tests to make them more maintainable in the next section.</p>
+<h3 id="refactor-tests">Refactor tests</h3>
+<p>You might have noticed a lot of code duplication in each test. The creation of the custom object with the policy, the execution of PSRule and the assertions are all very similar. We can refactor this code into reusable functions.</p>
+<p>I&rsquo;ve placed the functions in a separate file called <code>Functions.ps1</code> in the <code>tests</code> folder. You can find the full implementation <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/tests/Functions.ps1">here</a>. I’ll highlight the most important parts in the following sections.</p>
+<h4 id="policy-object-creation">Policy object creation</h4>
+<p>The custom policy object has the same structure for all tests. Only the scope, name and XML content differ. Here is an example of the functions to create a global and API policy object:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#66d9ef">function</span> New-GlobalPolicy([<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span>=$true)]$Xml)
+{
+    <span style="color:#66d9ef">return</span> New-Policy -Scope <span style="color:#e6db74">&#34;Global&#34;</span> -Name <span style="color:#e6db74">&#34;global.cshtml&#34;</span> -Xml $Xml
+}
+
+<span style="color:#66d9ef">function</span> New-APIPolicy([<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span>=$true)]$Xml)
+{
+    <span style="color:#66d9ef">return</span> New-Policy -Scope <span style="color:#e6db74">&#34;API&#34;</span> -Name <span style="color:#e6db74">&#34;test.api.cshtml&#34;</span> -Xml $Xml
+}
+
+<span style="color:#66d9ef">function</span> New-Policy([<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span>=$true)]$Scope, [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span>=$true)]$Name, [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span>=$true)]$Xml)
+{
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">[PSCustomObject]</span>@{
+        PSTypeName = <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> <span style="color:#75715e"># This is necessary for the -Type filter on a Rule to work</span>
+        Name = $Name
+        Scope = $Scope
+        Content = <span style="color:#66d9ef">[xml]</span>$Xml
+    }
+}
+</code></pre></div><p>I&rsquo;ve created a generic function called <code>New-Policy</code> that creates a policy object with the correct structure. The other two functions are wrappers that create a policy object with the appropriate scope and name.</p>
+<h4 id="execute-psrule">Execute PSRule</h4>
+<p>When executing PSRule, the <code>-Path</code> and <code>-Option</code> parameters remain consistent. I&rsquo;ve created a function that executes PSRule with these parameters to avoid repetition in each test. Here is the function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#66d9ef">function</span> Invoke-CustomPSRule([<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span>=$true)]$InputObject, [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span>=$true)]$Rule)
+{
+    <span style="color:#75715e"># The Path should point to the directory containing the rule files, else they won&#39;t be loaded</span>
+    <span style="color:#75715e"># The Option should point to the PSRule configuration file, else the conventions won&#39;t be loaded</span>
+
+    <span style="color:#66d9ef">return</span> Invoke-PSRule -InputObject $InputObject -Name $Rule -Path <span style="color:#e6db74">&#34;$PSScriptRoot/../.ps-rule&#34;</span> -Option <span style="color:#e6db74">&#34;$PSScriptRoot/../.ps-rule/ps-rule.yaml&#34;</span>
+}
+</code></pre></div><h4 id="assertions">Assertions</h4>
+<p>Lastly, each set of assertions can be extracted into its own function. Here are the functions to assert whether a rule has failed:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#66d9ef">function</span> Assert-RuleFailedWithReason {
+    [<span style="color:#66d9ef">CmdletBinding</span>()]
+    <span style="color:#66d9ef">Param</span> (
+        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span>=$true, <span style="color:#66d9ef">ValueFromPipeline</span>)]<span style="color:#66d9ef">[PSRule.Rules.RuleRecord]</span>$RuleRecord, 
+        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span>=$true)]<span style="color:#66d9ef">[string]</span>$ExpectedReasonPattern
+    )
+    
+    $RuleRecord | Assert-RuleFailed
+    $RuleRecord.Reason[0] | Should -BeLike $ExpectedReasonPattern
+}
+
+<span style="color:#66d9ef">function</span> Assert-RuleFailed {
+    [<span style="color:#66d9ef">CmdletBinding</span>()]
+    <span style="color:#66d9ef">Param</span> (
+        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span>=$true, <span style="color:#66d9ef">ValueFromPipeline</span>)]<span style="color:#66d9ef">[PSRule.Rules.RuleRecord]</span>$RuleRecord
+    )
+    
+    $RuleRecord | Should <span style="color:#f92672">-not</span> -BeNullOrEmpty
+    $RuleRecord.IsSuccess() | Should -Be $False
+    $RuleRecord.Reason.Length | Should -BeGreaterOrEqual 1
+}
+</code></pre></div><p>As you can see, these functions perform assertions on the <code>RuleRecord</code> object, which is the result of the <code>Invoke-PSRule</code> function. The output can be piped directly to the assertion functions.</p>
+<h4 id="update-tests">Update tests</h4>
+<p>To use these functions in your tests, download <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/tests/Functions.ps1">Functions.ps1</a> and place it in the <code>tests</code> folder. Then, open <code>APIM.Policy.InboundBasePolicy.Tests.ps1</code> and add the following code to the end of the <code>BeforeAll</code> block to load the functions:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Load functions</span>
+. $PSScriptRoot/Functions.ps1
+</code></pre></div><p>With the functions in place, the tests can be refactored. For example, the test for the scenario <em>&ldquo;Should fail if the inbound section is missing&rdquo;</em> can be changed to the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">    It <span style="color:#e6db74">&#34;Should fail if the inbound section is missing&#34;</span> {
+        $policy = New-APIPolicy <span style="color:#e6db74">&#34;&lt;policies&gt;&lt;/policies&gt;&#34;</span>
+        $result = Invoke-CustomPSRule $policy <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span>
+        $result | Assert-RuleFailedWithReason -ExpectedReasonPattern <span style="color:#e6db74">&#34;*inbound*not exist*&#34;</span>
+    }
+</code></pre></div><p>The old test was 13 lines long, while the refactored implementation is only 5 lines. This makes it more readable and easier to maintain.</p>
+<p>You can find the final implementation of <code>APIM.Policy.InboundBasePolicy.Tests.ps1</code> with refactored tests and all scenarios <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/tests/APIM.Policy.InboundBasePolicy.Tests.ps1">here</a>. I&rsquo;ve also created tests for the other rules. For example, see <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/tests/APIM.Policy.UseBackendEntity.Tests.ps1">APIM.Policy.UseBackendEntity.Tests.ps1</a> and <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/tests/APIM.Policy.FileExtension.Tests.ps1">APIM.Policy.FileExtension.Tests.ps1</a>.</p>
+<h3 id="test-convention">Test convention</h3>
+<p>As I mentioned before, I prefer creating the custom object with the policy inside my tests instead of using separate policy files. However, there is a downside to this approach: our custom convention defined in <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/.ps-rule/APIM.Policy.Conventions.Rule.ps1">APIM.Policy.Conventions.Rule.ps1</a> is not covered by these tests.</p>
+<p>I attempted to use the <a href="https://microsoft.github.io/PSRule/v2/commands/PSRule/en-US/Get-PSRuleTarget/">Get-PSRuleTarget</a> cmdlet on the <code>src</code> folder to obtain a list of all <code>APIM.Policy</code> and <code>APIM.PolicyWithInvalidXml</code> types, but it only returns the <code>.cshtml</code> type.</p>
+<p>However, when you execute PSRule on the <code>src</code> folder, an array of results is returned containing information about the target type (e.g., <code>APIM.Policy</code> or <code>APIM.PolicyWithInvalidXml</code>) and the target object. In our case, this is the custom object created in the convention. So, I&rsquo;ve created tests that execute the rules on all policy files in <code>src</code>, as we would do in a real-world scenario, and then check whether the target type and object are correct.</p>
+<p>To create these tests, create a file called <code>APIM.Policy.Conventions.Import.Tests.ps1</code> in the <code>tests</code> folder and add the following code to it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">BeforeAll {
+    <span style="color:#75715e"># Setup error handling</span>
+    $ErrorActionPreference = <span style="color:#e6db74">&#39;Stop&#39;</span>;
+    Set-StrictMode -Version latest;
+
+    <span style="color:#66d9ef">if</span> ($Env:SYSTEM_DEBUG <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#39;true&#39;</span>) {
+        $VerbosePreference = <span style="color:#e6db74">&#39;Continue&#39;</span>;
+    }
+
+    <span style="color:#75715e"># Load functions</span>
+    . $PSScriptRoot/Functions.ps1
+
+
+    <span style="color:#75715e"># If you execute Invoke-PSRule from inside the test folder, no files will be analysed. So, we go up one level.</span>
+    Push-Location <span style="color:#e6db74">&#34;$PSScriptRoot/..&#34;</span>
+    <span style="color:#66d9ef">try</span> {
+        <span style="color:#75715e"># Note that I tried using https://microsoft.github.io/PSRule/v2/commands/PSRule/en-US/Get-PSRuleTarget/ to get the targets, </span>
+        <span style="color:#75715e"># but it didn&#39;t return the custom objects we created in the convention. So, I&#39;m using the PSRule analysis result instead.</span>
+        $result = Invoke-PSRule -InputPath <span style="color:#e6db74">&#34;./src/&#34;</span> -Option <span style="color:#e6db74">&#34;./.ps-rule/ps-rule.yaml&#34;</span>
+    }
+    <span style="color:#66d9ef">finally</span> {
+        Pop-Location
+    }
+}
+
+Describe <span style="color:#e6db74">&#34;APIM.Policy.Conventions.Import&#34;</span> {
+
+}
+</code></pre></div><p>Similar to the other test files, we set up error handling, verbose logging, and load the functions in the <code>BeforeAll</code> block. The difference here is that we also execute PSRule on the <code>src</code> folder. The result is stored in a variable that we can use in our tests.</p>
+<blockquote>
+<p>Note that we use <code>Push-Location</code> and <code>Pop-Location</code> to change the current location to the root folder and back. This is necessary because, otherwise, PSRule won&rsquo;t find any files to analyze.</p>
+</blockquote>
+<p>Now, let&rsquo;s add a test to check if policy files with valid XML are imported correctly as an object of type <code>APIM.Policy</code>. Add the following code to the <code>Describe</code> block:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">It <span style="color:#e6db74">&#34;should import policy files with valid XML as APIM.Policy&#34;</span> {
+    $expectedPolicyFiles = @(
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/bad/bad.api.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;API&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/bad/bad.fragment.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;Fragment&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/bad/bad.operation.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;Operation&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/bad/bad.product.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;Product&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/bad/bad.workspace.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;Workspace&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/bad/global.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;Global&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/good/global.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;Global&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/good/good.api.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;API&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/good/good.fragment.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;Fragment&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/good/good.operation.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;Operation&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/good/good.product.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;Product&#34;</span> },
+        <span style="color:#66d9ef">[PSCustomObject]</span>@{ Name = <span style="color:#e6db74">&#34;./src/good/good.workspace.cshtml&#34;</span>; Scope = <span style="color:#e6db74">&#34;Workspace&#34;</span> }
+    )
+
+    <span style="color:#75715e"># Get the actual policy files based on the PSRule result. </span>
+    <span style="color:#75715e"># The TargetObject holds the custom object we created in the convention.</span>
+    <span style="color:#75715e"># Because multiple rules can be applied to the same target, we need to get the unique policy files.</span>
+    $actualPolicyFiles = $result | Where-Object { $_.TargetType <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;APIM.Policy&#34;</span> } | Select-Object -ExpandProperty TargetObject | Get-Unique -AsString
+
+    <span style="color:#75715e"># Assert that the correct number of policy files were found</span>
+    $actualPolicyFiles.Length | Should -Be $expectedPolicyFiles.Length
+    
+    <span style="color:#66d9ef">foreach</span> ($expectedPolicyFile <span style="color:#66d9ef">in</span> $expectedPolicyFiles) {
+        <span style="color:#75715e"># Find the actual policy file with the same name</span>
+        $actualPolicyFile = $actualPolicyFiles | Where-Object { $_.Name <span style="color:#f92672">-eq</span> $expectedPolicyFile.Name }
+
+        <span style="color:#75715e"># Assert that the policy file exists and that it has the correct data</span>
+        $actualPolicyFile | Should <span style="color:#f92672">-Not</span> -BeNullOrEmpty -Because <span style="color:#e6db74">&#34;a policy file with name &#39;</span>$($expectedPolicyFile.Name)<span style="color:#e6db74">&#39; should exist&#34;</span>
+        $actualPolicyFile.Scope | Should -Be $expectedPolicyFile.Scope -Because <span style="color:#e6db74">&#34;the scope of the policy file &#39;</span>$($expectedPolicyFile.Name)<span style="color:#e6db74">&#39; should be &#39;</span>$($expectedPolicyFile.Scope)<span style="color:#e6db74">&#39;&#34;</span>
+        $actualPolicyFile.Content | Should -BeOfType <span style="color:#66d9ef">[xml]</span> -Because <span style="color:#e6db74">&#34;the content of the policy file &#39;</span>$($expectedPolicyFile.Name)<span style="color:#e6db74">&#39; should be of type &#39;xml&#39;&#34;</span>
+    }
+}
+</code></pre></div><p>First, we create an array of all the expected policy files. This array contains the name and expected scope of each policy file.</p>
+<blockquote>
+<p>Note that we do not include the policy files in the <code>/src/suppressed</code> folder. Although the convention will process them, PSRule will skip them because no rules are executed on them due to several suppressions that have been configured.</p>
+</blockquote>
+<p>Next, we take the analysis result from PSRule and filter out the results for the <code>APIM.Policy</code> target type. We then extract the target object from each result. Since multiple rules can be applied to the same target, we retrieve the unique policy files using <code>Get-Unique -AsString</code>.</p>
+<p>Lastly, we assert that the actual policy files match the expected policy files by checking the name and scope of each item. We also verify that the content of the actual policy file is of type <code>xml</code>.</p>
+<p>We can add a similar test for policy files with invalid XML by adding the following code to the <code>Describe</code> block:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">It <span style="color:#e6db74">&#34;should import policy files with invalid XML as APIM.PolicyWithInvalidXml&#34;</span> {
+    $expectedPolicyFiles = @(
+        <span style="color:#e6db74">&#34;./src/bad/invalid-xml-1.operation.cshtml&#34;</span>
+        <span style="color:#e6db74">&#34;./src/bad/invalid-xml-2.operation.cshtml&#34;</span>
+    )
+
+    <span style="color:#75715e"># Get the actual policy files based on the PSRule result. </span>
+    <span style="color:#75715e"># The TargetObject holds the custom object we created in the convention.</span>
+    <span style="color:#75715e"># Because multiple rules can be applied to the same target, we need to get the unique policy files.</span>
+    $actualPolicyFiles = $result | Where-Object { $_.TargetType <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;APIM.PolicyWithInvalidXml&#34;</span> } | Select-Object -ExpandProperty TargetObject | Get-Unique -AsString
+
+    <span style="color:#75715e"># Assert that the correct number of policy files with invalid XML were found</span>
+    $actualPolicyFiles.Length | Should -Be $expectedPolicyFiles.Length
+    
+    <span style="color:#66d9ef">foreach</span> ($expectedPolicyFile <span style="color:#66d9ef">in</span> $expectedPolicyFiles) {
+        <span style="color:#75715e"># Find the actual policy file with the same name</span>
+        $actualPolicyFile = $actualPolicyFiles | Where-Object { $_.Name <span style="color:#f92672">-eq</span> $expectedPolicyFile }
+
+        <span style="color:#75715e"># Assert that the policy file exists and that it has an error message set</span>
+        $actualPolicyFile | Should <span style="color:#f92672">-Not</span> -BeNullOrEmpty -Because <span style="color:#e6db74">&#34;a policy file with name &#39;$expectedPolicyFile&#39; should exist&#34;</span>
+        $actualPolicyFile.Error | Should <span style="color:#f92672">-Not</span> -BeNullOrEmpty -Because <span style="color:#e6db74">&#34;the policy file &#39;$expectedPolicyFile&#39; should have an error message&#34;</span>
+    }
+}
+</code></pre></div><p>You can find the fully implemented <code>APIM.Policy.Conventions.Import.Tests.ps1</code> file <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/tests/APIM.Policy.Conventions.Import.Tests.ps1">here</a>.</p>
+<h3 id="run-tests-in-azure-pipeline">Run tests in Azure pipeline</h3>
+<p>With all tests in place, we can now create a pipeline to execute them. I’ve created an example pipeline that runs the tests in an Azure DevOps environment.</p>
+<p>Initially, I tried to use the <code>Pester</code> task from the <a href="https://marketplace.visualstudio.com/items?itemName=Pester.PesterRunner">Pester Test Runner</a> Azure DevOps extension. However, tests related to rules that should be skipped (e.g. for a specific scope) failed. It appears that the results from PSRule differ when using the task compared to running Pester with the PowerShell cmdlet.</p>
+<p>So instead, I chose to use a PowerShell script to execute the tests. This script is based on an example from the blog post <a href="https://www.logitblog.com/increase-the-success-rate-of-azure-devops-pipelines-using-pester/">Increase the success rate of Azure DevOps pipelines using Pester</a> by Ryan Ververs-Bijkerk. I’ve added additional logic to install both the PSRule and Pester modules. You can find the PowerShell script <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/tests/Invoke-PesterTests.ps1">here</a>.</p>
+<p>The pipeline executes the PowerShell script to run the tests and generate test results, which are then published. You can find the pipeline <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/validate-apim-policies-with-psrule/pipelines/pester-azure-pipelines.yml">here</a>.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Pester and PSRule are a great combination. By using a test driven approach, I found it much easier to create new rules and update existing ones. Testing the custom convention to load the API Management policy files was a bit more difficult, but I&rsquo;m happy to have found a practical workaround.</p>
+<p>You can find the combined sample of my <a href="/blog/2024/09/02/validate-api-management-policies-with-psrule/">previous posts</a> and this post <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/validate-apim-policies-with-psrule">here</a>.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/infra-as-code">Infra as Code</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/pester">Pester</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/psrule">PSRule</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/test-automation">Test Automation</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/">Validate API Management policies with PSRule &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/apim-mtls">apim-mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

@@ -7,11 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 02 Sep 2024 19:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 26 Sep 2024 16:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>API Management</title>
       <link>https://ronaldbosma.github.io/tags/api-management/</link>
-      <pubDate>Mon, 02 Sep 2024 19:30:00 +0200</pubDate>
+      <pubDate>Thu, 26 Sep 2024 16:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/api-management/</guid>
       <description></description>
@@ -20,7 +20,7 @@
     <item>
       <title>Azure</title>
       <link>https://ronaldbosma.github.io/tags/azure/</link>
-      <pubDate>Mon, 02 Sep 2024 19:30:00 +0200</pubDate>
+      <pubDate>Thu, 26 Sep 2024 16:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure/</guid>
       <description></description>
@@ -29,7 +29,7 @@
     <item>
       <title>Azure Integration Services</title>
       <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
-      <pubDate>Mon, 02 Sep 2024 19:30:00 +0200</pubDate>
+      <pubDate>Thu, 26 Sep 2024 16:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
       <description></description>
@@ -38,18 +38,36 @@
     <item>
       <title>Infra as Code</title>
       <link>https://ronaldbosma.github.io/tags/infra-as-code/</link>
-      <pubDate>Mon, 02 Sep 2024 19:30:00 +0200</pubDate>
+      <pubDate>Thu, 26 Sep 2024 16:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/infra-as-code/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>Pester</title>
+      <link>https://ronaldbosma.github.io/tags/pester/</link>
+      <pubDate>Thu, 26 Sep 2024 16:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/pester/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>PSRule</title>
       <link>https://ronaldbosma.github.io/tags/psrule/</link>
-      <pubDate>Mon, 02 Sep 2024 19:30:00 +0200</pubDate>
+      <pubDate>Thu, 26 Sep 2024 16:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/psrule/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Test Automation</title>
+      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
+      <pubDate>Thu, 26 Sep 2024 16:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
       <description></description>
     </item>
     
@@ -68,15 +86,6 @@
       <pubDate>Wed, 17 Jul 2024 08:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/specflow/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Test Automation</title>
-      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
-      <pubDate>Wed, 17 Jul 2024 08:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
       <description></description>
     </item>
     

@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 02 Sep 2024 19:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 26 Sep 2024 16:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Testing PSRule Rules for API Management Policies with Pester</title>
+      <link>https://ronaldbosma.github.io/blog/2024/09/26/testing-psrule-rules-for-api-management-policies-with-pester/</link>
+      <pubDate>Thu, 26 Sep 2024 16:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2024/09/26/testing-psrule-rules-for-api-management-policies-with-pester/</guid>
+      <description>In my previous blog post, I demonstrated how to use PSRule to validate Azure API Management policies by defining several custom rules, each with specific logic. As a fan of Test Driven Development, I created these rules following a test-first approach. In this post, I’ll walk you through how to write automated tests for these PSRule rules using Pester, a popular testing framework for PowerShell.</description>
+    </item>
+    
     <item>
       <title>Validate API Management policies with PSRule</title>
       <link>https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/</link>

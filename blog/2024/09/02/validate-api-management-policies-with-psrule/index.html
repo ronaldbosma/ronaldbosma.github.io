@@ -337,10 +337,9 @@ Rule <span style="color:#e6db74">&#34;APIM.Policy.FileExtension&#34;</span> -Typ
 </code></pre></div><p>As you can see, the <code>-Type</code> parameter filters <code>.cshtml</code> files directly, unlike the previous rule, which filtered based on the <code>APIM.Policy</code> type. This rule is executed on all <code>.cshtml</code> files, even if our convention did not import them as <code>APIM.Policy</code> objects.</p>
 <p>The rule verifies if the file name specifies a valid scope. It passes if the file name is <code>global.cshtml</code> or ends with <code>.workspace.cshtml</code>, <code>.product.cshtml</code>, <code>.api.cshtml</code>, <code>.operation.cshtml</code>, or <code>.fragment.cshtml</code>. Otherwise, it fails.</p>
 <p>When you execute PSRule again, you should see that the <code>APIM.Policy.FileExtension</code> rule is applied to each <code>.cshtml</code> file. The <code>unknown-scope.cshtml</code> file should fail this rule.</p>
-<blockquote>
-<p>To output only the failures, add the <code>-Outcome Fail</code> parameter. If you are interested in the results of a specific rule, use the <code>-Name</code> parameter. For example: <code>-Name &quot;APIM.Policy.FileExtension&quot;</code>.</p>
-</blockquote>
-<h4 id="the-subscription-key-header-is-removed">The subscription key header is removed</h4>
+<p>If the rule is not executed, ensure that the <code>src</code> folder name is followed by a <code>\</code>, as shown in the command below. Without it, PSRule may not find the <code>.cshtml</code> files to execute the rule on.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Invoke-PSRule -InputPath <span style="color:#e6db74">&#34;.\src\&#34;</span> -Option <span style="color:#e6db74">&#34;.\.ps-rule\ps-rule.yaml&#34;</span>
+</code></pre></div><h4 id="the-subscription-key-header-is-removed">The subscription key header is removed</h4>
 <p>One of the features of API Management is that it forwards all headers to the backend by default. While this is useful, it can also pose a security risk. For instance, the API Management subscription key header (<code>Ocp-Apim-Subscription-Key</code>) is forwarded to the backend, even though the backend usually doesn&rsquo;t need to know this key, especially when dealing with external backends. To mitigate this risk, we should remove this header in the inbound section of the global policy.</p>
 <p>We&rsquo;ll create the following rule to ensure this:</p>
 <p><em>The subscription key header (<code>Ocp-Apim-Subscription-Key</code>) should be removed in the inbound section of the global policy to prevent it from being forwarded to the backend.</em></p>
@@ -397,6 +396,9 @@ Rule <span style="color:#e6db74">&#34;APIM.Policy.UseBackendEntity&#34;</span> `
     }
 }
 </code></pre></div><p>The rule is executed on every object of type <code>APIM.Policy</code>, regardless of the scope. To ensure the rule only applies to policy files containing a <code>set-backend-service</code> policy, we use the condition: <code>$TargetObject.Content.DocumentElement.SelectNodes(&quot;.//*[local-name()='set-backend-service']&quot;).Count -ne 0</code>. This condition performs an XPath query to find all <code>set-backend-service</code> policies in the XML content of the policy file.</p>
+<blockquote>
+<p>Note that a rule will fail by default if no assertions are performed. If the <code>-If</code> condition is not present, you would need to use <code>$Assert.Pass()</code> to ensure the rule passes when no <code>set-backend-service</code> policies are found. However, I find that not executing the rule in this situation is a cleaner solution.</p>
+</blockquote>
 <p>The rule itself checks that each <code>set-backend-service</code> policy includes the <code>backend-id</code> attribute. If this attribute is present, the rule passes; otherwise, it fails.</p>
 <p>When you run PSRule again, you should see the <code>APIM.Policy.UseBackendEntity</code> rule applied to all <code>.cshtml</code> files that include a <code>set-backend-service</code> policy. The output should show that the rule passes for files in the <code>good</code> folder and fails for those in the <code>bad</code> folder.</p>
 <h3 id="handle-invalid-xml-syntax">Handle invalid XML syntax</h3>
@@ -577,7 +579,7 @@ Rule <span style="color:#e6db74">&#39;Azure.APIM.PolicyBase&#39;</span> -Ref <sp
 <p>The choice between the approach described in this post and using PSRule for Azure depends on your specific needs. Note that you can also use the method outlined here to validate API Management policies and leverage PSRule for Azure for Bicep or ARM configurations.</p>
 <h3 id="conclusion">Conclusion</h3>
 <p>PSRule is a powerful tool for managing the quality of your Azure API Management policies. By creating custom rules, you can validate your policies against your own standards.</p>
-<p>You can find a fully working sample <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/validate-apim-policies-with-psrule">here</a>. The full sample includes a few additional rules and sample policies for further exploration. It also contains automated tests for each rule, which I will cover in the next blog post.</p>
+<p>You can find a fully functional example <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/validate-apim-policies-with-psrule">here</a>. This sample includes additional rules and sample policies for further exploration, along with automated tests for each rule, which I discuss in <a href="/blog/2024/09/26/testing-psrule-rules-for-api-management-policies-with-pester/">Testing PSRule Rules for API Management Policies with Pester</a>.</p>
 
                     </div>
                     
@@ -611,6 +613,8 @@ Rule <span style="color:#e6db74">&#39;Azure.APIM.PolicyBase&#39;</span> -Ref <sp
                     
                     
                     <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                        <a class="d-block col-md-6" href="https://ronaldbosma.github.io/blog/2024/09/26/testing-psrule-rules-for-api-management-policies-with-pester/"> &laquo; Testing PSRule Rules for API Management Policies with Pester</a>
                     
                     
                         <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2024/07/17/reqnroll-parsable-value-retriever-and-comparer/">Reqnroll Parsable Value Retriever and Comparer &raquo;</a>
@@ -684,6 +688,8 @@ Rule <span style="color:#e6db74">&#39;Azure.APIM.PolicyBase&#39;</span> -Ref <sp
 			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
 			
 			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
 			
 			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
 			
