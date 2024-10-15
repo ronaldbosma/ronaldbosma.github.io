@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2024-09-02T19:30:00+02:00" />
-<meta property="article:modified_time" content="2024-09-02T19:30:00+02:00" />
+<meta property="article:modified_time" content="2024-10-15T07:30:00+02:00" />
 
 
 
@@ -198,7 +198,7 @@
 </code></pre><p>Examine the different policy files provided. The files located in the <code>good</code> folder conform to the rules that we will establish, while those in the <code>bad</code> folder do not.</p>
 <h3 id="import-policies-using-convention">Import policies using convention</h3>
 <p>At this moment in time, PSRule doesn&rsquo;t support loading XML files out-of-the-box. I&rsquo;ve created an issue for this on Github, which can be found <a href="https://github.com/microsoft/PSRule/issues/1537">here</a>. Luckily, PSRule is extensible, and Bernie White, the creator of PSRule, has provided a sample in my issue that we can use to load XML files. It uses a <a href="https://microsoft.github.io/PSRule/stable/concepts/PSRule/en-US/about_PSRule_Conventions/">convention</a>.</p>
-<p>Conventions, rules and other PSRule relates files are commonly stored in a <code>.ps-rule</code> folder in the root of your repository as described <a href="https://microsoft.github.io/PSRule/v2/authoring/storing-rules/">here</a>. You can create this folder in your root.</p>
+<p>Conventions, rules and other PSRule related files are commonly stored in a <code>.ps-rule</code> folder in the root of your repository as described <a href="https://microsoft.github.io/PSRule/v2/authoring/storing-rules/">here</a>. You can create this folder in your root.</p>
 <p>Inside the <code>.ps-rule</code> folder, create a file named <code>APIM.Policy.Conventions.Rule.ps1</code> (<em>the <code>.Rule.ps1</code> extension is required for PSRule to recognize the file</em>). Add the following code to the file:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: Imports the APIM XML policy file for analysis. File names should match: *.cshtml</span>
 Export-PSRuleConvention <span style="color:#e6db74">&#34;APIM.Policy.Conventions.Import&#34;</span> -Initialize {
