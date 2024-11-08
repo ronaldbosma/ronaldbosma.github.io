@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2024-02-19T19:00:00+01:00" />
-<meta property="article:modified_time" content="2024-02-19T19:00:00+01:00" />
+<meta property="article:modified_time" content="2024-11-08T11:30:00+01:00" />
 
 
 
@@ -157,7 +157,6 @@
 <li><a href="/blog/2024/02/02/validate-client-certificates-in-api-management/">Validate client certificates in API Management</a></li>
 <li>Validate client certificates in API Management when it&rsquo;s behind an Application Gateway <em><strong>(current)</strong></em></li>
 <li><a href="/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/">Securing backend connections with mTLS in API Management</a></li>
-<li>Deploying certificates into Key Vault <em>(coming soon)</em></li>
 </ol>
 <h3 id="intro">Intro</h3>
 <p>In this second post, we expand on the solution introduced in <a href="/blog/2024/02/02/validate-client-certificates-in-api-management/">the previous post</a>. We&rsquo;ll deploy API Management inside a virtual network, positioning it behind an application gateway. Utilizing an application gateway (or similar resource) in this manner is a common approach because it can provide load balancing capabilities and enhanced control over inbound and outbound traffic. Additionally, the Web Application Firewall (WAF) provides improved security by protecting against common web-based attacks and vulnerabilities, such as SQL injection and cross-site scripting (XSS).</p>
