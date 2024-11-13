@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2024-02-19T19:00:00+01:00" />
-<meta property="article:modified_time" content="2024-11-08T11:30:00+01:00" />
+<meta property="article:modified_time" content="2024-11-13T17:45:00+01:00" />
 
 
 
@@ -922,7 +922,7 @@ X-ARR-ClientCert: -----BEGIN%20CERTIFICATE-----%0AMIIDRzCCAi%2BgAwIBAgIQGbcu6oSk
 <p>In this post, we&rsquo;ve explored the impact of validating a client certificate in API Management when it&rsquo;s behind an application gateway. There&rsquo;s quite a bit more involved than simply establishing an mTLS connection with API Management directly. Personally, I found the application gateway configuration to be rather complex at first, so I hope this post will give you a solid start.</p>
 <p>The final result of this blog post can be found <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/apim-client-certificate-series/02-validate-client-certificate-in-apim-behind-agw">here</a>. I&rsquo;ve divided the <code>main.bicep</code> file into several modules to improve readability.</p>
 <p><strong>Final remark</strong></p>
-<p>If you deploy this solution to an Azure subscription with limited credits, take note that both the virtual network and application gateway are not cheap. It&rsquo;s best to remove everything after you&rsquo;re done.  If you want to keep the solution around a little longer, you can stop the application gateway, which stops the billing.</p>
+<p>If you deploy this solution to an Azure subscription with limited credits, take note that the application gateway is not cheap. It&rsquo;s best to remove everything after you&rsquo;re done.  If you want to keep the solution around a little longer, you can stop the application gateway, which stops the billing.</p>
 <p>To stop the application gateway, use the following Azure CLI command:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az network application-gateway stop --name <span style="color:#e6db74">&#39;agw-validate-client-certificate&#39;</span> --resource-group <span style="color:#e6db74">&#39;&lt;your-resource-group&gt;&#39;</span>
 </code></pre></div><p>To start the application gateway again, use the following Azure CLI command:</p>
