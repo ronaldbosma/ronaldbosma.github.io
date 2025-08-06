@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/cover.jpg"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2024-06-05T08:00:00+02:00" />
-<meta property="article:modified_time" content="2025-02-28T15:30:00+01:00" />
+<meta property="article:modified_time" content="2025-06-08T10:45:00+02:00" />
 
 
 
@@ -272,7 +272,7 @@ func getRegionMap() object =&gt; {
 <p>Here’s a sample function that sanitizes the input values by removing a trailing hyphen, colons, commas, dots, semicolons, underscores, and white spaces. It also converts the result to lowercase.</p>
 <pre tabindex="0"><code class="language-bicep" data-lang="bicep">func sanitizeResourceName(value string) string =&gt; toLower(removeTrailingHyphen(removeColons(removeCommas(removeDots(removeSemicolons(removeUnderscores(removeWhiteSpaces(value))))))))
 
-func removeTrailingHyphen(value string) string =&gt; endsWith(value, '-') ? substring(value, 0, length(value)-1) : value
+func removeTrailingHyphen(value string) string =&gt; endsWith(value, '-') ? substring(value, 0, max(0, length(value)-1)) : value
 func removeColons(value string) string =&gt; replace(value, ':', '')
 func removeCommas(value string) string =&gt; replace(value, ',', '')
 func removeDots(value string) string =&gt; replace(value, '.', '')
