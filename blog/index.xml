@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Fri, 21 Feb 2025 11:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 04 Sep 2025 18:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Convert Base64 to multipart/form-data with API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2025/09/04/convert-base64-to-multipart/form-data-with-api-management/</link>
+      <pubDate>Thu, 04 Sep 2025 18:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/09/04/convert-base64-to-multipart/form-data-with-api-management/</guid>
+      <description>In this post, I&amp;rsquo;ll show you how to use Azure API Management policies to transform a JSON request containing a base64-encoded file into a multipart/form-data request. This lets you connect clients that send files in JSON with backends that require standard form uploads.</description>
+    </item>
+    
     <item>
       <title>Azure Integration Services Quickstart</title>
       <link>https://ronaldbosma.github.io/blog/2025/02/21/azure-integration-services-quickstart/</link>

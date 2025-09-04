@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Convert Base64 to multipart/form-data with API Management | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/09/04/convert-base64-to-multipart/form-data-with-api-management/cover.jpg"/>
+<meta name="twitter:title" content="Convert Base64 to multipart/form-data with API Management"/>
+<meta name="twitter:description" content="In this post, I&rsquo;ll show you how to use Azure API Management policies to transform a JSON request containing a base64-encoded file into a multipart/form-data request. This lets you connect clients that send files in JSON with backends that require standard form uploads."/>
+
+	<meta property="og:title" content="Convert Base64 to multipart/form-data with API Management" />
+<meta property="og:description" content="In this post, I&rsquo;ll show you how to use Azure API Management policies to transform a JSON request containing a base64-encoded file into a multipart/form-data request. This lets you connect clients that send files in JSON with backends that require standard form uploads." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/09/04/convert-base64-to-multipart/form-data-with-api-management/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/09/04/convert-base64-to-multipart/form-data-with-api-management/cover.jpg"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-09-04T18:30:00+02:00" />
+<meta property="article:modified_time" content="2025-09-04T18:30:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Convert%20Base64%20to%20multipart%2fform-data%20with%20API%20Management&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f04%2fconvert-base64-to-multipart%2fform-data-with-api-management%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f04%2fconvert-base64-to-multipart%2fform-data-with-api-management%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f04%2fconvert-base64-to-multipart%2fform-data-with-api-management%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Sep 4, 2025
+                                    <i class="far fa-clock clock"></i>
+                                    9 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Convert Base64 to multipart/form-data with API Management</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/09/04/convert-base64-to-multipart/form-data-with-api-management/cover.jpg" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working with Azure API Management on an integration where the client sends a JSON payload containing a base64-encoded file. The backend service that processes the file expects a multipart/form-data request, which is typically used in HTML form uploads.</p>
+<p>In this post, I&rsquo;ll show you how to use API Management policies to transform the base64-encoded data into a properly formatted multipart/form-data request.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#understanding-multipartform-data">Understanding multipart/form-data</a></li>
+<li><a href="#creating-the-backend-function">Creating the Backend Function</a></li>
+<li><a href="#test-function-with-an-html-form">Test Function with an HTML Form</a></li>
+<li><a href="#creating-the-api-management-transformation">Creating the API Management Transformation</a></li>
+<li><a href="#testing-the-api">Testing the API</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>To follow along with this post, you&rsquo;ll need:</p>
+<ul>
+<li>An Azure API Management service instance</li>
+<li>An Azure Function App (.NET)</li>
+</ul>
+<p>If you don&rsquo;t have these resources yet, you can use my <a href="https://github.com/ronaldbosma/azure-integration-services-quickstart">Azure Integration Services Quickstart</a> template to deploy them. See the <a href="https://github.com/ronaldbosma/azure-integration-services-quickstart?tab=readme-ov-file#getting-started">Getting Started</a> section for instructions. During deployment, set <code>includeApiManagement</code> and <code>includeFunctionApp</code> to <code>true</code>. All other parameters can be set to <code>false</code>.</p>
+<h3 id="understanding-multipartform-data">Understanding multipart/form-data</h3>
+<p>Before diving into the implementation, it&rsquo;s worth understanding what multipart/form-data requests look like.</p>
+<p>A multipart/form-data request consists of multiple sections separated by boundaries. These sections can contain form field values, files or other data types.</p>
+<p>For example, here&rsquo;s an HTML form where you can specify a file ID and select a file to upload:</p>
+<p><img src="../../../../../../images/convert-base64-to-multipart-formdata-with-api-management/test-html-form.png" alt="Test HTML form"></p>
+<p>When submitting this form, the browser creates a request that includes a <code>Content-Type</code> header specifying the type as <code>multipart/form-data</code> and a unique boundary string:</p>
+<pre tabindex="0"><code>Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryKWINm4cKboHb55vB
+</code></pre><p>Here&rsquo;s an example of what the request body looks like:</p>
+<pre tabindex="0"><code>------WebKitFormBoundaryKWINm4cKboHb55vB
+Content-Disposition: form-data; name=&quot;fileId&quot;
+
+123
+------WebKitFormBoundaryKWINm4cKboHb55vB
+Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;sample.jpg&quot;
+Content-Type: image/jpeg
+
+... BINARY DATA ...
+------WebKitFormBoundaryKWINm4cKboHb55vB--
+</code></pre><p>Each section starts with a boundary (prefixed with <code>--</code>), followed by headers that describe the form field. The <code>Content-Disposition</code> header specifies the field name and, for file uploads, the filename. File sections include a <code>Content-Type</code> header that specifies the media type (like <code>image/jpeg</code>). Text fields typically don&rsquo;t include this header and default to <code>text/plain</code>. The actual data follows after a blank line.</p>
+<p>The browser automatically generates a unique boundary string for each request, so the value will be different every time you submit the form.</p>
+<p>For a deeper understanding of multipart/form-data requests, I recommend reading <a href="https://andrewlock.net/reading-json-and-binary-data-from-multipart-form-data-sections-in-aspnetcore/">Reading JSON and binary data from multipart/form-data sections in ASP.NET Core</a> by Andrew Lock. It provides excellent examples of how to construct and handle these requests in .NET.</p>
+<h3 id="creating-the-backend-function">Creating the Backend Function</h3>
+<p>Let&rsquo;s start by creating an Azure Function that can receive multipart/form-data requests. 
+This function will extract a file from the form data and return it as a downloadable file.
+Use the following code for the function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Http;
+<span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Mvc;
+<span style="color:#66d9ef">using</span> Microsoft.Azure.Functions.Worker;
+<span style="color:#66d9ef">using</span> Microsoft.Extensions.Logging;
+
+<span style="color:#66d9ef">namespace</span> AISQuick.FunctionApp;
+
+<span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e">/// Function that receives a file as part of a multipart form data request
+</span><span style="color:#75715e">/// and returns it as a file stream.
+</span><span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ProcessFileFunction</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> ILogger&lt;ProcessFileFunction&gt; <span style="color:#ae81ff">_l</span>ogger;
+
+    <span style="color:#66d9ef">public</span> ProcessFileFunction(ILogger&lt;ProcessFileFunction&gt; logger)
+    {
+        <span style="color:#ae81ff">_l</span>ogger = logger;
+    }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Function(nameof(ProcessFileFunction))]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> Task&lt;IActionResult&gt; Run(
+<span style="color:#a6e22e">        [HttpTrigger(AuthorizationLevel.Anonymous, &#34;post&#34;, Route = &#34;process-file&#34;)]</span> HttpRequest request)
+    {
+        <span style="color:#66d9ef">try</span>
+        {
+            <span style="color:#75715e">// 1. Read the form data
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">var</span> formData = <span style="color:#66d9ef">await</span> request.ReadFormAsync();
+
+            <span style="color:#75715e">// 2. Extract the file ID from the form data and log it
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">string?</span> fileId = formData[<span style="color:#e6db74">&#34;fileId&#34;</span>];
+            <span style="color:#ae81ff">_l</span>ogger.LogInformation(<span style="color:#e6db74">&#34;File ID: {FileID}&#34;</span>, fileId);
+
+            <span style="color:#75715e">// 3. Extract the binary file from the form data. Throw an exception if it&#39;s not present.
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">var</span> file = request.Form.Files[<span style="color:#e6db74">&#34;file&#34;</span>];
+            <span style="color:#66d9ef">if</span> (file == <span style="color:#66d9ef">null</span>)
+            {
+                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> BadRequestObjectResult(<span style="color:#e6db74">&#34;File not provided.&#34;</span>);
+            }
+
+            <span style="color:#75715e">// 4. Log the file details
+</span><span style="color:#75715e"></span>            <span style="color:#ae81ff">_l</span>ogger.LogInformation(<span style="color:#e6db74">&#34;File Name: {FileName}, Content Type: {ContentType}, Size: {Size} bytes&#34;</span>,
+                file.FileName, file.ContentType, file.Length);
+
+            <span style="color:#75715e">// 5. Return the file as a stream.
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">var</span> stream = file.OpenReadStream();
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> FileStreamResult(stream, file.ContentType)
+            {
+                FileDownloadName = file.FileName
+            };
+        }
+        <span style="color:#66d9ef">catch</span> (Exception ex)
+        {
+            <span style="color:#75715e">// If something goes wrong, return the exception details.
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// Don&#39;t do this in production code, as it can expose sensitive information.
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> ContentResult
+            {
+                StatusCode = StatusCodes.Status500InternalServerError,
+                Content = ex.ToString(),
+                ContentType = <span style="color:#e6db74">&#34;text/plain&#34;</span>
+            };
+        }
+    }
+}
+</code></pre></div><p>This function does the following:</p>
+<ol>
+<li>Reads the form data from the incoming request</li>
+<li>Extracts the <code>fileId</code> field and logs it</li>
+<li>Retrieves the uploaded file and validates that it is present</li>
+<li>Logs the file details</li>
+<li>Returns the file as a downloadable stream</li>
+</ol>
+<p>Deploy this function to your Azure Function App before proceeding to the next step.</p>
+<h3 id="test-function-with-an-html-form">Test Function with an HTML Form</h3>
+<p>Let&rsquo;s test our function with a simple HTML form. Create a new HTML file using the sample below or download the HTML file <a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/convert-base64-to-multipart-formdata/test-form.html">here</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#75715e">&lt;!DOCTYPE html&gt;</span>
+&lt;<span style="color:#f92672">html</span> <span style="color:#a6e22e">lang</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;en&#34;</span>&gt;
+&lt;<span style="color:#f92672">head</span>&gt;
+    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">charset</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;UTF-8&#34;</span>&gt;
+    &lt;<span style="color:#f92672">title</span>&gt;Upload File&lt;/<span style="color:#f92672">title</span>&gt;
+&lt;/<span style="color:#f92672">head</span>&gt;
+&lt;<span style="color:#f92672">body</span>&gt;
+    &lt;<span style="color:#f92672">form</span> <span style="color:#a6e22e">action</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://&lt;your-function-app-name&gt;.azurewebsites.net/api/process-file&#34;</span> <span style="color:#a6e22e">method</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;post&#34;</span> <span style="color:#a6e22e">enctype</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;multipart/form-data&#34;</span>&gt;
+        &lt;<span style="color:#f92672">label</span> <span style="color:#a6e22e">for</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;fileId&#34;</span>&gt;File ID:&lt;/<span style="color:#f92672">label</span>&gt;
+        &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text&#34;</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;fileId&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;fileId&#34;</span> <span style="color:#a6e22e">required</span>&gt;
+        &lt;<span style="color:#f92672">br</span>&gt;&lt;<span style="color:#f92672">br</span>&gt;
+        &lt;<span style="color:#f92672">label</span> <span style="color:#a6e22e">for</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;file&#34;</span>&gt;Select file:&lt;/<span style="color:#f92672">label</span>&gt;
+        &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;file&#34;</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;file&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;file&#34;</span> <span style="color:#a6e22e">required</span>&gt;
+        &lt;<span style="color:#f92672">br</span>&gt;&lt;<span style="color:#f92672">br</span>&gt;
+        &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;submit&#34;</span>&gt;Upload&lt;/<span style="color:#f92672">button</span>&gt;
+    &lt;/<span style="color:#f92672">form</span>&gt;
+&lt;/<span style="color:#f92672">body</span>&gt;
+&lt;/<span style="color:#f92672">html</span>&gt;
+</code></pre></div><p>Update the <code>action</code> attribute in the HTML form to point to your Function App URL by replacing <code>&lt;your-function-app-name&gt;</code> with your actual Function App name.</p>
+<p>Open the HTML file in your browser, enter a file ID and select a file. The form will look like this:</p>
+<p><img src="../../../../../../images/convert-base64-to-multipart-formdata-with-api-management/test-html-form.png" alt="Test HTML form"></p>
+<p>To see how the multipart/form-data request is structured, open your browser&rsquo;s developer tools before submitting the form. When you submit the form, you should see the file downloaded back to your browser. In the Network tab, you can inspect the request structure - it will look similar to the example shown in the <a href="#understanding-multipartform-data">Understanding multipart/form-data</a> section.</p>
+<p>If you have Application Insights configured, you can also check the logs to see the file ID and file details being logged by the function.</p>
+<h3 id="creating-the-api-management-transformation">Creating the API Management Transformation</h3>
+<p>Now let&rsquo;s create an API in API Management that transforms a JSON request with base64-encoded content into the multipart/form-data format our function expects.</p>
+<p>Navigate to your API Management instance in the Azure portal and create a new API based on OpenAPI.
+Use this <a href="https://raw.githubusercontent.com/ronaldbosma/azure-apim-samples/refs/heads/main/convert-base64-to-multipart-formdata/convert-file-api.openapi.yaml">OpenAPI specification</a>. 
+This will create an API called &lsquo;Convert File API&rsquo; with a &lsquo;Convert a Base64-encoded file&rsquo; operation. 
+It expects a JSON request with the following structure:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;12345&#34;</span>,
+    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;sample.jpg&#34;</span>,
+    <span style="color:#f92672">&#34;mimeType&#34;</span>: <span style="color:#e6db74">&#34;image/jpeg&#34;</span>,
+    <span style="color:#f92672">&#34;base64Content&#34;</span>: <span style="color:#e6db74">&#34;...BASE64_CONTENT...&#34;</span>
+}
+</code></pre></div><p>We&rsquo;ll transform that JSON request into a multipart/form-data request with these parts:</p>
+<ul>
+<li><code>fileId</code>: The ID from the JSON</li>
+<li><code>file</code>: The binary file data with proper metadata</li>
+</ul>
+<p>Here&rsquo;s how to set up the transformation for the &lsquo;Convert a Base64-encoded file&rsquo; operation. 
+Open the policy editor for this operation and add the following policies to the `inbound`` section:</p>
+<ol>
+<li>
+<p><strong>Configure the backend</strong> to forward the request to the Azure Function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;set-backend-service</span> <span style="color:#a6e22e">base-url=</span><span style="color:#e6db74">&#34;https://&lt;your-function-app-name&gt;.azurewebsites.net&#34;</span> <span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;rewrite-uri</span> <span style="color:#a6e22e">template=</span><span style="color:#e6db74">&#34;/api/process-file&#34;</span> <span style="color:#a6e22e">copy-unmatched-params=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
+</code></pre></div><p>Replace <code>&lt;your-function-app-name&gt;</code> with your actual Function App name.</p>
+</li>
+<li>
+<p><strong>Set the Content-Type header</strong> to multipart/form-data with a boundary:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;set-header</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;Content-Type&#34;</span> <span style="color:#a6e22e">exists-action=</span><span style="color:#e6db74">&#34;override&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;value&gt;</span>multipart/form-data; boundary=b5f36865-8df9-4d14-8d2c-4ae2eb78d0ec<span style="color:#f92672">&lt;/value&gt;</span>
+<span style="color:#f92672">&lt;/set-header&gt;</span>
+</code></pre></div></li>
+<li>
+<p><strong>Transform the request body</strong> from JSON to multipart/form-data:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;set-body&gt;</span>@{
+    // The Process File function expects a multipart/form-data request with the following parts:
+    // - fileId: string           - Id of the file to be processed
+    // - file:   string($binary)  - The file that is to be processed
+    //
+    // We&#39;re not constructing the entire request as a string where the file contents is converted using Encoding.UTF8.GetString(),
+    // because that would corrupt the binary data of the file.
+
+    var request = context.Request.Body.As<span style="color:#f92672">&lt;JObject&gt;</span>();
+    string id = request.Value<span style="color:#f92672">&lt;string&gt;</span>(&#34;id&#34;);
+    string name = request.Value<span style="color:#f92672">&lt;string&gt;</span>(&#34;name&#34;);
+    string mimeType = request.Value<span style="color:#f92672">&lt;string&gt;</span>(&#34;mimeType&#34;);
+
+    // Convert file to binary data
+    string base64Content = request.Value<span style="color:#f92672">&lt;string&gt;</span>(&#34;base64Content&#34;);
+    byte[] binaryData = Convert.FromBase64String(base64Content);
+
+    var formData = new List<span style="color:#f92672">&lt;byte&gt;</span>();
+
+    // Part 1: file id
+    AppendLine($&#34;--b5f36865-8df9-4d14-8d2c-4ae2eb78d0ec&#34;);
+    AppendLine(&#34;Content-Disposition: form-data; name=\&#34;fileId\&#34;&#34;);
+    AppendLine(&#34;&#34;);
+    AppendLine(id);
+
+    // Part 2: file metadata
+    AppendLine($&#34;--b5f36865-8df9-4d14-8d2c-4ae2eb78d0ec&#34;);
+    AppendLine($&#34;Content-Disposition: form-data; name=\&#34;file\&#34;; filename=\&#34;{name}\&#34;&#34;);
+    AppendLine($&#34;Content-Type: {mimeType}&#34;);
+    AppendLine(&#34;&#34;);
+
+    // Part 3: file content (raw bytes, not base64)
+    formData.AddRange(binaryData);
+    AppendLine(&#34;&#34;);
+
+    // End boundary
+    AppendLine($&#34;--b5f36865-8df9-4d14-8d2c-4ae2eb78d0ec--&#34;);
+
+    return formData.ToArray();
+
+
+    // Helper methods to add strings with proper encoding
+    void AppendLine(string s)
+    {
+        AppendString(s + &#34;\r\n&#34;);
+    }
+
+    void AppendString(string s)
+    {
+        formData.AddRange(Encoding.UTF8.GetBytes(s));
+    }
+}<span style="color:#f92672">&lt;/set-body&gt;</span>
+</code></pre></div></li>
+<li>
+<p><strong>Save the changes</strong> to apply the transformation.</p>
+</li>
+</ol>
+<p>You can find the complete policy XML <a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/convert-base64-to-multipart-formdata/convert-file.policy.xml">here</a>.</p>
+<h4 id="understanding-the-transformation">Understanding the Transformation</h4>
+<p>The transformation from JSON to multipart/form-data requires careful handling of both text and binary data. Unlike in .NET where you can use <a href="https://learn.microsoft.com/en-us/dotnet/api/system.net.http.multipartformdatacontent?view=net-9.0"><code>MultipartFormDataContent</code></a> to construct these requests easily, API Management policies require manual construction of the entire request body.</p>
+<p>Here&rsquo;s what happens step by step:</p>
+<p><strong>1. JSON Parsing and Data Extraction</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">var</span> request = context.Request.Body.As&lt;JObject&gt;();
+<span style="color:#66d9ef">string</span> id = request.Value&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;id&#34;</span>);
+<span style="color:#66d9ef">string</span> name = request.Value&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;name&#34;</span>);
+<span style="color:#66d9ef">string</span> mimeType = request.Value&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;mimeType&#34;</span>);
+
+<span style="color:#66d9ef">string</span> base64Content = request.Value&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;base64Content&#34;</span>);
+<span style="color:#66d9ef">byte</span>[] binaryData = Convert.FromBase64String(base64Content);
+</code></pre></div><p>The policy first parses the incoming JSON request and extracts all the required fields. The base64-encoded file content is converted to binary data.</p>
+<p><strong>2. Boundary Management</strong><br>
+The boundary <code>b5f36865-8df9-4d14-8d2c-4ae2eb78d0ec</code> serves as a delimiter between different parts of the multipart request. Each section starts with <code>--</code> followed by the boundary, and the final boundary is surrounded by <code>--</code> on both sides to indicate the end of the request.</p>
+<p>I&rsquo;ve chosen a static boundary for readability, but you can generate a unique boundary for each request.</p>
+<p><strong>3. Building the Form Data Structure</strong><br>
+The policy constructs the multipart request by appending data to a byte array:</p>
+<ul>
+<li><strong>Text Field (<code>fileId</code>)</strong>: Simple form field with just the Content-Disposition header</li>
+<li><strong>File Field (<code>file</code>)</strong>: More complex field that includes:
+<ul>
+<li>Content-Disposition header with field name and filename</li>
+<li>Content-Type header specifying the file&rsquo;s MIME type</li>
+<li>The actual binary file data</li>
+</ul>
+</li>
+</ul>
+<p><strong>4. Binary Data Preservation</strong><br>
+The critical aspect of this transformation is preserving binary integrity. Instead of converting everything to strings (which would corrupt binary data using UTF-8 encoding), the policy:</p>
+<ul>
+<li>Converts text portions to UTF-8 bytes using <code>Encoding.UTF8.GetBytes()</code></li>
+<li>Appends raw binary data directly using <code>formData.AddRange(binaryData)</code></li>
+<li>Returns the final result as a byte array</li>
+</ul>
+<h3 id="testing-the-api">Testing the API</h3>
+<p>You can test the API using an HTTP client. 
+Download <a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/convert-base64-to-multipart-formdata/tests.http">this test HTTP file</a> and replace <code>&lt;your-apim-service-name&gt;</code> with your API Management service name. 
+If you specified an API URL suffix when creating the API, be sure to include it in the request URL.</p>
+<p>Send the test request and verify the image is returned correctly. 
+If you receive a <code>401 Access Denied</code> error, add a subscription key to the request or configure the API to allow anonymous access.</p>
+<h3 id="content-validation">Content Validation</h3>
+<p>For production use, consider adding content validation to protect against large files:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;validate-content</span> <span style="color:#a6e22e">unspecified-content-type-action=</span><span style="color:#e6db74">&#34;prevent&#34;</span> <span style="color:#a6e22e">max-size=</span><span style="color:#e6db74">&#34;4194304&#34;</span> <span style="color:#a6e22e">size-exceeded-action=</span><span style="color:#e6db74">&#34;prevent&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;content</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;application/json&#34;</span> <span style="color:#a6e22e">validate-as=</span><span style="color:#e6db74">&#34;json&#34;</span> <span style="color:#a6e22e">action=</span><span style="color:#e6db74">&#34;prevent&#34;</span> <span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/validate-content&gt;</span>
+</code></pre></div><p>This policy restricts uploads to 4MB, which is the maximum value allowed for the <code>max-size</code> attribute in API Management. 
+If you want to allow larger files, set <code>size-exceeded-action</code> to <code>ignore</code>.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Using API Management policies, we can transform JSON requests with base64-encoded files into multipart/form-data requests that backend services expect. 
+While this process is more complex in API Management than in .NET, where you can use built-in helpers like <code>MultipartFormDataContent</code>, it is still achievable with careful policy design.</p>
+<p>The key benefits of this approach include:</p>
+<ul>
+<li>No code changes are required on the client side</li>
+<li>Proper handling of binary data without corruption</li>
+<li>Centralized transformation logic in API Management</li>
+<li>Support for different file types and metadata</li>
+</ul>
+<p>You can find the complete sample code in my <a href="https://github.com/ronaldbosma/azure-apim-samples/tree/main/convert-base64-to-multipart-formdata">Azure APIM samples repository</a>.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/02/21/azure-integration-services-quickstart/">Azure Integration Services Quickstart &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/apim-mtls">apim-mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
