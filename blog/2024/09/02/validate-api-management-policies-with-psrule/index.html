@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2024-09-02T19:30:00+02:00" />
-<meta property="article:modified_time" content="2024-10-15T07:30:00+02:00" />
+<meta property="article:modified_time" content="2025-09-12T10:00:00+02:00" />
 
 
 
@@ -130,7 +130,7 @@
                                     <i class="far fa-star"></i>
                                     Sep 2, 2024
                                     <i class="far fa-clock clock"></i>
-                                    22 min read
+                                    23 min read
                                 </span>					
                             </div>
                         </div>			
@@ -258,7 +258,14 @@ Rule <span style="color:#e6db74">&#34;APIM.Policy.InboundBasePolicy&#34;</span> 
   <span style="color:#75715e"># Ignore warnings for resources and objects that don&#39;t have any rules.</span>
   <span style="color:#f92672">unprocessedObject</span>: <span style="color:#ae81ff">Ignore</span>
   <span style="color:#f92672">ruleSuppressed</span>: <span style="color:#ae81ff">Ignore</span>
-</code></pre></div><h3 id="filter-on-scope">Filter on scope</h3>
+</code></pre></div><blockquote>
+<p><strong>UPDATE (2025-09-12):</strong> Microsoft has released the new built-in Azure policy: <a href="https://portal.azure.com/#view/Microsoft_Azure_Policy/PolicyDetailAdaptor.ReactView/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Fd5448c98-e503-4fdd-bcd2-784960c00d04">API Management policies should inherit parent scope policies using <code>&lt;base /&gt;</code></a>.
+It checks that each section contains the <code>&lt;base /&gt;</code> policy. 
+This built-in policy may be used instead of the <code>APIM.Policy.InboundBasePolicy</code> rule.
+However, the Azure policy requires the <code>&lt;base /&gt;</code> policy to be the first policy in each section. 
+If you want to allow other policies before the <code>&lt;base /&gt;</code> policy, for example to set a variable to influence logic on a higher level, you can use this custom PSRule rule instead and customize it to your needs.</p>
+</blockquote>
+<h3 id="filter-on-scope">Filter on scope</h3>
 <p>The <code>APIM.Policy.InboundBasePolicy</code> rule should have been skipped for the two global policy files because the <code>base</code> policy cannot be used at the global scope, as there is no higher level. We can add a filter to the rule to exclude the global scope, but first, we need to determine the scope of the policy during the import.</p>
 <p>Open <code>APIM.Policy.Conventions.Rule.ps1</code> and replace its contents with the following code:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e"># Synopsis: Imports the APIM XML policy file for analysis. File names should match: *.cshtml</span>
