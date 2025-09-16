@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Thu, 04 Sep 2025 18:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 16 Sep 2025 19:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Protect APIs in Azure API Management with OAuth</title>
+      <link>https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/</link>
+      <pubDate>Tue, 16 Sep 2025 19:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/</guid>
+      <description>Discover how to secure APIs in Azure API Management with OAuth 2.0 and Microsoft Entra ID using a fully automated, infrastructure-as-code approach. This post walks through deploying everything with Bicep, including app registrations via the Microsoft Graph Bicep extension, so you can avoid manual portal setup and ensure repeatable deployments.</description>
+    </item>
+    
     <item>
       <title>Convert Base64 to multipart/form-data with API Management</title>
       <link>https://ronaldbosma.github.io/blog/2025/09/04/convert-base64-to-multipart/form-data-with-api-management/</link>

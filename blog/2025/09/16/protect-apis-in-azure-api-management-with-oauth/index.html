@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Protect APIs in Azure API Management with OAuth | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/cover.png"/>
+<meta name="twitter:title" content="Protect APIs in Azure API Management with OAuth"/>
+<meta name="twitter:description" content="Discover how to secure APIs in Azure API Management with OAuth 2.0 and Microsoft Entra ID using a fully automated, infrastructure-as-code approach. This post walks through deploying everything with Bicep, including app registrations via the Microsoft Graph Bicep extension, so you can avoid manual portal setup and ensure repeatable deployments."/>
+
+	<meta property="og:title" content="Protect APIs in Azure API Management with OAuth" />
+<meta property="og:description" content="Discover how to secure APIs in Azure API Management with OAuth 2.0 and Microsoft Entra ID using a fully automated, infrastructure-as-code approach. This post walks through deploying everything with Bicep, including app registrations via the Microsoft Graph Bicep extension, so you can avoid manual portal setup and ensure repeatable deployments." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-09-16T19:30:00+02:00" />
+<meta property="article:modified_time" content="2025-09-16T19:30:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Protect%20APIs%20in%20Azure%20API%20Management%20with%20OAuth&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f16%2fprotect-apis-in-azure-api-management-with-oauth%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f16%2fprotect-apis-in-azure-api-management-with-oauth%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f16%2fprotect-apis-in-azure-api-management-with-oauth%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Sep 16, 2025
+                                    <i class="far fa-clock clock"></i>
+                                    11 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Protect APIs in Azure API Management with OAuth</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working on securing APIs in Azure API Management and wanted to show you how to deploy a complete OAuth-protected setup using Bicep. While Microsoft&rsquo;s documentation covers <a href="https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad">how to protect an API in Azure API Management using OAuth 2.0</a>, it focuses on manual configuration through the Azure portal.</p>
+<p>In this post, I&rsquo;ll show you how to deploy everything using Bicep, including the necessary Microsoft Entra ID app registrations. This approach gives you a fully automated, repeatable infrastructure-as-code solution for protecting your APIs with OAuth.</p>
+<p>This is the first post in a series about OAuth and API Management where we&rsquo;ll explore different scenarios and implementation patterns.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#why-protect-apis-with-oauth">Why Protect APIs with OAuth</a></li>
+<li><a href="#solution-overview">Solution Overview</a></li>
+<li><a href="#entra-id-configuration">Entra ID Configuration</a></li>
+<li><a href="#api-management-policy-configuration">API Management Policy Configuration</a></li>
+<li><a href="#testing-the-protected-api">Testing the Protected API</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h2 id="why-protect-apis-with-oauth">Why Protect APIs with OAuth</h2>
+<p>API Management provides several security mechanisms, but OAuth 2.0 with Microsoft Entra ID offers robust protection for enterprise scenarios. Here&rsquo;s what you get:</p>
+<ul>
+<li><strong>Token-based authentication</strong>: Clients authenticate with Entra ID and receive access tokens</li>
+<li><strong>Role-based authorization</strong>: Fine-grained control over API operations based on application roles</li>
+<li><strong>Centralized identity management</strong>: Integration with your organization&rsquo;s identity provider</li>
+<li><strong>Token validation</strong>: API Management validates tokens without calling back to Entra ID for each request</li>
+<li><strong>Managed identity integration</strong>: Azure resources that support managed identities can easily access APIs protected by OAuth 2.0 with Entra ID</li>
+</ul>
+<p>The traditional approach requires manual configuration of app registrations in Entra ID, which can be error-prone and difficult to reproduce across environments. Using Bicep with the Microsoft Graph extension solves this by treating identity configuration as infrastructure-as-code.</p>
+<p>It&rsquo;s worth noting that while this post focuses on API Management, the same Entra ID configuration can be used to protect other types of APIs, such as Azure Functions, ASP.NET Core Web APIs, or any other application that supports OAuth 2.0 authentication with Entra ID.</p>
+<h2 id="solution-overview">Solution Overview</h2>
+<p>The solution deploys the following architecture:</p>
+<p><img src="../../../../../images/apim-oauth-series/protect-apim-with-oauth/diagrams-overview.png" alt="Overview"></p>
+<p>The complete solution includes:</p>
+<ul>
+<li>An API Management service with an OAuth-protected API</li>
+<li>Three Entra ID app registrations:
+<ul>
+<li>One app registration representing the APIs in API Management</li>
+<li>One client with &lsquo;read&rsquo; and &lsquo;write&rsquo; permissions</li>
+<li>One client with no API access (for testing authorization failures)</li>
+</ul>
+</li>
+</ul>
+<p>To make deployment easier, I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template: <a href="https://github.com/ronaldbosma/protect-apim-with-oauth">Protect API Management with OAuth</a>. If you want to use it, check out the <a href="https://github.com/ronaldbosma/protect-apim-with-oauth?tab=readme-ov-file#getting-started">getting started section</a> for the prerequisites and deployment instructions.</p>
+<h2 id="entra-id-configuration">Entra ID Configuration</h2>
+<p>The key to deploying Entra ID resources with Bicep is the <a href="https://learn.microsoft.com/en-us/community/content/microsoft-graph-bicep-extension">Microsoft Graph Bicep Extension</a>, which has recently been released as GA. This extension allows you to manage Microsoft Graph resources like app registrations directly from Bicep templates.</p>
+<p>To enable the extension, you need to add it to your <code>bicepconfig.json</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;extensions&#34;</span>: {
+    <span style="color:#f92672">&#34;microsoftGraphV1&#34;</span>: <span style="color:#e6db74">&#34;br:mcr.microsoft.com/bicep/extensions/microsoftgraph/v1.0:1.0.0&#34;</span>
+  }
+}
+</code></pre></div><p>This configuration tells Bicep to load the Microsoft Graph extension, making the <code>Microsoft.Graph</code> resource types available in your templates.</p>
+<p>The solution creates three app registrations with specific purposes.</p>
+<h3 id="api-management-app-registration">API Management App Registration</h3>
+<p>The <code>Microsoft.Graph/applications</code> resource creates an app registration in Entra ID that represents the API Management service and is configured with application roles. The corresponding <code>Microsoft.Graph/servicePrincipals</code> resource can be found under &lsquo;Enterprise Applications&rsquo; in Entra ID:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">extension microsoftGraphV1
+
+resource apimAppRegistration 'Microsoft.Graph/applications@v1.0' = {
+  uniqueName: name
+  displayName: name
+  identifierUris: [ identifierUri ]
+
+  api: {
+    requestedAccessTokenVersion: 2 // Issue OAuth v2.0 access tokens
+  }
+
+  appRoles: [
+    {
+      id: guid(tenantId, name, 'Sample.Read')
+      description: 'Sample read application role'
+      displayName: 'Sample.Read'
+      value: 'Sample.Read'
+      allowedMemberTypes: [ 'Application' ]
+      isEnabled: true
+    }
+    {
+      id: guid(tenantId, name, 'Sample.Write')
+      description: 'Sample write application role'
+      displayName: 'Sample.Write'
+      value: 'Sample.Write'
+      allowedMemberTypes: [ 'Application' ]
+      isEnabled: true
+    }
+    {
+      id: guid(tenantId, name, 'Sample.Delete')
+      description: 'Sample delete application role'
+      displayName: 'Sample.Delete'
+      value: 'Sample.Delete'
+      allowedMemberTypes: [ 'Application' ]
+      isEnabled: true
+    }
+  ]
+  
+  // Add a 'HideApp' tag to hide the app from the end-users in the My Apps portal
+  tags: ['HideApp']
+}
+
+resource apimServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
+  appId: apimAppRegistration.appId
+  appRoleAssignmentRequired: true // When true, clients must have an app role assigned in order to retrieve an access token
+}
+</code></pre><p>Key configuration points:</p>
+<ul>
+<li>The <code>identifierUris</code> property sets the Application ID URI, such as <code>api://apim-oauth-uks-ledm7</code>. When requesting an access token from Entra ID, you need to use this URI with the <code>/.default</code> suffix as the scope (for example, <code>api://apim-oauth-uks-ledm7/.default</code>)</li>
+<li>The <code>requestedAccessTokenVersion</code> is set to <code>2</code> for OAuth 2.0 tokens</li>
+<li>Three application roles are defined: <code>Sample.Read</code>, <code>Sample.Write</code> and <code>Sample.Delete</code> for different API operations</li>
+<li>The <code>guid(tenantId, name, 'Sample.Read')</code> function generates a unique deterministic ID, ensuring the app role ID remains consistent across deployments</li>
+<li>The <code>HideApp</code> tag prevents the app from appearing in the My Apps portal for end-users</li>
+<li>The <code>appRoleAssignmentRequired</code> property ensures only clients with assigned roles can get tokens</li>
+</ul>
+<p>After deployment, you can see the created app registration in the Azure portal with the client ID and identifier URI:</p>
+<p><img src="../../../../../images/apim-oauth-series/protect-apim-with-oauth/apim-app-registration-details.jpg" alt="APIM App Registration Details"></p>
+<p>In this image, you can see two important values highlighted:</p>
+<ul>
+<li><strong>Application (client) ID</strong>: This is the value of the audience claim in the JWT token and can be used to verify that the token was issued for this specific app registration</li>
+<li><strong>Application ID URI</strong>: This is the scope to use when retrieving an access token from Entra ID</li>
+</ul>
+<p>The available roles are also visible in the app registration under the &ldquo;App roles&rdquo; section:</p>
+<p><img src="../../../../../images/apim-oauth-series/protect-apim-with-oauth/app-roles.png" alt="App Roles"></p>
+<p>For the complete implementation of the API Management app registration, see the <a href="https://github.com/ronaldbosma/protect-apim-with-oauth/blob/main/infra/modules/entra-id/apim-app-registration.bicep">apim-app-registration.bicep</a> template in the project repository. The Bicep file uses a variable to define the roles and a for loop to create them, which makes it easier to manage the roles and keeps the code readable.</p>
+<p><strong>Naming tip</strong>: Don&rsquo;t use the exact name of your API Management service for the app registration. When you enable the system-assigned managed identity on a resource like API Management, a service principal with the same name is created. Using the same name for the app registration would result in two service principals with the same name, which can cause issues when you&rsquo;re trying to assign permissions.</p>
+<h3 id="client-app-registrations">Client App Registrations</h3>
+<p>You can create an app registration for a client application using Bicep. The following example demonstrates how to define such a client app registration:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource clientAppRegistration 'Microsoft.Graph/applications@v1.0' = {
+  uniqueName: name
+  displayName: name
+  
+  // Add a 'HideApp' tag to hide the app from the end-users in the My Apps portal
+  tags: ['HideApp']
+}
+
+resource clientServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
+  appId: clientAppRegistration.appId
+
+  // Enforces that users/clients must be assigned an app role to access the application.
+  // This is not strictly required for this scenario, but it adds an extra layer of security.
+  appRoleAssignmentRequired: true
+}
+</code></pre><p>For the complete client app registration implementation, I&rsquo;ve created a reusable Bicep module <a href="https://github.com/ronaldbosma/protect-apim-with-oauth/blob/main/infra/modules/entra-id/client-app-registration.bicep">client-app-registration.bicep</a> that can be used to create both the valid client (with permissions) and the invalid client (without permissions) for testing different authorization scenarios.</p>
+<p>Assigning roles can be done using the <code>Microsoft.Graph/appRoleAssignedTo</code> resource. Here&rsquo;s how to assign the <code>Sample.Read</code> and <code>Sample.Write</code> roles to the a client:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func getAppRoleIdByValue(appRoles array, value string) string =&gt;
+  first(filter(appRoles, (role) =&gt; role.value == value)).id
+
+resource assignSampleReadToValidClient 'Microsoft.Graph/appRoleAssignedTo@v1.0' = {
+  resourceId: apimServicePrincipal.id
+  appRoleId: getAppRoleIdByValue(apimAppRegistration.appRoles, 'Sample.Read')
+  principalId: clientServicePrincipal.id
+}
+
+resource assignSampleWriteToValidClient 'Microsoft.Graph/appRoleAssignedTo@v1.0' = {
+  resourceId: apimServicePrincipal.id
+  appRoleId: getAppRoleIdByValue(apimAppRegistration.appRoles, 'Sample.Write')
+  principalId: clientServicePrincipal.id
+}
+</code></pre><p>The <code>getAppRoleIdByValue</code> function helps you retrieve the app role ID based on its value. Since role assignments require the unique role ID, this function lets you reference roles by name (such as &lsquo;Sample.Read&rsquo;), making your Bicep templates easier to read and reusable across different environments where the role IDs may vary.</p>
+<p>Note that assigning roles immediately after creating the app registrations can fail because the service principals might not be provisioned yet. In the template, I&rsquo;ve worked around this by assigning the roles after API Management is deployed because that takes some time. In the future, I&rsquo;m hoping to use the <a href="https://github.com/Azure/bicep/issues/1013">waitUntil decorator</a> instead.</p>
+<p>For the complete role assignment implementation, see the <a href="https://github.com/ronaldbosma/protect-apim-with-oauth/blob/main/infra/modules/entra-id/assign-app-roles.bicep">assign-app-roles.bicep</a> template in the project repository.</p>
+<p>Once deployed, you can verify the role assignments in the Azure portal under the valid client app&rsquo;s API permissions:</p>
+<p><img src="../../../../../images/apim-oauth-series/protect-apim-with-oauth/client-api-permissions.png" alt="Client API Permissions"></p>
+<p><strong>Important limitation</strong>: The Microsoft Graph Bicep extension doesn&rsquo;t support generating client secrets or certificates. This means you&rsquo;ll need to manually create these for your client applications after deployment—either through the Azure portal (in the &ldquo;Certificates &amp; secrets&rdquo; section of each client app registration) or by using the Azure CLI.</p>
+<h2 id="api-management-policy-configuration">API Management Policy Configuration</h2>
+<p>The API is protected using an API Management policy that validates OAuth tokens and enforces role-based access. Here&rsquo;s a simplified example showing the core validation logic:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;policies&gt;</span>
+    <span style="color:#f92672">&lt;inbound&gt;</span>
+        <span style="color:#f92672">&lt;base</span> <span style="color:#f92672">/&gt;</span>
+
+        <span style="color:#75715e">&lt;!-- Validate the JWT token --&gt;</span>
+        <span style="color:#f92672">&lt;validate-azure-ad-token</span> <span style="color:#a6e22e">tenant-id=</span><span style="color:#e6db74">&#34;{{tenant-id}}&#34;</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;audiences&gt;</span>
+                <span style="color:#f92672">&lt;audience&gt;</span>{{oauth-audience}}<span style="color:#f92672">&lt;/audience&gt;</span>
+            <span style="color:#f92672">&lt;/audiences&gt;</span>
+            <span style="color:#f92672">&lt;required-claims&gt;</span>
+                <span style="color:#f92672">&lt;claim</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;roles&#34;</span> <span style="color:#a6e22e">match=</span><span style="color:#e6db74">&#34;any&#34;</span><span style="color:#f92672">&gt;</span>
+                    <span style="color:#f92672">&lt;value&gt;</span>Sample.Read<span style="color:#f92672">&lt;/value&gt;</span>
+                <span style="color:#f92672">&lt;/claim&gt;</span>
+            <span style="color:#f92672">&lt;/required-claims&gt;</span>
+        <span style="color:#f92672">&lt;/validate-azure-ad-token&gt;</span>
+    <span style="color:#f92672">&lt;/inbound&gt;</span>
+<span style="color:#f92672">&lt;/policies&gt;</span>
+</code></pre></div><p>The <a href="https://learn.microsoft.com/en-us/azure/api-management/validate-azure-ad-token-policy">validate-azure-ad-token</a> policy uses two named values to verify token authenticity: <code>tenant-id</code> contains your Directory (tenant) ID to ensure the token was issued by the correct identity provider, and <code>oauth-audience</code> contains the &lsquo;Application (client) ID&rsquo; of the API Management app registration to verify the token was retrieved for the expected resource. This combination ensures that only tokens issued by your tenant for the correct API Management app registration are accepted. The policy also checks that the token&rsquo;s <code>roles</code> claim includes the required role, such as <code>Sample.Read</code>.</p>
+<p>In production scenarios, I usually configure the <code>validate-azure-ad-token</code> policy at the global scope to enforce OAuth authentication for all APIs in the API Management instance, then configure the specific required roles at the API or operation scope by setting them in a variable before the token validation occurs. This approach provides consistent security across your APIs while making it easy to enforce different role requirements for different endpoints or operations, keeping your policy logic both centralized and flexible.</p>
+<p>You can find the full policy example with role determination based on HTTP methods in the <a href="https://github.com/ronaldbosma/protect-apim-with-oauth/blob/main/infra/modules/application/protected-api.xml">project repository</a>.</p>
+<p>As an alternative to the <code>validate-azure-ad-token</code> policy, you can use the <a href="https://learn.microsoft.com/en-us/azure/api-management/validate-jwt-policy">validate-jwt</a> policy, which supports other identity providers that implement OpenID Connect:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;validate-jwt</span> <span style="color:#a6e22e">header-name=</span><span style="color:#e6db74">&#34;Authorization&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;openid-config</span> <span style="color:#a6e22e">url=</span><span style="color:#e6db74">&#34;https://login.microsoftonline.com/{{tenant-id}}/v2.0/.well-known/openid-configuration&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;audiences&gt;</span>
+        <span style="color:#f92672">&lt;audience&gt;</span>{{oauth-audience}}<span style="color:#f92672">&lt;/audience&gt;</span>
+    <span style="color:#f92672">&lt;/audiences&gt;</span>
+    <span style="color:#f92672">&lt;required-claims&gt;</span>
+        <span style="color:#f92672">&lt;claim</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;roles&#34;</span> <span style="color:#a6e22e">match=</span><span style="color:#e6db74">&#34;any&#34;</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;value&gt;</span>Sample.Read<span style="color:#f92672">&lt;/value&gt;</span>
+        <span style="color:#f92672">&lt;/claim&gt;</span>
+    <span style="color:#f92672">&lt;/required-claims&gt;</span>
+<span style="color:#f92672">&lt;/validate-jwt&gt;</span>
+</code></pre></div><h2 id="testing-the-protected-api">Testing the Protected API</h2>
+<p>After deployment, you can test the OAuth-protected API using the OAuth 2.0 client credentials flow. The following sequence diagram shows the authentication and authorization flow:</p>
+<p><img src="../../../../../images/apim-oauth-series/protect-apim-with-oauth/diagrams-sequence-diagram.png" alt="Sequence Diagram"></p>
+<p>For a detailed explanation on how to test the API with the VS Code REST Client extension, see the <a href="https://github.com/ronaldbosma/protect-apim-with-oauth/blob/main/demos/demo.md#test-the-protected-api">&lsquo;Test the protected API&rsquo; section</a> in the template&rsquo;s demo guide. But you can use any tool that supports HTTP requests.</p>
+<p>Here are the basic HTTP requests you&rsquo;ll use:</p>
+<ol>
+<li><strong>Get an access token</strong> from Entra ID:</li>
+</ol>
+<pre tabindex="0"><code># Get a token from Entra ID
+# @name getToken
+POST https://login.microsoftonline.com/{{tenantId}}/oauth2/v2.0/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id={{clientId}}&amp;client_secret={{clientSecret}}&amp;grant_type=client_credentials&amp;scope={{clientScope}}
+</code></pre><ol start="2">
+<li><strong>Call the protected API</strong> with different HTTP methods:</li>
+</ol>
+<pre tabindex="0"><code># Call GET on Protected API with token
+GET https://{{apimHostname}}/protected
+Authorization: Bearer {{getToken.response.body.access_token}}
+
+# Call POST on Protected API with token
+POST https://{{apimHostname}}/protected
+Authorization: Bearer {{getToken.response.body.access_token}}
+
+# Call DELETE on Protected API with token (should fail without Sample.Delete role)
+DELETE https://{{apimHostname}}/protected
+Authorization: Bearer {{getToken.response.body.access_token}}
+</code></pre><p>The API will return a 200 OK response if the token is valid and the client has the required role, or a 401 Unauthorized response if authorization fails.</p>
+<p>You can inspect the access token at <a href="https://jwt.ms/">jwt.ms</a> to see the claims, including the <code>roles</code> claim that contains the assigned application roles.</p>
+<h2 id="considerations">Considerations</h2>
+<p>When implementing OAuth protection for API Management, there are several architectural decisions to consider that will impact your security model, performance and maintenance overhead.</p>
+<h3 id="app-registration-strategy">App Registration Strategy</h3>
+<p>You&rsquo;ll need to decide how many app registrations to create for your APIs.</p>
+<p><strong>Single app registration approach</strong>: Create one app registration that represents all APIs in your API Management instance, with different roles for each API or set of operations. This is the approach shown in this post. The main benefit is that clients only need to retrieve one token to access multiple APIs they&rsquo;re authorized for, reducing the number of calls to Entra ID. However, if clients have many role assignments, the JWT token can become large, potentially impacting performance or causing issues with firewalls that limit header sizes.</p>
+<p><strong>Multiple app registrations approach</strong>: Create a separate app registration for each API in API Management. This results in smaller JWT tokens with fewer roles, but clients need to retrieve and cache separate tokens for each API since the OAuth 2.0 client credentials flow in Entra ID only supports one scope per token request. This also increases the number of app registrations you need to maintain.</p>
+<h3 id="client-authentication-methods">Client Authentication Methods</h3>
+<p>The authentication method your clients use affects both security and implementation complexity.</p>
+<p><strong>Managed identities</strong> should always be your first choice when clients run on Azure resources within the same Entra ID tenant. This eliminates secret management entirely and provides the highest security with the least operational overhead.</p>
+<p><strong>Certificates</strong> are Microsoft&rsquo;s recommended best practice over client secrets. The private key stays with the client and doesn&rsquo;t travel over the network, making it more secure. However, certificate management can be more complex for clients to implement.</p>
+<p><strong>Client secrets</strong> are the simplest option from a client implementation perspective but less secure since the secret is transmitted with each token request. You&rsquo;ll also need to plan for secret rotation since client secrets have expiration dates, and you need a secure way to distribute the secrets to your clients.</p>
+<p><strong>Federated credentials</strong> can be a good alternative for external clients that support this authentication method, though the setup can be more complex.</p>
+<p>If you want to enforce that clients use certificates or managed identities instead of client secrets, you can add an additional check in your API Management policy that requires the <code>azpacr</code> claim in the token to be <code>2</code>, indicating that certificate-based authentication was used.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Deploying OAuth-protected APIs in Azure API Management using Bicep provides several benefits:</p>
+<ul>
+<li><strong>Infrastructure as code</strong>: You can reproduce your environment, including identity configuration, every time you deploy</li>
+<li><strong>Role-based security</strong>: Fine-grained access control using application roles</li>
+<li><strong>Enterprise integration</strong>: Native integration with Microsoft Entra ID</li>
+</ul>
+<p>This approach eliminates manual configuration steps and provides a solid foundation for securing APIs in enterprise environments. In upcoming posts in this series, we&rsquo;ll explore additional OAuth scenarios.</p>
+<p>You can find the complete working example in my <a href="https://github.com/ronaldbosma/protect-apim-with-oauth">protect-apim-with-oauth</a> repository, which includes detailed deployment instructions and testing examples.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/oauth">OAuth</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/entra-id">Entra ID</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/microsoft-graph">Microsoft Graph</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/09/04/convert-base64-to-multipart/form-data-with-api-management/">Convert Base64 to multipart/form-data with API Management &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/apim-mtls">apim-mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

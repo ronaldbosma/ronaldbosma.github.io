@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Fri, 21 Feb 2025 11:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/bicep/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 16 Sep 2025 19:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/bicep/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Protect APIs in Azure API Management with OAuth</title>
+      <link>https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/</link>
+      <pubDate>Tue, 16 Sep 2025 19:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/</guid>
+      <description>Discover how to secure APIs in Azure API Management with OAuth 2.0 and Microsoft Entra ID using a fully automated, infrastructure-as-code approach. This post walks through deploying everything with Bicep, including app registrations via the Microsoft Graph Bicep extension, so you can avoid manual portal setup and ensure repeatable deployments.</description>
+    </item>
+    
     <item>
       <title>Azure Integration Services Quickstart</title>
       <link>https://ronaldbosma.github.io/blog/2025/02/21/azure-integration-services-quickstart/</link>
