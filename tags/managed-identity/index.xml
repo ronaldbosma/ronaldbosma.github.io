@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Managed Identity on Ronald&#39;s Blog</title>
+    <link>https://ronaldbosma.github.io/tags/managed-identity/</link>
+    <description>Recent content in Managed Identity on Ronald&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Ronald Bosma - All rights reserved</copyright>
+    <lastBuildDate>Sat, 20 Sep 2025 14:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/managed-identity/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Call OAuth-Protected APIs with Managed Identity from .NET</title>
+      <link>https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/</link>
+      <pubDate>Sat, 20 Sep 2025 14:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/</guid>
+      <description>Learn how to call OAuth-protected APIs from .NET applications using Azure managed identity. This post shows how to implement secure API calls from Azure Functions without managing secrets, using the Azure Identity library and custom HTTP message handlers.</description>
+    </item>
+    
+  </channel>
+</rss>

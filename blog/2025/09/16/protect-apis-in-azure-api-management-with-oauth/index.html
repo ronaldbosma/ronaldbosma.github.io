@@ -130,7 +130,7 @@
                                     <i class="far fa-star"></i>
                                     Sep 16, 2025
                                     <i class="far fa-clock clock"></i>
-                                    11 min read
+                                    12 min read
                                 </span>					
                             </div>
                         </div>			
@@ -152,7 +152,24 @@
                     <div class="article-post">
                         <p>I&rsquo;ve been working on securing APIs in Azure API Management and wanted to show you how to deploy a complete OAuth-protected setup using Bicep. While Microsoft&rsquo;s documentation covers <a href="https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad">how to protect an API in Azure API Management using OAuth 2.0</a>, it focuses on manual configuration through the Azure portal.</p>
 <p>In this post, I&rsquo;ll show you how to deploy everything using Bicep, including the necessary Microsoft Entra ID app registrations. This approach gives you a fully automated, repeatable infrastructure-as-code solution for protecting your APIs with OAuth.</p>
-<p>This is the first post in a series about OAuth and API Management where we&rsquo;ll explore different scenarios and implementation patterns.</p>
+<p>This is the first post in a series about OAuth and API Management where we&rsquo;ll explore different scenarios and implementation patterns. The series covers both protecting APIs with OAuth and calling OAuth-protected resources from various Azure services:</p>
+<ul>
+<li><strong>Protect APIs in Azure API Management with OAuth - <em>this post</em></strong></li>
+<li>Calling OAuth-Protected APIs with Managed Identity
+<ul>
+<li><a href="/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/">Part 1: In .NET (Azure Function)</a></li>
+<li>Part 2: In Logic Apps - <em>coming soon</em></li>
+<li>Part 3: In API Management - <em>coming soon</em></li>
+</ul>
+</li>
+<li>Calling OAuth-Protected Backends from API Management - <em>coming later</em>
+<ul>
+<li>Part 1: With Credential Manager</li>
+<li>Part 2: With Client Secret</li>
+<li>Part 3: With Client Certificate</li>
+</ul>
+</li>
+</ul>
 <h3 id="table-of-contents">Table of Contents</h3>
 <ul>
 <li><a href="#why-protect-apis-with-oauth">Why Protect APIs with OAuth</a></li>
@@ -435,6 +452,8 @@ Authorization: Bearer {{getToken.response.body.access_token}}
                     
                     <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
                     
+                        <a class="d-block col-md-6" href="https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/"> &laquo; Call OAuth-Protected APIs with Managed Identity from .NET</a>
+                    
                     
                         <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/09/04/convert-base64-to-multipart/form-data-with-api-management/">Convert Base64 to multipart/form-data with API Management &raquo;</a>
                     
@@ -459,6 +478,8 @@ Authorization: Bearer {{getToken.response.body.access_token}}
 			</div>
 		</div>
 		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
 			
 			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
 			
@@ -513,6 +534,8 @@ Authorization: Bearer {{getToken.response.body.access_token}}
 			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
 			
 			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
 			
 			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
 			

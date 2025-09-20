@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Call OAuth-Protected APIs with Managed Identity from .NET | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/cover.png"/>
+<meta name="twitter:title" content="Call OAuth-Protected APIs with Managed Identity from .NET"/>
+<meta name="twitter:description" content="Learn how to call OAuth-protected APIs from .NET applications using Azure managed identity. This post shows how to implement secure API calls from Azure Functions without managing secrets, using the Azure Identity library and custom HTTP message handlers."/>
+
+	<meta property="og:title" content="Call OAuth-Protected APIs with Managed Identity from .NET" />
+<meta property="og:description" content="Learn how to call OAuth-protected APIs from .NET applications using Azure managed identity. This post shows how to implement secure API calls from Azure Functions without managing secrets, using the Azure Identity library and custom HTTP message handlers." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-09-20T14:30:00+02:00" />
+<meta property="article:modified_time" content="2025-09-20T14:30:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Call%20OAuth-Protected%20APIs%20with%20Managed%20Identity%20from%20.NET&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f20%2fcall-oauth-protected-apis-with-managed-identity-from-.net%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f20%2fcall-oauth-protected-apis-with-managed-identity-from-.net%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f20%2fcall-oauth-protected-apis-with-managed-identity-from-.net%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Sep 20, 2025
+                                    <i class="far fa-clock clock"></i>
+                                    8 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Call OAuth-Protected APIs with Managed Identity from .NET</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working with OAuth-protected APIs in Azure API Management and wanted to show you how to call them securely from .NET applications. In my <a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">previous post</a>, we covered how to protect APIs with OAuth and now it&rsquo;s time to show how to consume them.</p>
+<p>This post is part of a series about OAuth and API Management:</p>
+<ul>
+<li><a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a></li>
+<li>Calling OAuth-Protected APIs with Managed Identity
+<ul>
+<li><strong>Part 1: In .NET (Azure Function) - <em>this post</em></strong></li>
+<li>Part 2: In Logic Apps - <em>coming soon</em></li>
+<li>Part 3: In API Management - <em>coming soon</em></li>
+</ul>
+</li>
+<li>Calling OAuth-Protected Backends from API Management - <em>coming later</em>
+<ul>
+<li>Part 1: With Credential Manager</li>
+<li>Part 2: With Client Secret</li>
+<li>Part 3: With Client Certificate</li>
+</ul>
+</li>
+</ul>
+<p>When calling APIs that are protected with OAuth using Entra ID, using managed identities should always be your first choice when clients run on Azure resources within the same Entra ID tenant. This eliminates secret management entirely and provides the highest security with the least operational overhead.</p>
+<p>In this post, I&rsquo;ll show you how to implement OAuth authentication from a .NET Azure Function using the system-assigned managed identity.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#solution-overview">Solution Overview</a></li>
+<li><a href="#basic-implementation">Basic Implementation</a></li>
+<li><a href="#refactored-implementation">Refactored Implementation</a>
+<ul>
+<li><a href="#configuration-management">Configuration Management</a></li>
+<li><a href="#authorization-handler">Authorization Handler</a></li>
+<li><a href="#azure-function-implementation">Azure Function Implementation</a></li>
+<li><a href="#service-registration">Service Registration</a></li>
+</ul>
+</li>
+<li><a href="#testing-the-implementation">Testing the Implementation</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="solution-overview">Solution Overview</h3>
+<p>The solution includes the following components:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-with-managed-identity-from-dotnet/diagrams-overview-function.png" alt="Overview"></p>
+<ul>
+<li><strong>Azure Function App</strong>: A .NET Azure Function that calls the protected API using its system-assigned managed identity</li>
+<li><strong>Azure API Management</strong>: Service with OAuth-protected API</li>
+<li><strong>Entra ID App Registration</strong>: Represents the protected APIs in API Management and defines available app roles</li>
+<li><strong>Supporting Resources</strong>: Application Insights, Log Analytics workspace and Storage Account</li>
+</ul>
+<p>While this example uses an API on API Management, the same approach applies when calling any other API protected with OAuth.</p>
+<p>The Entra ID configuration follows the same pattern described in <a href="https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a>. The key difference is that we assign the <code>Sample.Read</code> and <code>Sample.Write</code> app roles to the Function App&rsquo;s system-assigned managed identity instead of client app registrations.</p>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity">Call API Management with Managed Identity</a> that demonstrates three scenarios: .NET Azure Functions, Logic Apps and API Management calling protected APIs. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on the .NET implementation.</p>
+<h3 id="basic-implementation">Basic Implementation</h3>
+<p>To authenticate with managed identity from .NET, the easiest way is to use the <a href="https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential?view=azure-dotnet">DefaultAzureCredential</a> class. This class automatically detects the available authentication method and uses the appropriate credential type, including managed identity when running in Azure.</p>
+<blockquote>
+<p>In production, it&rsquo;s better to use something else. See <a href="https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/credential-chains?tabs=dac#usage-guidance-for-defaultazurecredential">Usage guidance for DefaultAzureCredential</a>.</p>
+<p>If you want to execute the function locally, have a look at <a href="https://rios.engineer/securing-api-to-api-calls-in-azure-with-entra-and-api-management/">Securing API to API calls in Azure with Entra and API Management</a> from Dan Rios. He explains what to configure in order to use the local users' Azure CLI credentials.</p>
+</blockquote>
+<p>Let&rsquo;s start with a simple implementation that shows the core concepts. Here&rsquo;s an Azure Function that retrieves an access token and performs a GET request on a protected API:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> Azure.Core;
+<span style="color:#66d9ef">using</span> Azure.Identity;
+<span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Http;
+<span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Mvc;
+<span style="color:#66d9ef">using</span> Microsoft.Azure.Functions.Worker;
+<span style="color:#66d9ef">using</span> System.Net.Http.Headers;
+
+<span style="color:#66d9ef">namespace</span> FunctionApp;
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CallProtectedApiFunction</span>
+{
+<span style="color:#a6e22e">    [Function(nameof(CallProtectedApiFunction))]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> Task&lt;IActionResult&gt; Run([HttpTrigger(AuthorizationLevel.Anonymous, <span style="color:#e6db74">&#34;get&#34;</span>)] HttpRequest originalRequest)
+    {
+        <span style="color:#75715e">// Retrieve bearer token
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">var</span> credentials = <span style="color:#66d9ef">new</span> DefaultAzureCredential();
+        <span style="color:#66d9ef">var</span> tokenResult = <span style="color:#66d9ef">await</span> credentials.GetTokenAsync(
+            <span style="color:#66d9ef">new</span> TokenRequestContext([<span style="color:#e6db74">&#34;&lt;your-application-id-uri&gt;&#34;</span>])
+        );
+
+        <span style="color:#75715e">// Create HTTP client and set Authorization header
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">using</span> var httpClient = <span style="color:#66d9ef">new</span> HttpClient();
+        httpClient.BaseAddress = <span style="color:#66d9ef">new</span> Uri(<span style="color:#e6db74">&#34;https://&lt;your-api-management-service-name&gt;.azure-api.net&#34;</span>);
+        httpClient.DefaultRequestHeaders.Authorization = <span style="color:#66d9ef">new</span> AuthenticationHeaderValue(<span style="color:#e6db74">&#34;Bearer&#34;</span>, tokenResult.Token);
+
+        <span style="color:#75715e">// Call protected endpoint
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">var</span> result = <span style="color:#66d9ef">await</span> httpClient.GetAsync(<span style="color:#e6db74">&#34;/protected&#34;</span>);
+        result.EnsureSuccessStatusCode();
+
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> OkResult();
+    }
+}
+</code></pre></div><ul>
+<li><code>&lt;your-application-id-uri&gt;</code> should be replaced with the Application ID URI of the Entra ID app registration representing the protected API in API Management. For example, <code>api://apim-managedidentity-nwe-i2jdr</code>. In this case, the <code>./default</code> suffix is not required</li>
+<li><code>&lt;your-api-management-service-name&gt;</code> should be replaced with the name of your API Management service</li>
+</ul>
+<blockquote>
+<p>Note that the Azure Function allows anonymous access (<code>AuthorizationLevel.Anonymous</code>) for the purpose of this demo. In a real-world scenario, use appropriate security measures to protect your function.</p>
+</blockquote>
+<p>This implementation shows the essential steps:</p>
+<ol>
+<li><strong>Create credentials</strong>: <code>DefaultAzureCredential</code> automatically detects the managed identity when running in Azure</li>
+<li><strong>Request token</strong>: Use the Application ID URI as the scope to retrieve an access token</li>
+<li><strong>Set authorization header</strong>: Add the Bearer token to the HTTP request in the Authorization header</li>
+<li><strong>Call the API</strong>: Send the request to the protected endpoint</li>
+</ol>
+<p>While this works, it has some limitations. You&rsquo;re creating a new <code>HttpClient</code> for each request and authentication logic is mixed with other logic which has to be repeated in every function that calls a protected API.</p>
+<h3 id="refactored-implementation">Refactored Implementation</h3>
+<p>A better approach uses configuration management, dependency injection and custom HTTP message handlers. This separates concerns, makes your code more testable and eliminates hardcoded values.</p>
+<h4 id="configuration-management">Configuration Management</h4>
+<p>To make the implementation independent of the environment, we&rsquo;ll use the <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-9.0">Options pattern in ASP.NET Core</a> for configuration management.</p>
+<p>First, create a configuration model to specify the API Management URL and the OAuth target resource:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> System.ComponentModel.DataAnnotations;
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ApiManagementOptions</span>
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">string</span> SectionKey = <span style="color:#e6db74">&#34;ApiManagement&#34;</span>;
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Required]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> GatewayUrl { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; } = <span style="color:#66d9ef">string</span>.Empty;
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Required]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> OAuthTargetResource { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; } = <span style="color:#66d9ef">string</span>.Empty;
+}
+</code></pre></div><p>Register the options object in your dependency injection container:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">services.AddOptionsWithValidateOnStart&lt;ApiManagementOptions&gt;()
+        .BindConfiguration(ApiManagementOptions.SectionKey)
+        .ValidateDataAnnotations();
+</code></pre></div><p>The configuration values are provided through application settings when deployed to Azure. In the sample azd template, the environment variables <code>ApiManagement__OAuthTargetResource</code> and <code>ApiManagement__GatewayUrl</code> are automatically configured during deployment. See <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/infra/modules/services/function-app.bicep">function-app.bicep</a> for the configuration.</p>
+<h4 id="authorization-handler">Authorization Handler</h4>
+<p>Next, create a <code>DelegatingHandler</code> that manages OAuth token retrieval:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> Azure.Core;
+<span style="color:#66d9ef">using</span> Azure.Identity;
+<span style="color:#66d9ef">using</span> Microsoft.Extensions.Options;
+<span style="color:#66d9ef">using</span> System.Net.Http.Headers;
+
+<span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AzureCredentialsAuthorizationHandler</span> : DelegatingHandler
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> ApiManagementOptions <span style="color:#ae81ff">_</span>apimOptions;
+
+    <span style="color:#66d9ef">public</span> AzureCredentialsAuthorizationHandler(IOptions&lt;ApiManagementOptions&gt; apimOptions)
+    {
+        <span style="color:#ae81ff">_</span>apimOptions = apimOptions.Value;
+    }
+
+    <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">async</span> Task&lt;HttpResponseMessage&gt; SendAsync(
+        HttpRequestMessage request, 
+        CancellationToken cancellationToken)
+    {
+        <span style="color:#66d9ef">var</span> credentials = <span style="color:#66d9ef">new</span> DefaultAzureCredential();
+        <span style="color:#66d9ef">var</span> tokenResult = <span style="color:#66d9ef">await</span> credentials.GetTokenAsync(
+            <span style="color:#66d9ef">new</span> TokenRequestContext([<span style="color:#ae81ff">_</span>apimOptions.OAuthTargetResource]), 
+            cancellationToken);
+
+        request.Headers.Authorization = <span style="color:#66d9ef">new</span> AuthenticationHeaderValue(<span style="color:#e6db74">&#34;Bearer&#34;</span>, tokenResult.Token);
+
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">await</span> <span style="color:#66d9ef">base</span>.SendAsync(request, cancellationToken);
+    }
+}
+</code></pre></div><p>This handler automatically:</p>
+<ul>
+<li>Retrieves access tokens using the managed identity</li>
+<li>Adds the Bearer token to outgoing requests</li>
+<li>Benefits from automatic token caching provided by <code>DefaultAzureCredential</code></li>
+<li>Uses configuration instead of hardcoded values</li>
+</ul>
+<h4 id="azure-function-implementation">Azure Function Implementation</h4>
+<p>The Function implementation becomes much cleaner by using the <a href="https://learn.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests">IHttpClientFactory</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Http;
+<span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Mvc;
+<span style="color:#66d9ef">using</span> Microsoft.Azure.Functions.Worker;
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CallProtectedApiFunction</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> IHttpClientFactory <span style="color:#ae81ff">_</span>httpClientFactory;
+
+    <span style="color:#66d9ef">public</span> CallProtectedApiFunction(IHttpClientFactory httpClientFactory)
+    {
+        <span style="color:#ae81ff">_</span>httpClientFactory = httpClientFactory;
+    }
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">    [Function(nameof(CallProtectedApiFunction))]</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> Task&lt;IActionResult&gt; Run([HttpTrigger(AuthorizationLevel.Anonymous, <span style="color:#e6db74">&#34;get&#34;</span>)] HttpRequest originalRequest)
+    {
+        <span style="color:#66d9ef">using</span> var httpClient = <span style="color:#ae81ff">_</span>httpClientFactory.CreateClient(<span style="color:#e6db74">&#34;apim&#34;</span>);
+        <span style="color:#66d9ef">var</span> result = <span style="color:#66d9ef">await</span> httpClient.GetAsync(<span style="color:#e6db74">&#34;/protected&#34;</span>);
+        result.EnsureSuccessStatusCode();
+
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> OkResult();
+    }
+}
+</code></pre></div><p>This simplified implementation shows how the authentication logic is completely removed from the Function. The HTTP client factory provides a pre-configured client called &ldquo;apim&rdquo; that automatically handles OAuth tokens through the authorization handler.</p>
+<blockquote>
+<p>The final implementation of the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/src/functionApp/FunctionApp/CallProtectedApiFunction.cs">CallProtectedApiFunction</a> function has additional logic to handle GET, POST and DELETE requests, and returns the used JWT token or detailed error information for demo purposes. You shouldn&rsquo;t do this in production, but it&rsquo;s useful for testing and debugging.</p>
+</blockquote>
+<h4 id="service-registration">Service Registration</h4>
+<p>The dependency injection setup registers all required services:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> Microsoft.Azure.Functions.Worker;
+<span style="color:#66d9ef">using</span> Microsoft.Extensions.Configuration;
+<span style="color:#66d9ef">using</span> Microsoft.Extensions.DependencyInjection;
+<span style="color:#66d9ef">using</span> Microsoft.Extensions.Options;
+
+<span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ServiceCollectionExtensions</span>
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> IServiceCollection RegisterDependencies(
+        <span style="color:#66d9ef">this</span> IServiceCollection services, 
+        IConfigurationManager configuration)
+    {
+        services.AddApplicationInsightsTelemetryWorkerService()
+                .ConfigureFunctionsApplicationInsights();
+
+        services.AddOptionsWithValidateOnStart&lt;ApiManagementOptions&gt;()
+                .BindConfiguration(ApiManagementOptions.SectionKey)
+                .ValidateDataAnnotations();
+
+        services.AddScoped&lt;AzureCredentialsAuthorizationHandler&gt;();
+
+        services.AddHttpClient(<span style="color:#e6db74">&#34;apim&#34;</span>, (sp, client) =&gt;
+                {
+                    <span style="color:#66d9ef">var</span> options = sp.GetRequiredService&lt;IOptions&lt;ApiManagementOptions&gt;&gt;().Value;
+                    client.BaseAddress = <span style="color:#66d9ef">new</span> Uri(options.GatewayUrl);
+                })
+                .AddHttpMessageHandler&lt;AzureCredentialsAuthorizationHandler&gt;();
+
+        <span style="color:#66d9ef">return</span> services;
+    }
+}
+</code></pre></div><p>This extension method is called from the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/src/functionApp/FunctionApp/Program.cs">Program.cs</a> file to configure all services during application startup.</p>
+<p>Key configuration points:</p>
+<ul>
+<li><strong>Options validation</strong>: Configuration is validated at startup using data annotations</li>
+<li><strong>Scoped handler</strong>: The authorization handler is registered as scoped to align with HTTP client lifetime</li>
+<li><strong>Named HTTP client</strong>: The &ldquo;apim&rdquo; client is pre-configured with the base address</li>
+<li><strong>Handler registration</strong>: <code>AddHttpMessageHandler</code> adds the authorization handler to the HTTP client pipeline</li>
+</ul>
+<h3 id="testing-the-implementation">Testing the Implementation</h3>
+<p>After deploying the solution (from the azd template), you can test the OAuth-protected API calls using different HTTP methods. Here&rsquo;s a sequence diagram showing a sample flow:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-with-managed-identity-from-dotnet/diagrams-function-to-apim.png" alt="Sequence Diagram"></p>
+<p>The flow shows how the access token is retrieved during the initial GET request and then cached for subsequent requests. The DELETE request fails because the managed identity is not assigned the required <code>Sample.Delete</code> role.</p>
+<p>You can test the implementation using any HTTP client. Here are examples using the REST Client extension for VS Code. Replace <code>&lt;your-function-app-name&gt;</code> with your actual Function App hostname:</p>
+<pre tabindex="0"><code>#=============================================================================
+# Test requests for the Azure Function
+#=============================================================================
+
+# Replace &lt;your-function-app-name&gt; with your actual Function App hostname
+@functionAppHostname = &lt;your-function-app-name&gt;.azurewebsites.net
+
+# Call GET on Azure Function
+GET https://{{functionAppHostname}}/api/CallProtectedApiFunction HTTP/1.1
+
+###
+
+# Call POST on Azure Function
+POST https://{{functionAppHostname}}/api/CallProtectedApiFunction HTTP/1.1
+
+###
+
+# Call DELETE on Azure Function
+DELETE https://{{functionAppHostname}}/api/CallProtectedApiFunction HTTP/1.1
+
+###
+</code></pre><ul>
+<li><strong>GET and POST requests</strong>: Return 200 OK because the Function&rsquo;s managed identity has <code>Sample.Read</code> and <code>Sample.Write</code> roles</li>
+<li><strong>DELETE request</strong>: Returns 401 Unauthorized because the <code>Sample.Delete</code> role isn&rsquo;t assigned to the managed identity</li>
+</ul>
+<p>If you execute multiple requests quickly, you&rsquo;ll notice that the <code>IssuedAt</code> value in the response doesn&rsquo;t change between requests. This demonstrates that <code>DefaultAzureCredential</code> automatically caches access tokens, improving performance by avoiding unnecessary token requests to Entra ID.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Calling OAuth-protected APIs from .NET applications using managed identity provides a secure, maintainable approach that eliminates secret management overhead. Using one of the <code>TokenCredential</code> classes provided in the Azure Identity library for .NET makes it super easy to retrieve an access token for a managed identity. Combined with custom HTTP message handlers, this creates a clean solution that separates authentication concerns from business logic.</p>
+<p>Key takeaways from this implementation:</p>
+<ul>
+<li>Use the Azure Identity library for managed identity authentication and automatic token caching</li>
+<li>Implement custom <code>DelegatingHandler</code> classes to centralize OAuth token management</li>
+<li>Leverage dependency injection and the options pattern for configuration management</li>
+<li>Take advantage of HTTP client factory for proper connection management</li>
+</ul>
+<p>In the next posts in this series, we&rsquo;ll explore how to call OAuth-protected APIs from Logic Apps and from other API Management APIs using similar managed identity patterns.</p>
+<p>You can find the complete working example in my <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity">call-apim-with-managed-identity</a> repository, which includes detailed deployment instructions and testing examples for multiple scenarios.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/.net">.NET</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-functions">Azure Functions</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/entra-id">Entra ID</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/managed-identity">Managed Identity</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/oauth">OAuth</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/apim-mtls">apim-mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
