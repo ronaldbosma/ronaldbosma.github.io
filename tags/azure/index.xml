@@ -14,7 +14,7 @@
       <pubDate>Wed, 24 Sep 2025 17:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/</guid>
-      <description>Configure Azure Logic Apps Standard workflows to call OAuth-protected APIs using managed identity. This post demonstrates how to set up HTTP action authentication settings, handle token caching automatically and test API calls with role-based access control.</description>
+      <description>Azure Logic Apps Standard makes it easy to call OAuth-protected APIs using managed identity. This post demonstrates how to use the HTTP action’s built-in authentication and token caching for secure, reliable calls.</description>
     </item>
     
     <item>
