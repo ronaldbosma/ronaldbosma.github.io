@@ -4,21 +4,21 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="generator" content="Hugo 0.92.2" />
 	
-	<title>Call OAuth-Protected APIs with Managed Identity from Logic Apps | Ronald&#39;s Blog</title>
+	<title>Call OAuth-Protected APIs with Managed Identity from API Management | Ronald&#39;s Blog</title>
 	
 	
 
 	<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/cover.png"/>
-<meta name="twitter:title" content="Call OAuth-Protected APIs with Managed Identity from Logic Apps"/>
-<meta name="twitter:description" content="Azure Logic Apps Standard makes it easy to call OAuth-protected APIs using managed identity. This post demonstrates how to use the HTTP action’s built-in authentication and token caching for secure, reliable calls."/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/cover.png"/>
+<meta name="twitter:title" content="Call OAuth-Protected APIs with Managed Identity from API Management"/>
+<meta name="twitter:description" content="Learn how to use API Management to call OAuth-protected APIs with managed identity. This enables secure API-to-API communication and privilege delegation patterns without managing secrets."/>
 
-	<meta property="og:title" content="Call OAuth-Protected APIs with Managed Identity from Logic Apps" />
-<meta property="og:description" content="Azure Logic Apps Standard makes it easy to call OAuth-protected APIs using managed identity. This post demonstrates how to use the HTTP action’s built-in authentication and token caching for secure, reliable calls." />
+	<meta property="og:title" content="Call OAuth-Protected APIs with Managed Identity from API Management" />
+<meta property="og:description" content="Learn how to use API Management to call OAuth-protected APIs with managed identity. This enables secure API-to-API communication and privilege delegation patterns without managing secrets." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/cover.png"/><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2025-09-24T17:00:00+02:00" />
-<meta property="article:modified_time" content="2025-09-24T17:00:00+02:00" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-09-29T16:00:00+02:00" />
+<meta property="article:modified_time" content="2025-09-29T16:00:00+02:00" />
 
 
 
@@ -91,19 +91,19 @@
     <p>Share</p>
     <ul>
         <li class="ml-1 mr-1">
-        <a target="_blank" href="https://twitter.com/intent/tweet?text=Call%20OAuth-Protected%20APIs%20with%20Managed%20Identity%20from%20Logic%20Apps&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f24%2fcall-oauth-protected-apis-with-managed-identity-from-logic-apps%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Call%20OAuth-Protected%20APIs%20with%20Managed%20Identity%20from%20API%20Management&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f29%2fcall-oauth-protected-apis-with-managed-identity-from-api-management%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
         <i class="fab fa-x-twitter"></i>
         </a>
         </li>
         
         <li class="ml-1 mr-1">
-        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f24%2fcall-oauth-protected-apis-with-managed-identity-from-logic-apps%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f29%2fcall-oauth-protected-apis-with-managed-identity-from-api-management%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
         <i class="fab fa-facebook-f"></i>
         </a>
         </li>
 
         <li class="ml-1 mr-1">
-        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f24%2fcall-oauth-protected-apis-with-managed-identity-from-logic-apps%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f09%2f29%2fcall-oauth-protected-apis-with-managed-identity-from-api-management%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
         <i class="fab fa-xing"></i>
         </a>
         </li>        
@@ -128,7 +128,7 @@
                                 <span class="author-description">
                                     Software Architect<br>
                                     <i class="far fa-star"></i>
-                                    Sep 24, 2025
+                                    Sep 29, 2025
                                     <i class="far fa-clock clock"></i>
                                     6 min read
                                 </span>					
@@ -138,27 +138,27 @@
                         
                                                 
                         
-                        <h1 class="posttitle">Call OAuth-Protected APIs with Managed Identity from Logic Apps</h1> 
+                        <h1 class="posttitle">Call OAuth-Protected APIs with Managed Identity from API Management</h1> 
                     </div>
 
                     
                     
                     
-                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/cover.png" alt="thumbnail for this post">
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/cover.png" alt="thumbnail for this post">
                     
                     
 
                     
                     <div class="article-post">
-                        <p>In my <a href="/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/">previous post</a>, I showed how to call an OAuth-protected API from .NET using an Azure Function. In most projects that use Azure Integration Services, I also use Logic Apps Standard workflows. This post shows how to call OAuth-protected APIs with managed identity from Logic Apps Standard workflows.</p>
+                        <p>In my previous posts I showed how to call OAuth-protected APIs from .NET and Logic Apps using managed identity. This post demonstrates how to call OAuth-protected APIs from within API Management policies using the system-assigned managed identity.</p>
 <p>This post is part of a series about OAuth and API Management:</p>
 <ul>
 <li><a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a></li>
 <li>Calling OAuth-Protected APIs with Managed Identity
 <ul>
 <li><a href="/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/">Part 1: In .NET (Azure Function)</a></li>
-<li><strong>Part 2: In Logic Apps (Standard) - <em>this post</em></strong></li>
-<li><a href="/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/">Part 3: In API Management</a></li>
+<li><a href="/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/">Part 2: In Logic Apps (Standard)</a></li>
+<li><strong>Part 3: In API Management - <em>this post</em></strong></li>
 </ul>
 </li>
 <li>Calling OAuth-Protected Backends from API Management - <em>coming later</em>
@@ -169,127 +169,150 @@
 </ul>
 </li>
 </ul>
-<p>When calling APIs that are protected with OAuth using Entra ID from Azure Logic Apps, using managed identities should always be your first choice when workflows run on Azure resources within the same Entra ID tenant. This eliminates secret management entirely and provides the highest security with the least operational overhead.</p>
-<p>In this post, I&rsquo;ll show you how to implement OAuth authentication from a Logic Apps Standard workflow using the system-assigned managed identity.</p>
+<p>API Management provides several use cases for calling OAuth-protected APIs with managed identity. For example:</p>
+<ol>
+<li><strong>Proxy API calls</strong>: Acting as a proxy to forward requests to OAuth-protected APIs</li>
+<li><strong>API composition and privilege delegation</strong>: Creating composite APIs where the client has access to one API but needs data from another protected API. The managed identity acts as a privileged service account, allowing API Management to access resources on behalf of the client without exposing additional permissions to the original caller.</li>
+</ol>
+<p>In this post, I&rsquo;ll show you how to use managed identity in API Management to securely call OAuth-protected APIs.</p>
 <h3 id="table-of-contents">Table of Contents</h3>
 <ul>
 <li><a href="#solution-overview">Solution Overview</a></li>
-<li><a href="#workflow-implementation">Workflow Implementation</a>
+<li><a href="#implementation">Implementation</a>
 <ul>
-<li><a href="#workflow-structure">Workflow Structure</a></li>
-<li><a href="#configuring-managed-identity-authentication">Configuring Managed Identity Authentication</a></li>
+<li><a href="#policy-configuration">Policy Configuration</a></li>
+<li><a href="#backend-configuration">Backend Configuration</a></li>
 </ul>
 </li>
 <li><a href="#testing-the-implementation">Testing the Implementation</a></li>
 <li><a href="#conclusion">Conclusion</a></li>
 </ul>
 <h3 id="solution-overview">Solution Overview</h3>
-<p>The solution includes the following components:</p>
-<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-with-managed-identity-from-logic-apps/diagrams-overview-workflow.png" alt="Overview"></p>
+<p>The solution demonstrates API Management calling protected APIs using its system-assigned managed identity:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-with-managed-identity-from-apim/diagrams-overview-apim.png" alt="Overview"></p>
 <ul>
-<li><strong>Azure Logic App (Standard)</strong>: A workflow that calls the protected API using the Logic App&rsquo;s system-assigned managed identity</li>
-<li><strong>Azure API Management</strong>: Service with OAuth-protected API</li>
-<li><strong>Entra ID App Registration</strong>: Represents the protected APIs in API Management and defines available app roles</li>
-<li><strong>Supporting Resources</strong>: Application Insights, Log Analytics workspace and Storage Account</li>
+<li><strong>Azure API Management</strong> service with two APIs:
+<ul>
+<li><strong>Protected API</strong>: A backend API that&rsquo;s protected with OAuth using Entra ID</li>
+<li><strong>Unprotected API</strong>: A public API that calls the protected API using API Management&rsquo;s system-assigned managed identity</li>
 </ul>
-<p>While this example uses an API on API Management, the same approach applies when calling any other API protected with OAuth using Entra ID.</p>
-<p>The Entra ID configuration follows the same pattern described in <a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a>. The key difference is that we assign the <code>Sample.Read</code> and <code>Sample.Write</code> app roles to the Logic App&rsquo;s system-assigned managed identity instead of client app registrations.</p>
-<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity">Call API Management with Managed Identity</a> that demonstrates three scenarios: .NET Azure Functions, Logic Apps and API Management calling protected APIs. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on the Logic Apps implementation.</p>
-<h3 id="workflow-implementation">Workflow Implementation</h3>
-<p>Azure Logic Apps Standard provides built-in support for managed identity authentication to APIs through the HTTP action. The implementation is straightforward - you configure the authentication settings directly in the action without writing custom code.</p>
-<h4 id="workflow-structure">Workflow Structure</h4>
-<p>The workflow that&rsquo;s deployed in the template looks like:</p>
-<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-with-managed-identity-from-logic-apps/call-protected-api-workflow.png" alt="Workflow Overview"></p>
+</li>
+<li><strong>Entra ID App Registration</strong>: Represents the protected APIs in API Management and defines available app roles</li>
+<li><strong>Supporting Resources</strong>: Application Insights and Log Analytics workspace</li>
+</ul>
+<p>While this example uses an API on API Management as the protected backend, you can use the same approach to call any API protected with OAuth via Entra ID.</p>
+<p>The Entra ID configuration follows the same pattern described in <a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a>. The key difference is that we assign the <code>Sample.Read</code> and <code>Sample.Write</code> app roles to API Management&rsquo;s system-assigned managed identity instead of client app registrations.</p>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity">Call API Management with Managed Identity</a> that demonstrates three scenarios: .NET Azure Functions, Logic Apps and API Management calling protected APIs. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on calling OAuth-protected APIs from API Management.</p>
+<h3 id="implementation">Implementation</h3>
+<p>API Management provides a built-in policy called <code>authentication-managed-identity</code> that simplifies OAuth authentication using managed identity. This policy automatically handles token acquisition, caching and renewal. For complete documentation, see <a href="https://learn.microsoft.com/en-us/azure/api-management/authentication-managed-identity-policy">Authenticate with managed identity</a>.</p>
+<h4 id="policy-configuration">Policy Configuration</h4>
+<p>The unprotected API uses a simple policy configuration to call the protected API with managed identity authentication. Here&rsquo;s the inbound section from <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/infra/modules/application/unprotected-api.xml">unprotected-api.xml</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;inbound&gt;</span>
+	<span style="color:#f92672">&lt;base</span> <span style="color:#f92672">/&gt;</span>
+
+	<span style="color:#75715e">&lt;!-- Forward requests to the Protected API hosted on this API Management instance. --&gt;</span>
+	<span style="color:#f92672">&lt;set-backend-service</span> <span style="color:#a6e22e">backend-id=</span><span style="color:#e6db74">&#34;localhost&#34;</span> <span style="color:#f92672">/&gt;</span>
+	<span style="color:#f92672">&lt;rewrite-uri</span> <span style="color:#a6e22e">template=</span><span style="color:#e6db74">&#34;protected&#34;</span> <span style="color:#f92672">/&gt;</span>
+
+	<span style="color:#75715e">&lt;!-- Use the API Management system-assigned managed identity to get a JWT token. --&gt;</span>
+	<span style="color:#f92672">&lt;authentication-managed-identity</span> <span style="color:#a6e22e">resource=</span><span style="color:#e6db74">&#34;{{oauth-target-resource}}&#34;</span> <span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/inbound&gt;</span>
+</code></pre></div><p>The policy does three main things:</p>
 <ol>
-<li><strong>When an HTTP request is received trigger</strong>: Receives a JSON request specifying the HTTP method to use when calling the protected API. For example:
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-     <span style="color:#f92672">&#34;httpMethod&#34;</span>: <span style="color:#e6db74">&#34;GET&#34;</span>
+<li><code>set-backend-service</code>: Uses the <code>localhost</code> backend to route requests within the same API Management instance</li>
+<li><code>rewrite-uri</code>: Rewrites the URI to target the <code>protected</code> API path</li>
+<li><code>authentication-managed-identity</code>: Automatically obtains an OAuth token using API Management&rsquo;s system-assigned managed identity and adds it to the Authorization header</li>
+</ol>
+<p>The policy uses one named value:</p>
+<ul>
+<li><code>oauth-target-resource</code>: The Application ID URI of the Entra ID app registration representing the protected API (e.g., <code>api://apim-managedidentity-nwe-i2jdr</code>)</li>
+</ul>
+<h4 id="backend-configuration">Backend Configuration</h4>
+<p>The policy references a <code>localhost</code> backend that allows one API to call another API within the same API Management instance. This backend needs to be configured separately from the policy. Here&rsquo;s the Bicep configuration used to create it:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource localhostBackend 'Microsoft.ApiManagement/service/backends@2024-06-01-preview' = {
+  parent: apiManagementService
+  name: 'localhost'
+  properties: {
+    description: 'The localhost backend. Can be used to call other APIs hosted in the same API Management instance.'
+
+    // Note: This configuration uses the public gateway URL for the backend.
+    // For APIM instances running inside a VNet, you would typically use https://localhost as the backend URL.
+    url: apiManagementService.properties.gatewayUrl
+    protocol: 'http'
+    
+    // Note: The Host header configuration is only necessary when the backend URL is set to https://localhost.
+    // For public gateway URLs, this configuration can be omitted.
+    credentials : {
+      header: {
+        Host: [ parseUri(apiManagementService.properties.gatewayUrl).host ]
+      }
+    }
+    
+    tls: {
+      validateCertificateChain: true
+      validateCertificateName: true
+    }
+  }
 }
-</code></pre></div></li>
-<li><strong>HTTP action</strong>: Calls the protected API on API Management with managed identity authentication. The <code>httpMethod</code> value in the request specifies the HTTP method that&rsquo;s used when calling the protected API. The HTTP action is wrapped in a scope action so we can return error details if an exception occurs.</li>
-<li><strong>Response action</strong>: Returns the API response with the JWT token details or detailed error information. This is for demo purposes, don&rsquo;t return this in a real world scenario.</li>
-</ol>
-<h4 id="configuring-managed-identity-authentication">Configuring Managed Identity Authentication</h4>
-<p>To enable managed identity authentication on the HTTP action, you need to configure the advanced authentication settings. For the official documentation, see <a href="https://learn.microsoft.com/en-us/azure/logic-apps/authenticate-with-managed-identity?tabs=standard#authenticate-access-with-managed-identity">Authenticate access with managed identity</a>.</p>
+</code></pre><p>This backend configuration:</p>
+<ul>
+<li><strong>Creates a reusable backend</strong>: The <code>localhost</code> backend can be referenced by multiple policies within the same API Management instance</li>
+<li><strong>Uses the public gateway URL</strong>: Points to the API Management gateway URL for external-facing instances. For APIM instances running inside a VNet, you would typically use <code>https://localhost</code> as the backend URL instead</li>
+<li><strong>Configures proper headers</strong>: Sets the Host header to ensure requests are routed correctly. This Host header configuration is only necessary when the backend URL is set to <code>https://localhost</code> - for public gateway URLs, this configuration can be omitted</li>
+</ul>
+<p>Using a backend instead of directly specifying the URL in policies provides better maintainability and reusability across multiple operations and APIs.</p>
 <blockquote>
-<p>Note: The &ldquo;Call an Azure API Management API&rdquo; action in Logic Apps does not support configuring additional authentication such as managed identities. You must use the generic HTTP action instead.</p>
+<p>Note: When using a backend in API Management, you can actually <a href="https://learn.microsoft.com/en-us/azure/api-management/backends?tabs=portal#configure-managed-identity-for-authorization-credentials">configure managed identity for authorization credentials</a> through the Azure Portal, as shown in the configuration below:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-with-managed-identity-from-apim/apim-backend-authorization-credentials.png" alt="Backend Authorization Credentials"></p>
+<p>However, at this moment in time, it&rsquo;s not possible to deploy this using Bicep as it is not part of the <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.apimanagement/service/backends?pivots=deployment-language-bicep">Microsoft.ApiManagement service/backends</a> resource definition.</p>
 </blockquote>
-<p>Here&rsquo;s how to configure it:</p>
-<ol>
-<li>
-<p><strong>Enable authentication</strong>: Click on the &ldquo;Advanced parameters&rdquo; dropdown in the HTTP action parameters tab to reveal additional parameters and select &ldquo;Authentication&rdquo;:</p>
-<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-with-managed-identity-from-logic-apps/http-action-advanced-parameters.png" alt="HTTP Action Advanced Parameters"></p>
-</li>
-<li>
-<p><strong>Configure managed identity</strong>: Set the authentication type to &ldquo;Managed Identity&rdquo;, select the appropriate managed identity and specify the audience:</p>
-<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-with-managed-identity-from-logic-apps/http-action-authentication-settings.png" alt="HTTP Action Authentication Settings"></p>
-<p>The audience must match the Application ID URI of the Entra ID app registration representing the protected API. For example, <code>api://apim-managedidentity-nwe-i2jdr</code>.</p>
-</li>
-</ol>
-<p>You can find the complete workflow definition in <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/src/logicApp/Workflows/call-protected-api-workflow/workflow.json">workflow.json</a>. The audience is set through a <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/src/logicApp/Workflows/parameters.json">parameter</a> so the workflow can be deployed in different environments. It&rsquo;s configured through an environment variable in <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/infra/modules/services/logic-app.bicep">logic-app.bicep</a>.</p>
 <h3 id="testing-the-implementation">Testing the Implementation</h3>
-<p>After deploying the solution, you can test the OAuth-protected API calls using different HTTP methods. Here&rsquo;s a sequence diagram showing a sample flow:</p>
-<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-with-managed-identity-from-logic-apps/diagrams-workflow-to-apim.png" alt="Sequence Diagram"></p>
-<p>The flow shows how the access token is retrieved during the initial GET request and then cached for subsequent requests. The DELETE request fails because the managed identity is not assigned the required <code>Sample.Delete</code> role.</p>
-<p>You can test the implementation with the following requests using any HTTP client. For example, you can use the REST Client extension for VS Code. Replace <code>&lt;your-call-protected-api-workflow-url&gt;</code> with the actual URL of the <code>call-protected-api-workflow</code> workflow:</p>
+<p>After deploying the solution, you can test the OAuth-protected API calls using different HTTP methods. Here&rsquo;s a sequence diagram showing the complete flow:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-with-managed-identity-from-apim/diagrams-apim-to-apim.png" alt="Sequence Diagram"></p>
+<p>The flow demonstrates how API Management:</p>
+<ol>
+<li>Receives a request on the unprotected API</li>
+<li>Uses the <code>authentication-managed-identity</code> policy to obtain an access token</li>
+<li>Forwards the request to the protected API with the token</li>
+<li>Caches the token for subsequent requests to improve performance</li>
+</ol>
+<p>You can test the implementation with the following requests using any HTTP client. For example, you can use the REST Client extension for VS Code. Replace <code>&lt;your-api-management-service-name&gt;</code> with the actual name of your API Management service:</p>
 <pre tabindex="0"><code>#=============================================================================
-# Test requests for the Logic App workflow
+# Test requests for the Unprotected API on API Management
 #=============================================================================
 
-# Replace &lt;your-call-protected-api-workflow-url&gt; with your actual URL of the 'call-protected-api-workflow' workflow
-@callProtectedApiWorkflowUrl = &lt;your-call-protected-api-workflow-url&gt;
+# Replace &lt;your-api-management-service-name&gt; with your actual API Management service name
+@apimHostname = &lt;your-api-management-service-name&gt;.azure-api.net
 
-# Trigger workflow that will call GET the protected API
-POST {{callProtectedApiWorkflowUrl}} HTTP/1.1
-Content-Type: application/json
-
-{
-    &quot;httpMethod&quot;: &quot;GET&quot;
-}
+# Call GET on Unprotected API
+GET https://{{apimHostname}}/unprotected HTTP/1.1
 
 ###
 
-# Trigger workflow that will call POST the protected API
-POST {{callProtectedApiWorkflowUrl}} HTTP/1.1
-Content-Type: application/json
-
-{
-    &quot;httpMethod&quot;: &quot;POST&quot;
-}
+# Call POST on Unprotected API
+POST https://{{apimHostname}}/unprotected HTTP/1.1
 
 ###
 
-# Trigger workflow that will call DELETE the protected API (should return 401 Unauthorized because managed identity does not have the Sample.Delete permission)
-POST {{callProtectedApiWorkflowUrl}} HTTP/1.1
-Content-Type: application/json
+# Call DELETE on Unprotected API (should return 401 Unauthorized because managed identity does not have the Sample.Delete permission)
+DELETE https://{{apimHostname}}/unprotected HTTP/1.1
 
-{
-    &quot;httpMethod&quot;: &quot;DELETE&quot;
-}
-</code></pre><p>To get the Logic App workflow URL:</p>
-<ol>
-<li>Navigate to your Logic App resource in the Azure portal</li>
-<li>Open the <code>call-protected-api-workflow</code> workflow</li>
-<li>Click on the &ldquo;When an HTTP request is received&rdquo; trigger (first step in the workflow)</li>
-<li>Copy the value of the &ldquo;HTTP URL&rdquo; from the trigger details</li>
-<li>Use this URL to replace <code>&lt;your-call-protected-api-workflow-url&gt;</code> in the test file</li>
-</ol>
-<p>The expected results are:</p>
+###
+</code></pre><p>The expected results are:</p>
 <ul>
 <li><strong>GET request</strong>: Should succeed (200 OK) - the protected API requires <code>Sample.Read</code> role</li>
 <li><strong>POST request</strong>: Should succeed (200 OK) - the protected API requires <code>Sample.Write</code> role</li>
 <li><strong>DELETE request</strong>: Should fail (401 Unauthorized) - the protected API requires <code>Sample.Delete</code> role which is not assigned to the managed identity</li>
 </ul>
-<p>The Logic Apps workflow automatically handles access token caching and renewal. If you execute the GET and POST requests multiple times, you&rsquo;ll notice that the <code>IssuedAt</code> value in the response doesn&rsquo;t change initially, showing that the platform caches tokens for improved performance.</p>
+<p>API Management automatically handles access token caching and renewal. If you execute the GET and POST requests multiple times, you&rsquo;ll notice that the <code>IssuedAt</code> value in the response doesn&rsquo;t change initially, showing that the platform caches tokens for improved performance.</p>
 <h3 id="conclusion">Conclusion</h3>
-<p>Azure Logic Apps Standard provides a clean and straightforward way to call OAuth-protected APIs using managed identity authentication. The key benefits of this approach include:</p>
+<p>API Management&rsquo;s <code>authentication-managed-identity</code> policy provides a simple way to call OAuth-protected APIs using managed identity authentication. The key benefits of this approach include:</p>
 <ul>
-<li><strong>No secret management</strong>: System-assigned managed identity eliminates the need to store and rotate client secrets</li>
-<li><strong>Built-in authentication</strong>: The platform handles token acquisition, caching and renewal automatically</li>
-<li><strong>Easy configuration</strong>: Authentication is configured through the designer interface without custom code</li>
+<li><strong>Zero secret management</strong>: System-assigned managed identity eliminates the need to store and rotate client secrets</li>
+<li><strong>Built-in token management</strong>: The platform handles token acquisition, caching and renewal automatically</li>
+<li><strong>Simple policy configuration</strong>: Authentication is configured through a single policy element</li>
 </ul>
-<p>This approach works with any OAuth-protected API that supports Entra ID authentication, not just API Management. Whether you&rsquo;re calling Microsoft Graph, custom APIs or third-party services that integrate with Entra ID, the same pattern applies.</p>
-<p>The next post in this series will cover how to call OAuth-protected APIs from within API Management policies, completing the three main scenarios for Azure Integration Services.</p>
+<p>This approach works with any OAuth-protected API that supports Entra ID authentication, whether the API is hosted within the same API Management instance or externally. This makes it a versatile solution for secure API-to-API communication in Azure Integration Services architectures.</p>
 
                     </div>
                     
@@ -314,10 +337,6 @@ Content-Type: application/json
                         </li>
                         
                         <li>
-                        <a href="/tags/logic-apps">Logic Apps</a>
-                        </li>
-                        
-                        <li>
                         <a href="/tags/managed-identity">Managed Identity</a>
                         </li>
                         
@@ -332,10 +351,8 @@ Content-Type: application/json
                     
                     <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
                     
-                        <a class="d-block col-md-6" href="https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/"> &laquo; Call OAuth-Protected APIs with Managed Identity from API Management</a>
                     
-                    
-                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/">Call OAuth-Protected APIs with Managed Identity from .NET &raquo;</a>
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/">Call OAuth-Protected APIs with Managed Identity from Logic Apps &raquo;</a>
                     
                     <div class="clearfix"></div>
                     </div>

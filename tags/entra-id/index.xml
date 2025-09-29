@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Wed, 24 Sep 2025 17:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/entra-id/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 29 Sep 2025 16:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/entra-id/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Call OAuth-Protected APIs with Managed Identity from API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/</link>
+      <pubDate>Mon, 29 Sep 2025 16:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/</guid>
+      <description>Learn how to use API Management to call OAuth-protected APIs with managed identity. This enables secure API-to-API communication and privilege delegation patterns without managing secrets.</description>
+    </item>
+    
     <item>
       <title>Call OAuth-Protected APIs with Managed Identity from Logic Apps</title>
       <link>https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/</link>
