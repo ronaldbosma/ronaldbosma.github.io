@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Call OAuth-Protected Backends from API Management using Credential Manager | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/cover.png"/>
+<meta name="twitter:title" content="Call OAuth-Protected Backends from API Management using Credential Manager"/>
+<meta name="twitter:description" content="Azure API Management’s credential manager provides a simple, managed way to handle OAuth flows with automatic token acquisition and caching. In this post, I show how to configure it using Bicep and integrate it into your APIs. I also highlight key considerations to help you decide when credential manager is the right choice versus custom token handling."/>
+
+	<meta property="og:title" content="Call OAuth-Protected Backends from API Management using Credential Manager" />
+<meta property="og:description" content="Azure API Management’s credential manager provides a simple, managed way to handle OAuth flows with automatic token acquisition and caching. In this post, I show how to configure it using Bicep and integrate it into your APIs. I also highlight key considerations to help you decide when credential manager is the right choice versus custom token handling." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-10-06T16:00:00+02:00" />
+<meta property="article:modified_time" content="2025-10-06T16:00:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Call%20OAuth-Protected%20Backends%20from%20API%20Management%20using%20Credential%20Manager&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f10%2f06%2fcall-oauth-protected-backends-from-api-management-using-credential-manager%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f10%2f06%2fcall-oauth-protected-backends-from-api-management-using-credential-manager%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f10%2f06%2fcall-oauth-protected-backends-from-api-management-using-credential-manager%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Oct 6, 2025
+                                    <i class="far fa-clock clock"></i>
+                                    9 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Call OAuth-Protected Backends from API Management using Credential Manager</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>In my <a href="/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/">previous post</a> I showed how to call an OAuth-protected backend from API Management using its managed identity. While managed identity should be the preferred approach for calling OAuth-protected APIs, you can&rsquo;t always use managed identities.</p>
+<p>In this post, I&rsquo;ll show you how to use API Management&rsquo;s credential manager to call OAuth-protected backend APIs when managed identity isn&rsquo;t an option. This approach provides Azure-managed token acquisition and caching while handling OAuth flows automatically.</p>
+<p>The official documentation <a href="https://learn.microsoft.com/en-us/azure/api-management/credentials-overview">About API credentials and credential manager</a> focuses on how to configure the credential manager from the Azure Portal. In this post I demonstrate how to configure this using Bicep. I&rsquo;m using Entra ID with the client credentials grant flow in my example, but other Identity Providers and flows are supported.</p>
+<p>This post is part of a series about OAuth and API Management:</p>
+<ul>
+<li><a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a></li>
+<li>Calling OAuth-Protected APIs with Managed Identity
+<ul>
+<li><a href="/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/">Part 1: In .NET (Azure Function)</a></li>
+<li><a href="/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/">Part 2: In Logic Apps</a></li>
+<li><a href="/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/">Part 3: In API Management</a></li>
+</ul>
+</li>
+<li>Calling OAuth-Protected Backends from API Management
+<ul>
+<li><strong>Part 1: Using Credential Manager - <em>this post</em></strong></li>
+<li>Part 2: Using Send-Request Policy with Client Secret - <em>coming soon</em></li>
+<li>Part 3: Using Send-Request Policy with Client Certificate - <em>coming soon</em></li>
+</ul>
+</li>
+</ul>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#solution-overview">Solution Overview</a></li>
+<li><a href="#implementation">Implementation</a>
+<ul>
+<li><a href="#credential-manager-configuration">Credential Manager Configuration</a></li>
+<li><a href="#policy-implementation">Policy Implementation</a></li>
+</ul>
+</li>
+<li><a href="#testing-the-implementation">Testing the Implementation</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="solution-overview">Solution Overview</h3>
+<p>The solution demonstrates API Management calling OAuth-protected backend APIs using the credential manager:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-backends-from-api-management-using-credential-manager/diagrams-overview-credential-manager.png" alt="Overview"></p>
+<ul>
+<li><strong>Azure API Management</strong> service with two APIs:
+<ul>
+<li><strong>Protected Backend API</strong>: A backend API that&rsquo;s protected with OAuth using Entra ID</li>
+<li><strong>Unprotected API</strong>: A public API that calls the protected backend using the credential manager</li>
+</ul>
+</li>
+<li><strong>Entra ID App Registrations</strong>: Separate app registrations for the backend API and the client, with proper role assignments</li>
+<li><strong>Supporting Resources</strong>: Application Insights and Log Analytics workspace for monitoring</li>
+</ul>
+<p>While this example uses an API on API Management as the protected backend, you can use the same approach to call any API protected with OAuth via Entra ID. The credential manager also supports other identity providers, so you can adapt this solution for APIs secured by other providers.</p>
+<p>The Entra ID configuration uses the same pattern described in <a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a>. For a detailed guide, check out that post.</p>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth">Call API Management backend with OAuth</a> that demonstrates three scenarios: using the credential manager, a send-request policy with client secret and a send-request policy with client certificate. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on calling OAuth-protected backends using the credential manager.</p>
+<p>We&rsquo;re using the BasicV2 tier because the Consumption tier doesn&rsquo;t support caching, which is important for token management.</p>
+<p>Now that we&rsquo;ve covered the architecture and supporting components, let&rsquo;s walk through how to configure the credential manager and apply it in your API Management policies step by step.</p>
+<h3 id="implementation">Implementation</h3>
+<p>The credential manager provides a managed solution for handling OAuth authentication in API Management. It consists of three major components: the credential provider, client connections and access policies. Let&rsquo;s look at how to configure each using Bicep.</p>
+<h4 id="credential-manager-configuration">Credential Manager Configuration</h4>
+<p>The credential manager configuration uses Bicep to create the necessary components. Here&rsquo;s the configuration from <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth/blob/main/src/apis/unprotected-api/credential-manager.bicep">credential-manager.bicep</a>:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">// Create a Credential Provider that will be used to retrieve the
+// access token for the protected backend.
+resource credentialProvider 'Microsoft.ApiManagement/service/authorizationProviders@2024-06-01-preview' = {
+  parent: apiManagementService
+  name: 'credential-provider'
+  properties: {
+    displayName: 'Credential Provider'
+    identityProvider: 'aad'
+    oauth2: {
+      grantTypes: {
+        clientCredentials: {
+          resourceUri: oauthTargetResource
+          tenantId: subscription().tenantId
+        }
+      }
+    }
+  }
+
+  // Add a connection to the Credential Provider for our client
+  resource clientConnection 'authorizations' = {
+    name: 'client-connection'
+    properties: {
+      authorizationType: 'OAuth2'
+      oauth2grantType: 'ClientCredentials'
+      parameters: {
+        clientId: clientId
+        clientSecret: clientSecret
+      }
+    }
+
+    // Give the system-assigned managed identity of API Management
+    // permission to use the connection
+    resource accessPolicies 'accessPolicies' = {
+      name: 'client-connection-access-policy-apim-managed-identity'
+      properties: {
+        objectId: apiManagementService.identity.principalId
+        tenantId: apiManagementService.identity.tenantId
+      }
+    }
+  }
+}
+</code></pre><p>Note that the Bicep resource names have &lsquo;authorization&rsquo; in their name because credential manager used to be called &lsquo;Authorizations&rsquo;.</p>
+<p>The configuration creates three components:</p>
+<ol>
+<li>
+<p><strong>Credential Provider</strong>: The main component that defines how to connect to the OAuth provider</p>
+<ul>
+<li>Uses <code>identityProvider: 'aad'</code> which matches &lsquo;Azure Active Directory v1&rsquo; in the portal</li>
+<li>Configures the client credentials grant flow</li>
+<li>Sets the <code>resourceUri</code> to the Application ID URI of the backend&rsquo;s app registration (for example, <code>api://appreg-oauthbackend-sdc-backend-luolm</code>)</li>
+</ul>
+</li>
+<li>
+<p><strong>Client Connection</strong>: Links the provider to specific credentials</p>
+<ul>
+<li>Contains the client ID and client secret for authentication</li>
+</ul>
+</li>
+<li>
+<p><strong>Access Policy</strong>: Controls which APIs can use the authorization</p>
+<ul>
+<li>Grants API Management&rsquo;s system-assigned managed identity permission to use the connection</li>
+<li>When creating the client connection through the portal, this is automatically configured</li>
+</ul>
+</li>
+</ol>
+<p>The template automatically generates a client secret for the client&rsquo;s app registration and stores it in Key Vault. However, we can&rsquo;t reference a Key Vault secret directly in the credential manager configuration. Instead, the client secret is passed directly to the Bicep configuration and then securely managed by Azure according to the <a href="https://learn.microsoft.com/en-us/azure/api-management/credentials-overview#security-considerations">security considerations</a>: <em>&ldquo;The access token and other secrets (for example, client secrets) are encrypted with an envelope encryption and stored in an internal, multitenant storage.&quot;</em>.</p>
+<p>After deployment, you can review the connection status by navigating to API Management in the Azure Portal, choosing Credential Manager, opening the credential provider and then choosing Connections. When everything is configured correctly, you&rsquo;ll see a connected status:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-backends-from-api-management-using-credential-manager/client-connection-status-connected.png" alt="Client Connection Status - Connected"></p>
+<p>If there are configuration issues, like an invalid or expired secret, the connection will show an error status:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-backends-from-api-management-using-credential-manager/client-connection-status-error.png" alt="Client Connection Status - Error"></p>
+<h4 id="policy-implementation">Policy Implementation</h4>
+<p>The unprotected API uses the credential manager to obtain tokens automatically. Here&rsquo;s the inbound section of the policy implementation from <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth/blob/main/src/apis/unprotected-api/credential-manager.xml">credential-manager.xml</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;inbound&gt;</span>
+    <span style="color:#f92672">&lt;base</span> <span style="color:#f92672">/&gt;</span>
+    
+    <span style="color:#75715e">&lt;!-- 
+</span><span style="color:#75715e">        Get the access token from the Credential Provider. If this fails, an exception is raised.
+</span><span style="color:#75715e">    --&gt;</span>
+    <span style="color:#f92672">&lt;get-authorization-context</span> <span style="color:#a6e22e">provider-id=</span><span style="color:#e6db74">&#34;credential-provider&#34;</span> <span style="color:#a6e22e">authorization-id=</span><span style="color:#e6db74">&#34;client-connection&#34;</span> 
+                                <span style="color:#a6e22e">context-variable-name=</span><span style="color:#e6db74">&#34;auth-context&#34;</span> <span style="color:#a6e22e">identity-type=</span><span style="color:#e6db74">&#34;managed&#34;</span>
+                                <span style="color:#a6e22e">ignore-error=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
+
+    <span style="color:#f92672">&lt;set-header</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;Authorization&#34;</span> <span style="color:#a6e22e">exists-action=</span><span style="color:#e6db74">&#34;override&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;value&gt;</span>@(&#34;Bearer &#34; + ((Authorization)context.Variables.GetValueOrDefault(&#34;auth-context&#34;))?.AccessToken)<span style="color:#f92672">&lt;/value&gt;</span>
+    <span style="color:#f92672">&lt;/set-header&gt;</span>
+<span style="color:#f92672">&lt;/inbound&gt;</span>
+</code></pre></div><p>The policy does two main things:</p>
+<ol>
+<li>
+<p><strong>Token Retrieval</strong>: Uses <a href="https://learn.microsoft.com/en-us/azure/api-management/get-authorization-context-policy">get-authorization-context</a> to retrieve an access token from the credential manager</p>
+<ul>
+<li>References the credential provider and client connection by their IDs</li>
+<li>Uses <code>identity-type=&quot;managed&quot;</code> to authenticate with API Management&rsquo;s system-assigned managed identity</li>
+<li>Stores the authorization context in a variable for later use</li>
+</ul>
+</li>
+<li>
+<p><strong>Authorization Header</strong>: Extracts the access token from the authorization context variable and adds it to the Authorization header</p>
+</li>
+</ol>
+<p>The credential manager handles all the complexity of token acquisition, caching and refresh automatically. The policy implementation is much simpler compared to manual token handling approaches.</p>
+<h3 id="testing-the-implementation">Testing the Implementation</h3>
+<p>After deploying the solution, you can test the OAuth-protected backend call. Here&rsquo;s a sequence diagram showing the flow:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-backends-from-api-management-using-credential-manager/diagrams-credential-manager.png" alt="Sequence Diagram"></p>
+<p>The flow demonstrates how:</p>
+<ol>
+<li>API Management receives a request on the unprotected API</li>
+<li>The <code>get-authorization-context</code> policy retrieves an access token from the credential manager</li>
+<li>The credential manager obtains the token from Entra ID if not cached</li>
+<li>The credential manager caches the token for subsequent requests</li>
+<li>The request is forwarded to the protected backend with the token</li>
+</ol>
+<p>You can test the implementation using the following request. Replace <code>&lt;your-api-management-service-name&gt;</code> with the actual name of your API Management service:</p>
+<pre tabindex="0"><code># Operation that will call the protected backend using the credential manager
+GET https://&lt;your-api-management-service-name&gt;.azure-api.net/unprotected/credential-manager HTTP/1.1
+</code></pre><p>The request should succeed with a 200 OK response, showing that the credential manager successfully obtained an access token and called the protected backend.</p>
+<p>Note that the response contains the details of the JWT token that was used to call the protected backend. This is for demo purposes and shouldn&rsquo;t be done in production scenarios.</p>
+<p>If you execute the request multiple times, you&rsquo;ll notice that the <code>IssuedAt</code> value in the response doesn&rsquo;t change initially, showing that the credential manager caches tokens for improved performance.</p>
+<h3 id="considerations">Considerations</h3>
+<p>While the credential manager provides a convenient managed solution, there are several important considerations to keep in mind:</p>
+<h4 id="shared-infrastructure-dependencies">Shared Infrastructure Dependencies</h4>
+<p>The solution that handles token retrieval and renewal does not run inside your Azure API Management instance. According to the <a href="https://learn.microsoft.com/en-us/azure/api-management/credentials-overview#frequently-asked-questions-faq">FAQ</a>:</p>
+<blockquote>
+<p><strong>Q: Is this feature supported using API Management running inside a VNet?</strong><br>
+<strong>A:</strong> Yes, as long as outbound connectivity on port 443 is enabled to the AzureConnectors service tag.</p>
+</blockquote>
+<p>The AzureConnectors service tag enables outbound calls to services like Azure Logic Apps and Power Platform. This indicates that the token management service for credential manager runs in the same infrastructure as these services.</p>
+<h4 id="ip-whitelisting-challenges">IP Whitelisting Challenges</h4>
+<p>This shared infrastructure dependency has important implications for IP whitelisting. When the Identity Provider you&rsquo;re retrieving the token from has implemented IP whitelisting, they either need to:</p>
+<ul>
+<li>Whitelist the AzureConnectors service tag for inbound calls if they&rsquo;re on Azure</li>
+<li>Whitelist <a href="https://www.azurespeed.com/Information/AzureIpRanges/AzureConnectors">all IPs</a> that make up the AzureConnectors service tag</li>
+</ul>
+<p>I don&rsquo;t recommend whitelisting the (large number of) IPs that are part of the service tag because these can change over time. This means you&rsquo;d need to update your IP whitelisting rules frequently, which can be difficult to maintain and may introduce security risks.</p>
+<p>I&rsquo;ve encountered this issue myself several times and decided not to use the credential manager in those scenarios. Instead, I implemented custom logic within my API to retrieve tokens directly. I&rsquo;ll demonstrate this approach in the next blog post.</p>
+<h4 id="authentication-method-limitations">Authentication Method Limitations</h4>
+<p>While this post demonstrates using client secrets with the credential manager, Microsoft recommends using certificates as a more secure authentication method. Certificate-based authentication works with JSON Web Token (JWT) assertions signed with a certificate, providing better security since the private key never leaves the client.</p>
+<p>However, the credential manager doesn&rsquo;t support certificate-based authentication. If you need to use certificates for OAuth authentication, you&rsquo;ll need to implement token retrieval using policies within API Management. I&rsquo;ll demonstrate this approach using the send-request policy in one of the next posts in this series.</p>
+<h4 id="availability-limitations">Availability Limitations</h4>
+<p>At the time of writing this post, the credential manager is not available in the self-hosted gateway and several regions. See <a href="https://learn.microsoft.com/en-us/azure/api-management/credentials-overview#availability">Availability</a> for the current status.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>API Management&rsquo;s credential manager provides a managed solution for calling OAuth-protected backend APIs with automatic token handling. The key benefits include:</p>
+<ul>
+<li><strong>Azure-managed solution</strong>: The platform handles token acquisition, caching and renewal automatically</li>
+<li><strong>Simple policy configuration</strong>: Authentication is configured through a single policy element</li>
+<li><strong>Bicep support</strong>: The entire configuration can be deployed as infrastructure as code</li>
+</ul>
+<p>However, the solution has several limitations that may make it unsuitable for certain environments:</p>
+<ul>
+<li><strong>Shared infrastructure dependencies</strong>: The token management service runs outside your API Management instance and requires connectivity to the AzureConnectors service tag, which can create challenges for strict IP whitelisting requirements</li>
+<li><strong>Authentication method restrictions</strong>: Only client secret authentication is supported; certificate-based authentication with JWT assertions is not available</li>
+</ul>
+<p>When the credential manager doesn&rsquo;t meet your requirements due to these constraints or availability limitations, you can implement OAuth token handling directly in your policies using the send-request approach, which I&rsquo;ll demonstrate in upcoming posts.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/entra-id">Entra ID</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/oauth">OAuth</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/">Call OAuth-Protected APIs with Managed Identity from API Management &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/apim-mtls">apim-mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

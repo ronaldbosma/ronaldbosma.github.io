@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 29 Sep 2025 16:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/oauth/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 06 Oct 2025 16:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/oauth/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Call OAuth-Protected Backends from API Management using Credential Manager</title>
+      <link>https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/</link>
+      <pubDate>Mon, 06 Oct 2025 16:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/</guid>
+      <description>Azure API Management’s credential manager provides a simple, managed way to handle OAuth flows with automatic token acquisition and caching. In this post, I show how to configure it using Bicep and integrate it into your APIs. I also highlight key considerations to help you decide when credential manager is the right choice versus custom token handling.</description>
+    </item>
+    
     <item>
       <title>Call OAuth-Protected APIs with Managed Identity from API Management</title>
       <link>https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/</link>
