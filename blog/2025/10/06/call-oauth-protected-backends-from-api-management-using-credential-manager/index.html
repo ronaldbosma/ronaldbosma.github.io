@@ -166,7 +166,7 @@
 <li>Calling OAuth-Protected Backends from API Management
 <ul>
 <li><strong>Part 1: Using Credential Manager - <em>this post</em></strong></li>
-<li>Part 2: Using Send-Request Policy with Client Secret - <em>coming soon</em></li>
+<li><a href="/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/">Part 2: Using Send-Request Policy with Client Secret</a></li>
 <li>Part 3: Using Send-Request Policy with Client Certificate - <em>coming soon</em></li>
 </ul>
 </li>
@@ -359,7 +359,7 @@ GET https://&lt;your-api-management-service-name&gt;.azure-api.net/unprotected/c
 <li><strong>Shared infrastructure dependencies</strong>: The token management service runs outside your API Management instance and requires connectivity to the AzureConnectors service tag, which can create challenges for strict IP whitelisting requirements</li>
 <li><strong>Authentication method restrictions</strong>: Only client secret authentication is supported; certificate-based authentication with JWT assertions is not available</li>
 </ul>
-<p>When the credential manager doesn&rsquo;t meet your requirements due to these constraints or availability limitations, you can implement OAuth token handling directly in your policies using the send-request approach, which I&rsquo;ll demonstrate in upcoming posts.</p>
+<p>When the credential manager doesn&rsquo;t meet your requirements due to these constraints or availability limitations, you can implement OAuth token handling directly in your policies using the send-request policy, which I&rsquo;ll demonstrate in upcoming posts.</p>
 
                     </div>
                     
@@ -393,6 +393,8 @@ GET https://&lt;your-api-management-service-name&gt;.azure-api.net/unprotected/c
                     
                     
                     <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                        <a class="d-block col-md-6" href="https://ronaldbosma.github.io/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/"> &laquo; Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Secret</a>
                     
                     
                         <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/">Call OAuth-Protected APIs with Managed Identity from API Management &raquo;</a>

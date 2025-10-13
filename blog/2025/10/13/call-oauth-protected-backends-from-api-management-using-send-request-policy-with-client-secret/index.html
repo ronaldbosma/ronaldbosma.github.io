@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Secret | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/cover.png"/>
+<meta name="twitter:title" content="Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Secret"/>
+<meta name="twitter:description" content="When API Management&rsquo;s credential manager isn&rsquo;t suitable for your OAuth scenarios, you can implement token handling directly using policies. In this post, I show how to call OAuth-protected backends using the send-request policy with Client Credentials Flow and a client secret stored in Key Vault."/>
+
+	<meta property="og:title" content="Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Secret" />
+<meta property="og:description" content="When API Management&rsquo;s credential manager isn&rsquo;t suitable for your OAuth scenarios, you can implement token handling directly using policies. In this post, I show how to call OAuth-protected backends using the send-request policy with Client Credentials Flow and a client secret stored in Key Vault." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-10-13T16:00:00+02:00" />
+<meta property="article:modified_time" content="2025-10-13T16:00:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Call%20OAuth-Protected%20Backends%20from%20API%20Management%20using%20Send-Request%20Policy%20with%20Client%20Secret&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f10%2f13%2fcall-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f10%2f13%2fcall-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f10%2f13%2fcall-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Oct 13, 2025
+                                    <i class="far fa-clock clock"></i>
+                                    9 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Secret</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>In my <a href="/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/">previous post</a> I showed how to use API Management&rsquo;s credential manager to call OAuth-protected backends. While the credential manager offers managed token handling, it’s not always suitable. For example, when your Identity Provider enforces IP whitelisting or isn&rsquo;t available in your region.</p>
+<p>In this post, I&rsquo;ll show you how to implement OAuth token handling directly using API Management policies with the <a href="https://learn.microsoft.com/en-us/azure/api-management/send-request-policy">send-request</a> policy. This approach gives you complete control over the token acquisition process while storing sensitive credentials securely in Azure Key Vault.</p>
+<p>This post is part of a series about OAuth and API Management:</p>
+<ul>
+<li><a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a></li>
+<li>Calling OAuth-Protected APIs with Managed Identity
+<ul>
+<li><a href="/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/">Part 1: In .NET (Azure Function)</a></li>
+<li><a href="/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/">Part 2: In Logic Apps</a></li>
+<li><a href="/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/">Part 3: In API Management</a></li>
+</ul>
+</li>
+<li>Calling OAuth-Protected Backends from API Management
+<ul>
+<li><a href="/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/">Part 1: Using Credential Manager</a></li>
+<li><strong>Part 2: Using Send-Request Policy with Client Secret - <em>this post</em></strong></li>
+<li>Part 3: Using Send-Request Policy with Client Certificate - <em>coming soon</em></li>
+</ul>
+</li>
+</ul>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#solution-overview">Solution Overview</a></li>
+<li><a href="#implementation">Implementation</a></li>
+<li><a href="#testing-the-implementation">Testing the Implementation</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="solution-overview">Solution Overview</h3>
+<p>The solution demonstrates API Management calling OAuth-protected backend APIs using a custom policy implementation with client credential flow and client secret authentication:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/diagrams-overview-send-request-with-secret.png" alt="Overview"></p>
+<ul>
+<li><strong>Azure API Management</strong> service with two APIs:
+<ul>
+<li><strong>Protected Backend API</strong>: A backend API that&rsquo;s protected with OAuth using Entra ID</li>
+<li><strong>Unprotected API</strong>: A public API that calls the protected backend using custom token handling</li>
+</ul>
+</li>
+<li><strong>Azure Key Vault</strong>: Stores the client secret securely and provides it to API Management through a named value</li>
+<li><strong>Entra ID App Registrations</strong>: Separate app registrations for the backend API and the client, with proper role assignments</li>
+<li><strong>Supporting Resources</strong>: Application Insights and Log Analytics workspace for monitoring</li>
+</ul>
+<p>While this example uses an API on API Management as the protected backend, you can use the same approach to call any API protected with OAuth via Entra ID and other Identity Providers.</p>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth">Call API Management backend with OAuth</a> that demonstrates three scenarios: using the credential manager, a send-request policy with client secret and a send-request policy with client certificate. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on calling OAuth-protected backends using the send-request policy with client secret.</p>
+<p>We&rsquo;re using the BasicV2 tier because the Consumption tier doesn&rsquo;t support caching, which is important for token management.</p>
+<p>Now that we&rsquo;ve covered the architecture and supporting components, let&rsquo;s walk through how to implement the send-request policy step by step.</p>
+<h3 id="implementation">Implementation</h3>
+<p>The send-request policy approach gives you complete control over the OAuth token acquisition process. The implementation is based on the <a href="https://github.com/Azure/api-management-policy-snippets/blob/master/examples/Backend%20OAuth2%20Authentication%20With%20Cache.policy.xml">Backend OAuth2 Authentication With Cache.policy.xml</a> example from the Azure API Management Policy Snippets repository, but with some alterations for better error handling and tracing.</p>
+<p>Here&rsquo;s the complete policy implementation from <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth/blob/main/src/apis/unprotected-api/send-request-with-secret.xml">send-request-with-secret.xml</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;policies&gt;</span>
+    <span style="color:#f92672">&lt;inbound&gt;</span>
+        <span style="color:#f92672">&lt;base</span> <span style="color:#f92672">/&gt;</span>
+
+        <span style="color:#75715e">&lt;!-- Get access token from cache if it exists--&gt;</span>
+        <span style="color:#f92672">&lt;cache-lookup-value</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;access-token-from-secret&#34;</span> <span style="color:#a6e22e">variable-name=</span><span style="color:#e6db74">&#34;access-token&#34;</span> <span style="color:#a6e22e">caching-type=</span><span style="color:#e6db74">&#34;internal&#34;</span> <span style="color:#f92672">/&gt;</span>
+
+        <span style="color:#f92672">&lt;choose&gt;</span>
+            <span style="color:#75715e">&lt;!-- Retrieve new access token from Entra ID if it was not found in the cache. --&gt;</span>
+            <span style="color:#f92672">&lt;when</span> <span style="color:#a6e22e">condition=</span><span style="color:#e6db74">&#34;@(!context.Variables.ContainsKey(&#34;</span><span style="color:#960050;background-color:#1e0010">access-token&#34;))&#34;</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#f92672">&lt;send-request</span> <span style="color:#a6e22e">mode=</span><span style="color:#e6db74">&#34;new&#34;</span> <span style="color:#a6e22e">timeout=</span><span style="color:#e6db74">&#34;20&#34;</span> <span style="color:#a6e22e">response-variable-name=</span><span style="color:#e6db74">&#34;get-access-token-response&#34;</span> <span style="color:#a6e22e">ignore-error=</span><span style="color:#e6db74">&#34;false&#34;</span><span style="color:#f92672">&gt;</span>
+                    <span style="color:#f92672">&lt;set-url&gt;</span>{{oauth-token-url}}<span style="color:#f92672">&lt;/set-url&gt;</span>
+                    <span style="color:#f92672">&lt;set-method&gt;</span>POST<span style="color:#f92672">&lt;/set-method&gt;</span>
+                    <span style="color:#f92672">&lt;set-header</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;Content-Type&#34;</span> <span style="color:#a6e22e">exists-action=</span><span style="color:#e6db74">&#34;override&#34;</span><span style="color:#f92672">&gt;</span>
+                        <span style="color:#f92672">&lt;value&gt;</span>application/x-www-form-urlencoded<span style="color:#f92672">&lt;/value&gt;</span>
+                    <span style="color:#f92672">&lt;/set-header&gt;</span>
+                    <span style="color:#f92672">&lt;set-body&gt;</span>@(&#34;client_id={{client-id}}<span style="color:#960050;background-color:#1e0010">&amp;</span>client_secret={{client-secret}}<span style="color:#960050;background-color:#1e0010">&amp;</span>scope={{oauth-scope}}<span style="color:#960050;background-color:#1e0010">&amp;</span>grant_type=client_credentials&#34;)<span style="color:#f92672">&lt;/set-body&gt;</span>
+                <span style="color:#f92672">&lt;/send-request&gt;</span>
+
+                <span style="color:#f92672">&lt;set-variable</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;get-access-token-response-body&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@(((IResponse)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response&#34;])?.Body?.As&lt;JObject</span><span style="color:#f92672">&gt;</span>())&#34; /&gt;
+
+                <span style="color:#f92672">&lt;choose&gt;</span>
+                    <span style="color:#75715e">&lt;!-- If access token retrieval succeeded (HTTP 200), extract the access token and cache it --&gt;</span>
+                    <span style="color:#f92672">&lt;when</span> <span style="color:#a6e22e">condition=</span><span style="color:#e6db74">&#34;@(((IResponse)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response&#34;])?</span><span style="color:#a6e22e">.StatusCode =</span><span style="color:#e6db74">=</span> <span style="color:#960050;background-color:#1e0010">200)&#34;</span><span style="color:#f92672">&gt;</span>
+                        <span style="color:#f92672">&lt;set-variable</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;access-token&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@(((JObject)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response-body&#34;]).Value&lt;string</span><span style="color:#f92672">&gt;</span>(&#34;access_token&#34;))&#34; /&gt;
+                        <span style="color:#f92672">&lt;set-variable</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;access-token-expires-in&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@(((JObject)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response-body&#34;]).Value&lt;int</span><span style="color:#f92672">&gt;</span>(&#34;expires_in&#34;))&#34; /&gt;
+
+                        <span style="color:#75715e">&lt;!-- Cache the access token for 95% of its lifetime to prevent expiration issues --&gt;</span>
+                        <span style="color:#f92672">&lt;cache-store-value</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;access-token-from-secret&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@((string)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">access-token&#34;])&#34;</span> 
+                                           <span style="color:#a6e22e">duration=</span><span style="color:#e6db74">&#34;@((int)(0.95 * (int)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">access-token-expires-in&#34;]))&#34;</span> 
+                                           <span style="color:#a6e22e">caching-type=</span><span style="color:#e6db74">&#34;internal&#34;</span> <span style="color:#f92672">/&gt;</span>
+                    <span style="color:#f92672">&lt;/when&gt;</span>
+
+                    <span style="color:#75715e">&lt;!-- If access token retrieval failed, log error and return a 500 Internal Server Error --&gt;</span>
+                    <span style="color:#f92672">&lt;otherwise&gt;</span>
+                        <span style="color:#f92672">&lt;trace</span> <span style="color:#a6e22e">source=</span><span style="color:#e6db74">&#34;getAccessTokenUsingSecret&#34;</span> <span style="color:#a6e22e">severity=</span><span style="color:#e6db74">&#34;error&#34;</span><span style="color:#f92672">&gt;</span>
+                            <span style="color:#f92672">&lt;message&gt;</span>Retrieval of access token failed<span style="color:#f92672">&lt;/message&gt;</span>
+                            <span style="color:#f92672">&lt;metadata</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;ResponseBody&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@{
+</span><span style="color:#e6db74">                                // To prevent exceptions, ensure the message is never null or empty by always providing a value.
+</span><span style="color:#e6db74">                                var body = ((JObject)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response-body&#34;])?.ToString();</span>
+                                <span style="color:#960050;background-color:#1e0010">return</span> <span style="color:#960050;background-color:#1e0010">!string.IsNullOrWhiteSpace(body)</span> <span style="color:#960050;background-color:#1e0010">?</span> <span style="color:#960050;background-color:#1e0010">body</span> <span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#960050;background-color:#1e0010">&#34;&lt;empty</span><span style="color:#f92672">&gt;</span>&#34;;
+                            }&#34; /&gt;
+                            <span style="color:#f92672">&lt;metadata</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;ResponseStatusCode&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@{
+</span><span style="color:#e6db74">                                // To prevent exceptions, ensure the status code is never null or empty by always providing a value.
+</span><span style="color:#e6db74">                                var statusCode = ((IResponse)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response&#34;])?.StatusCode.ToString();</span>
+                                <span style="color:#960050;background-color:#1e0010">return</span> <span style="color:#960050;background-color:#1e0010">!string.IsNullOrWhiteSpace(statusCode)</span> <span style="color:#960050;background-color:#1e0010">?</span> <span style="color:#960050;background-color:#1e0010">statusCode</span> <span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#960050;background-color:#1e0010">&#34;&lt;empty</span><span style="color:#f92672">&gt;</span>&#34;;
+                            }&#34; /&gt;
+                        <span style="color:#f92672">&lt;/trace&gt;</span>
+
+                        <span style="color:#75715e">&lt;!-- We&#39;re returning the response of the failed token retrieval. Don&#39;t do this in production as it will expose sensitive information. --&gt;</span>
+                        <span style="color:#f92672">&lt;return-response&gt;</span>
+                            <span style="color:#f92672">&lt;set-status</span> <span style="color:#a6e22e">code=</span><span style="color:#e6db74">&#34;500&#34;</span> <span style="color:#a6e22e">reason=</span><span style="color:#e6db74">&#34;Internal Server Error&#34;</span> <span style="color:#f92672">/&gt;</span>
+                            <span style="color:#f92672">&lt;set-header</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;Content-Type&#34;</span> <span style="color:#a6e22e">exists-action=</span><span style="color:#e6db74">&#34;override&#34;</span><span style="color:#f92672">&gt;</span>
+                                <span style="color:#f92672">&lt;value&gt;</span>application/json<span style="color:#f92672">&lt;/value&gt;</span>
+                            <span style="color:#f92672">&lt;/set-header&gt;</span>
+                            <span style="color:#f92672">&lt;set-body&gt;</span>@(((JObject)context.Variables[&#34;get-access-token-response-body&#34;])?.ToString())<span style="color:#f92672">&lt;/set-body&gt;</span>
+                        <span style="color:#f92672">&lt;/return-response&gt;</span>
+                    <span style="color:#f92672">&lt;/otherwise&gt;</span>
+                <span style="color:#f92672">&lt;/choose&gt;</span>
+            <span style="color:#f92672">&lt;/when&gt;</span>
+        <span style="color:#f92672">&lt;/choose&gt;</span>
+
+        <span style="color:#f92672">&lt;set-header</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;Authorization&#34;</span> <span style="color:#a6e22e">exists-action=</span><span style="color:#e6db74">&#34;override&#34;</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;value&gt;</span>@(&#34;Bearer &#34; + (string)context.Variables[&#34;access-token&#34;])<span style="color:#f92672">&lt;/value&gt;</span>
+        <span style="color:#f92672">&lt;/set-header&gt;</span>
+    <span style="color:#f92672">&lt;/inbound&gt;</span>
+
+    <span style="color:#f92672">&lt;backend&gt;</span>
+        <span style="color:#f92672">&lt;base</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/backend&gt;</span>
+
+    <span style="color:#f92672">&lt;outbound&gt;</span>
+        <span style="color:#f92672">&lt;base</span> <span style="color:#f92672">/&gt;</span>
+        
+        <span style="color:#f92672">&lt;choose&gt;</span>
+            <span style="color:#f92672">&lt;when</span> <span style="color:#a6e22e">condition=</span><span style="color:#e6db74">&#34;@(context.Response.StatusCode == 401 || context.Response.StatusCode == 403)&#34;</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#f92672">&lt;cache-remove-value</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;access-token-from-secret&#34;</span> <span style="color:#a6e22e">caching-type=</span><span style="color:#e6db74">&#34;internal&#34;</span> <span style="color:#f92672">/&gt;</span>
+            <span style="color:#f92672">&lt;/when&gt;</span>
+        <span style="color:#f92672">&lt;/choose&gt;</span>
+    <span style="color:#f92672">&lt;/outbound&gt;</span>
+
+    <span style="color:#f92672">&lt;on-error&gt;</span>
+        <span style="color:#f92672">&lt;base</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/on-error&gt;</span>
+<span style="color:#f92672">&lt;/policies&gt;</span>
+</code></pre></div><p><strong>A tip for improving maintainability:</strong> I usually put the logic to retrieve an access token in a <a href="https://learn.microsoft.com/en-us/azure/api-management/policy-fragments">policy fragment</a>. This makes the API or operation policy much easier to read and allows you to reuse the token retrieval logic across multiple APIs or operations.</p>
+<p>Let me break down the key steps that the policy executes:</p>
+<h4 id="step-1-cache-lookup">Step 1: Cache Lookup</h4>
+<p>The policy starts by checking if an access token already exists in the cache using <a href="https://learn.microsoft.com/en-us/azure/api-management/cache-lookup-value-policy">cache-lookup-value</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;cache-lookup-value</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;access-token-from-secret&#34;</span> <span style="color:#a6e22e">variable-name=</span><span style="color:#e6db74">&#34;access-token&#34;</span> <span style="color:#a6e22e">caching-type=</span><span style="color:#e6db74">&#34;internal&#34;</span> <span style="color:#f92672">/&gt;</span>
+</code></pre></div><p>This step helps improve performance by avoiding unnecessary token requests to Entra ID when a valid token is already available.</p>
+<h4 id="step-2-token-acquisition">Step 2: Token Acquisition</h4>
+<p>If no cached token exists, the policy uses send-request to call the Entra ID token endpoint with the Client Credentials Flow:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;send-request</span> <span style="color:#a6e22e">mode=</span><span style="color:#e6db74">&#34;new&#34;</span> <span style="color:#a6e22e">timeout=</span><span style="color:#e6db74">&#34;20&#34;</span> <span style="color:#a6e22e">response-variable-name=</span><span style="color:#e6db74">&#34;get-access-token-response&#34;</span> <span style="color:#a6e22e">ignore-error=</span><span style="color:#e6db74">&#34;false&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;set-url&gt;</span>{{oauth-token-url}}<span style="color:#f92672">&lt;/set-url&gt;</span>
+    <span style="color:#f92672">&lt;set-method&gt;</span>POST<span style="color:#f92672">&lt;/set-method&gt;</span>
+    <span style="color:#f92672">&lt;set-header</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;Content-Type&#34;</span> <span style="color:#a6e22e">exists-action=</span><span style="color:#e6db74">&#34;override&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;value&gt;</span>application/x-www-form-urlencoded<span style="color:#f92672">&lt;/value&gt;</span>
+    <span style="color:#f92672">&lt;/set-header&gt;</span>
+    <span style="color:#f92672">&lt;set-body&gt;</span>@(&#34;client_id={{client-id}}<span style="color:#960050;background-color:#1e0010">&amp;</span>client_secret={{client-secret}}<span style="color:#960050;background-color:#1e0010">&amp;</span>scope={{oauth-scope}}<span style="color:#960050;background-color:#1e0010">&amp;</span>grant_type=client_credentials&#34;)<span style="color:#f92672">&lt;/set-body&gt;</span>
+<span style="color:#f92672">&lt;/send-request&gt;</span>
+</code></pre></div><p>The policy uses several named values that are configured in API Management:</p>
+<ul>
+<li><code>oauth-token-url</code>: The OAuth 2.0 token endpoint URL (for example, <code>https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token</code>)</li>
+<li><code>client-id</code>: The &ldquo;Application (client) ID&rdquo; of the client app registration</li>
+<li><code>client-secret</code>: A reference to the client secret in Key Vault (generated and stored automatically by the <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth/blob/main/hooks/postprovision-create-and-store-client-secret.ps1">this script</a>)</li>
+<li><code>oauth-scope</code>: The Application ID URI of the backend&rsquo;s app registration (for example, <code>api://appreg-oauthbackend-sdc-backend-luolm</code>)</li>
+</ul>
+<p>The <code>ignore-error</code> attribute is set to false so we can perform detailed error handling and tracing.</p>
+<h4 id="step-3-token-caching">Step 3: Token Caching</h4>
+<p>When token retrieval succeeds, the policy extracts the access token and caches it using <a href="https://learn.microsoft.com/en-us/azure/api-management/cache-store-value-policy">cache-store-value</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;set-variable</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;access-token&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@(((JObject)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response-body&#34;]).Value&lt;string</span><span style="color:#f92672">&gt;</span>(&#34;access_token&#34;))&#34; /&gt;
+<span style="color:#f92672">&lt;set-variable</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;access-token-expires-in&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@(((JObject)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response-body&#34;]).Value&lt;int</span><span style="color:#f92672">&gt;</span>(&#34;expires_in&#34;))&#34; /&gt;
+
+<span style="color:#75715e">&lt;!-- Cache the access token for 95% of its lifetime to prevent expiration issues --&gt;</span>
+<span style="color:#f92672">&lt;cache-store-value</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;access-token-from-secret&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@((string)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">access-token&#34;])&#34;</span> 
+                   <span style="color:#a6e22e">duration=</span><span style="color:#e6db74">&#34;@((int)(0.95 * (int)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">access-token-expires-in&#34;]))&#34;</span> 
+                   <span style="color:#a6e22e">caching-type=</span><span style="color:#e6db74">&#34;internal&#34;</span> <span style="color:#f92672">/&gt;</span>
+</code></pre></div><p>The policy caches the token for 95% of its lifetime to prevent expiration issues during processing.</p>
+<h4 id="step-4-error-handling-and-tracing">Step 4: Error Handling and Tracing</h4>
+<p>Requests made by the send-request policy are not automatically logged in Application Insights. So, when something goes wrong, we need to log this explicitly using the trace policy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;trace</span> <span style="color:#a6e22e">source=</span><span style="color:#e6db74">&#34;getAccessTokenUsingSecret&#34;</span> <span style="color:#a6e22e">severity=</span><span style="color:#e6db74">&#34;error&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;message&gt;</span>Retrieval of access token failed<span style="color:#f92672">&lt;/message&gt;</span>
+    <span style="color:#f92672">&lt;metadata</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;ResponseBody&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@{
+</span><span style="color:#e6db74">        // To prevent exceptions, ensure the message is never null or empty by always providing a value.
+</span><span style="color:#e6db74">        var body = ((JObject)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response-body&#34;])?.ToString();</span>
+        <span style="color:#960050;background-color:#1e0010">return</span> <span style="color:#960050;background-color:#1e0010">!string.IsNullOrWhiteSpace(body)</span> <span style="color:#960050;background-color:#1e0010">?</span> <span style="color:#960050;background-color:#1e0010">body</span> <span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#960050;background-color:#1e0010">&#34;&lt;empty</span><span style="color:#f92672">&gt;</span>&#34;;
+    }&#34; /&gt;
+    <span style="color:#f92672">&lt;metadata</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;ResponseStatusCode&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@{
+</span><span style="color:#e6db74">        // To prevent exceptions, ensure the status code is never null or empty by always providing a value.
+</span><span style="color:#e6db74">        var statusCode = ((IResponse)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response&#34;])?.StatusCode.ToString();</span>
+        <span style="color:#960050;background-color:#1e0010">return</span> <span style="color:#960050;background-color:#1e0010">!string.IsNullOrWhiteSpace(statusCode)</span> <span style="color:#960050;background-color:#1e0010">?</span> <span style="color:#960050;background-color:#1e0010">statusCode</span> <span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#960050;background-color:#1e0010">&#34;&lt;empty</span><span style="color:#f92672">&gt;</span>&#34;;
+    }&#34; /&gt;
+<span style="color:#f92672">&lt;/trace&gt;</span>
+</code></pre></div><p>The code includes null checks for both the response body and status code because the trace policy&rsquo;s metadata values must always have a value. If either is null or an empty string, an exception will be thrown.</p>
+<p>When retrieval of the token fails, we return the detailed error response for demo and troubleshooting purposes, which you shouldn&rsquo;t do in real world scenarios.</p>
+<h4 id="step-5-authorization-header">Step 5: Authorization Header</h4>
+<p>Once the token is available (either from cache or newly acquired), the policy adds it to the Authorization header:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;set-header</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;Authorization&#34;</span> <span style="color:#a6e22e">exists-action=</span><span style="color:#e6db74">&#34;override&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;value&gt;</span>@(&#34;Bearer &#34; + (string)context.Variables[&#34;access-token&#34;])<span style="color:#f92672">&lt;/value&gt;</span>
+<span style="color:#f92672">&lt;/set-header&gt;</span>
+</code></pre></div><h4 id="step-6-cache-invalidation">Step 6: Cache Invalidation</h4>
+<p>In the outbound section, the policy handles cache invalidation when the backend returns authentication errors using <a href="https://learn.microsoft.com/en-us/azure/api-management/cache-remove-value-policy">cache-remove-value</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;choose&gt;</span>
+    <span style="color:#f92672">&lt;when</span> <span style="color:#a6e22e">condition=</span><span style="color:#e6db74">&#34;@(context.Response.StatusCode == 401 || context.Response.StatusCode == 403)&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;cache-remove-value</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;access-token-from-secret&#34;</span> <span style="color:#a6e22e">caching-type=</span><span style="color:#e6db74">&#34;internal&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/when&gt;</span>
+<span style="color:#f92672">&lt;/choose&gt;</span>
+</code></pre></div><p>This ensures that expired or invalid tokens are removed from the cache, forcing a fresh token acquisition on the next request.</p>
+<h3 id="testing-the-implementation">Testing the Implementation</h3>
+<p>After deploying the solution, you can test the OAuth-protected backend call using the send-request policy. Here&rsquo;s a sequence diagram showing the flow:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/diagrams-send-request-with-secret.png" alt="Sequence Diagram"></p>
+<p>The flow demonstrates how:</p>
+<ol>
+<li>API Management receives a request on the unprotected API</li>
+<li>The policy checks the cache for an existing access token</li>
+<li>If no cached token exists, API Management calls Entra ID directly using the send-request policy</li>
+<li>The policy caches the token for subsequent requests</li>
+<li>The request is forwarded to the protected backend with the token</li>
+</ol>
+<p>You can test the implementation using the following request. Replace <code>&lt;your-api-management-service-name&gt;</code> with the actual name of your API Management service:</p>
+<pre tabindex="0"><code># Operation that will call the protected backend using the send-request policy with a secret
+GET https://&lt;your-api-management-service-name&gt;.azure-api.net/unprotected/send-request-with-secret HTTP/1.1
+</code></pre><p>The request should succeed with a 200 OK response, showing that the policy successfully obtained an access token and called the protected backend.</p>
+<p>For demonstration purposes, the response includes the JWT token. You shouldn&rsquo;t return tokens in production environments, as this can expose sensitive information.</p>
+<p>If you execute the request multiple times, you&rsquo;ll notice that the <code>IssuedAt</code> value in the response doesn&rsquo;t change initially, showing that the policy caches tokens for improved performance.</p>
+<h3 id="considerations">Considerations</h3>
+<p>While this approach uses client secrets stored securely in Key Vault, certificates are recommended over client secrets for stronger security. The next post in this series will demonstrate how to use certificate-based authentication with JWT assertions, which provides better security since the private key never leaves the client.</p>
+<p>The policy implementation explicitly uses <code>caching-type=&quot;internal&quot;</code> to ensure tokens are stored in API Management&rsquo;s built-in cache. According to the Microsoft <a href="https://learn.microsoft.com/en-us/azure/api-management/caching-overview">Caching overview</a> documentation: <em>&ldquo;By default in caching policies, API Management uses an external cache if configured and falls back to the built-in cache otherwise.&quot;</em> If you add an external cache like Azure Cache for Redis, access tokens could potentially be stored there, where users with sufficient permissions might view them. Caching access tokens in an external cache should be a deliberate decision with the security implications carefully considered.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>The send-request policy approach provides a flexible alternative to API Management&rsquo;s credential manager for calling OAuth-protected backend APIs. The key benefits include:</p>
+<ul>
+<li><strong>Complete control</strong>: Full customization of token acquisition, caching and error handling</li>
+<li><strong>No shared infrastructure dependencies</strong>: All processing happens within your API Management instance, and when deployed in a VNET, you don&rsquo;t need to whitelist the AzureConnectors service tag</li>
+<li><strong>IP whitelisting compatibility</strong>: OAuth calls originate from your API Management service, making IP restrictions easier to manage</li>
+</ul>
+<p>Although this approach involves more implementation effort than using the credential manager, it gives you the flexibility needed when the credential manager&rsquo;s limitations don&rsquo;t fit your requirements. In the next post, I&rsquo;ll take this a step further by replacing the client secret with a client certificate for even stronger security.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/entra-id">Entra ID</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/oauth">OAuth</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/">Call OAuth-Protected Backends from API Management using Credential Manager &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/apim-mtls">apim-mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
