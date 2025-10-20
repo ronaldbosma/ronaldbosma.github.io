@@ -169,9 +169,10 @@
 <ul>
 <li><a href="/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/">Part 1: Using Credential Manager</a></li>
 <li><strong>Part 2: Using Send-Request Policy with Client Secret - <em>this post</em></strong></li>
-<li>Part 3: Using Send-Request Policy with Client Certificate - <em>coming soon</em></li>
+<li><a href="/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/">Part 3: Using Send-Request Policy with Client Certificate</a></li>
 </ul>
 </li>
+<li>Calling OAuth-Protected APIs from CI/CD Pipelines using Federated Credentials - <em>coming soon</em></li>
 </ul>
 <h3 id="table-of-contents">Table of Contents</h3>
 <ul>
@@ -378,7 +379,7 @@ GET https://&lt;your-api-management-service-name&gt;.azure-api.net/unprotected/s
 <li><strong>No shared infrastructure dependencies</strong>: All processing happens within your API Management instance, and when deployed in a VNET, you don&rsquo;t need to whitelist the AzureConnectors service tag</li>
 <li><strong>IP whitelisting compatibility</strong>: OAuth calls originate from your API Management service, making IP restrictions easier to manage</li>
 </ul>
-<p>Although this approach involves more implementation effort than using the credential manager, it gives you the flexibility needed when the credential manager&rsquo;s limitations don&rsquo;t fit your requirements. In the next post, I&rsquo;ll take this a step further by replacing the client secret with a client certificate for even stronger security.</p>
+<p>Although this approach involves more implementation effort than using the credential manager, it gives you the flexibility needed when the credential manager&rsquo;s limitations don&rsquo;t fit your requirements. In the <a href="/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/">next post</a>, I&rsquo;ll take this a step further by replacing the client secret with a client certificate for even stronger security.</p>
 
                     </div>
                     
@@ -412,6 +413,8 @@ GET https://&lt;your-api-management-service-name&gt;.azure-api.net/unprotected/s
                     
                     
                     <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                        <a class="d-block col-md-6" href="https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/"> &laquo; Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Certificate</a>
                     
                     
                         <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/">Call OAuth-Protected Backends from API Management using Credential Manager &raquo;</a>

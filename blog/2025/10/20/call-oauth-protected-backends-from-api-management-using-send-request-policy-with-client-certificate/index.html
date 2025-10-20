@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Certificate | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/cover.png"/>
+<meta name="twitter:title" content="Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Certificate"/>
+<meta name="twitter:description" content="Learn how to implement certificate-based OAuth authentication in API Management using JWT assertions and the send-request policy. This approach provides stronger security than client secrets by proving possession of a private key without transmitting it."/>
+
+	<meta property="og:title" content="Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Certificate" />
+<meta property="og:description" content="Learn how to implement certificate-based OAuth authentication in API Management using JWT assertions and the send-request policy. This approach provides stronger security than client secrets by proving possession of a private key without transmitting it." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-10-20T16:00:00+02:00" />
+<meta property="article:modified_time" content="2025-10-20T16:00:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Call%20OAuth-Protected%20Backends%20from%20API%20Management%20using%20Send-Request%20Policy%20with%20Client%20Certificate&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f10%2f20%2fcall-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f10%2f20%2fcall-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f10%2f20%2fcall-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Oct 20, 2025
+                                    <i class="far fa-clock clock"></i>
+                                    12 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Certificate</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>In my <a href="/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/">previous post</a> I showed how to call OAuth-protected backends using the <a href="https://learn.microsoft.com/en-us/azure/api-management/send-request-policy">send-request</a> policy with client secrets. While client secrets work well, certificates provide stronger security by proving possession of a private key without ever transmitting it.</p>
+<p>In this post, I&rsquo;ll show you how to implement certificate-based OAuth authentication in API Management using the OAuth 2.0 Client Credentials Flow. We&rsquo;ll use a client certificate to create a JWT assertion, which proves possession of the private key and enables secure access to protected backends.</p>
+<blockquote>
+<p>If you can, use a managed identity to call OAuth-protected APIs from API Management. Have a look at <a href="/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/">this post</a> for more information.</p>
+</blockquote>
+<p>This post is part of a series about OAuth and API Management:</p>
+<ul>
+<li><a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a></li>
+<li>Calling OAuth-Protected APIs with Managed Identity
+<ul>
+<li><a href="/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/">Part 1: In .NET (Azure Function)</a></li>
+<li><a href="/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/">Part 2: In Logic Apps</a></li>
+<li><a href="/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/">Part 3: In API Management</a></li>
+</ul>
+</li>
+<li>Calling OAuth-Protected Backends from API Management
+<ul>
+<li><a href="/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/">Part 1: Using Credential Manager</a></li>
+<li><a href="/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/">Part 2: Using Send-Request Policy with Client Secret</a></li>
+<li><strong>Part 3: Using Send-Request Policy with Client Certificate - <em>this post</em></strong></li>
+</ul>
+</li>
+<li>Calling OAuth-Protected APIs from CI/CD Pipelines using Federated Credentials - <em>coming soon</em></li>
+</ul>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#solution-overview">Solution Overview</a></li>
+<li><a href="#understanding-certificate-based-authentication">Understanding Certificate-Based Authentication</a></li>
+<li><a href="#implementation">Implementation</a>
+<ul>
+<li><a href="#step-1-cache-lookup">Step 1: Cache Lookup</a></li>
+<li><a href="#step-2-jwt-assertion-creation">Step 2: JWT Assertion Creation</a></li>
+<li><a href="#step-3-token-acquisition">Step 3: Token Acquisition</a></li>
+<li><a href="#step-4-token-caching">Step 4: Token Caching</a></li>
+<li><a href="#step-5-error-handling-and-tracing">Step 5: Error Handling and Tracing</a></li>
+<li><a href="#step-6-authorization-header">Step 6: Authorization Header</a></li>
+<li><a href="#step-7-cache-invalidation">Step 7: Cache Invalidation</a></li>
+</ul>
+</li>
+<li><a href="#testing-the-implementation">Testing the Implementation</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="solution-overview">Solution Overview</h3>
+<p>The solution demonstrates API Management calling OAuth-protected backend APIs using certificate-based authentication with JWT assertions:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/diagrams-overview-send-request-with-certificate.png" alt="Overview"></p>
+<ul>
+<li><strong>Azure API Management</strong> service with two APIs:
+<ul>
+<li><strong>Protected Backend API</strong>: A backend API that&rsquo;s protected with OAuth using Entra ID</li>
+<li><strong>Unprotected API</strong>: A public API that calls the protected backend using certificate-based token handling</li>
+</ul>
+</li>
+<li><strong>Azure Key Vault</strong>: Stores the client certificate securely and makes it available to API Management</li>
+<li><strong>Entra ID App Registrations</strong>: Separate app registrations for the backend API and the client, with proper role assignments and certificate configuration</li>
+<li><strong>Supporting Resources</strong>: Application Insights and Log Analytics workspace for monitoring</li>
+</ul>
+<p>The key difference from the client secret approach is that the certificate provides stronger security through public key cryptography instead of shared secrets.</p>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth">Call API Management backend with OAuth</a> that demonstrates three scenarios: using the credential manager, a send-request policy with client secret and a send-request policy with client certificate. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on calling OAuth-protected backends using the send-request policy with client certificate.</p>
+<h3 id="understanding-certificate-based-authentication">Understanding Certificate-Based Authentication</h3>
+<p>Before diving into the implementation, it&rsquo;s important to understand how certificate-based authentication works with Entra ID. The process involves creating a JWT assertion that proves possession of the certificate&rsquo;s private key without transmitting it. The <a href="https://learn.microsoft.com/en-us/entra/identity-platform/certificate-credentials">Microsoft identity platform application authentication certificate credentials</a> documentation provides detailed guidance on creating these JWT assertions, which I&rsquo;ll explain briefly here.</p>
+<p>Here&rsquo;s what a decoded JWT assertion looks like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;alg&#34;</span>: <span style="color:#e6db74">&#34;PS256&#34;</span>,
+  <span style="color:#f92672">&#34;typ&#34;</span>: <span style="color:#e6db74">&#34;JWT&#34;</span>,
+  <span style="color:#f92672">&#34;x5t#S256&#34;</span>: <span style="color:#e6db74">&#34;A1bC2dE3fH4iJ5kL6mN7oP8qR9sT0u&#34;</span>
+}
+<span style="color:#960050;background-color:#1e0010">.</span>
+{
+  <span style="color:#f92672">&#34;aud&#34;</span>: <span style="color:#e6db74">&#34;https://login.microsoftonline.com/contoso.onmicrosoft.com/oauth2/v2.0/token&#34;</span>,
+  <span style="color:#f92672">&#34;exp&#34;</span>: <span style="color:#ae81ff">1484593341</span>,
+  <span style="color:#f92672">&#34;iss&#34;</span>: <span style="color:#e6db74">&#34;aaaabbbb-0000-cccc-1111-dddd2222eeee&#34;</span>,
+  <span style="color:#f92672">&#34;jti&#34;</span>: <span style="color:#e6db74">&#34;00aa00aa-bb11-cc22-dd33-44ee44ee44ee&#34;</span>,
+  <span style="color:#f92672">&#34;nbf&#34;</span>: <span style="color:#ae81ff">1484592741</span>,
+  <span style="color:#f92672">&#34;sub&#34;</span>: <span style="color:#e6db74">&#34;aaaaaaaa-0000-1111-2222-bbbbbbbbbbbb&#34;</span>
+}
+<span style="color:#960050;background-color:#1e0010">.</span>
+<span style="color:#e6db74">&#34;A1bC2dE3fH4iJ5kL6mN7oP8qR9sT0u...&#34;</span>
+</code></pre></div><p>The JWT assertion consists of three parts separated by dots (<code>.</code>):</p>
+<p>The <strong>header</strong> specifies the signing algorithm and certificate information. It uses PS256 for the algorithm (<code>alg</code>), JWT for the token type (<code>typ</code>), and includes the Base64Url-encoded SHA-256 thumbprint of the certificate in the <code>x5t#S256</code> field, which Entra ID uses to validate the signature.</p>
+<p>The <strong>claims section</strong> contains the authentication information required by Entra ID. The audience (<code>aud</code>) points to Entra ID&rsquo;s token endpoint, while the issuer (<code>iss</code>) and subject (<code>sub</code>) both contain your client application&rsquo;s ID. The token includes timing claims like expiration time (<code>exp</code>) and not before time (<code>nbf</code>), with a unique identifier (<code>jti</code>) to prevent replay attacks.</p>
+<p>The <strong>signature</strong> is computed by signing the Base64Url-encoded header and claims (<code>header.claims</code>) with the certificate&rsquo;s private key using PS256 (RSA with PSS padding and SHA-256). This signature proves possession of the private key without transmitting it, providing the cryptographic security that makes certificate-based authentication stronger than shared secrets.</p>
+<p>The JWT assertion can be sent to Entra ID in a form-encoded request like this:</p>
+<pre tabindex="0"><code>scope={scope}
+&amp;client_id={clientId}
+&amp;client_assertion={clientAssertion}
+&amp;client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+&amp;grant_type=client_credentials
+</code></pre><p>Where:</p>
+<ul>
+<li><code>scope</code>: The Application ID URI of the backend&rsquo;s app registration</li>
+<li><code>clientId</code>: The &ldquo;Application (client) ID&rdquo; of the client app registration</li>
+<li><code>clientAssertion</code>: The encoded JWT assertion signed with the certificate&rsquo;s private key</li>
+</ul>
+<p>Entra ID will validate the assertion using the public key from the certificate and return an access token if the assertion is valid.</p>
+<p>Note that this post focuses on Entra ID. Other Identity Providers may require different JWT header and claims structures. Always consult the specific Identity Provider&rsquo;s documentation for their JWT assertion requirements.</p>
+<h3 id="implementation">Implementation</h3>
+<p>The certificate-based policy implementation builds on the same foundation as the client secret approach but adds JWT assertion creation and certificate signing. Instead of showing the entire policy inline, I&rsquo;ll walk through the key steps and logic, highlighting the most relevant snippets. For the full working policy, see <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth/blob/main/src/apis/unprotected-api/send-request-with-certificate.xml">send-request-with-certificate.xml</a>.</p>
+<p>This approach is inspired by the <a href="https://github.com/Azure/api-management-policy-snippets/blob/master/examples/Get%20OAuth2%20access%20token%20from%20AAD%20using%20client%20id%20and%20certificate%20using%20key%20vault%20manage%20identity.xml">Get OAuth2 access token from AAD using client id and certificate using key vault manage identity.xml</a> example, but uses a different method for certificate retrieval and includes several improvements.</p>
+<p><strong>Tip for maintainability:</strong> I usually put the logic to retrieve an access token in a <a href="https://learn.microsoft.com/en-us/azure/api-management/policy-fragments">policy fragment</a>. This makes the API or operation policy much easier to read and allows you to reuse the token retrieval logic across multiple APIs or operations.</p>
+<p>Let me break down the key components of this implementation:</p>
+<h4 id="step-1-cache-lookup">Step 1: Cache Lookup</h4>
+<p>The policy starts by checking if an access token already exists in the cache using <a href="https://learn.microsoft.com/en-us/azure/api-management/cache-lookup-value-policy">cache-lookup-value</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;cache-lookup-value</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;access-token-from-certificate&#34;</span> <span style="color:#a6e22e">variable-name=</span><span style="color:#e6db74">&#34;access-token&#34;</span> <span style="color:#a6e22e">caching-type=</span><span style="color:#e6db74">&#34;internal&#34;</span> <span style="color:#f92672">/&gt;</span>
+</code></pre></div><p>This step helps improve performance by avoiding unnecessary token requests to Entra ID when a valid token is already available.</p>
+<h4 id="step-2-jwt-assertion-creation">Step 2: JWT Assertion Creation</h4>
+<p>If no cached token exists, a policy expression creates a JWT assertion signed with the client certificate and stores it in the <code>signed-client-assertion</code> variable. This involves several sub-steps:</p>
+<h5 id="certificate-retrieval">Certificate Retrieval</h5>
+<p>First, we need to retrieve the certificate from API Management&rsquo;s certificate store using the thumbprint:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">var</span> certificate = context.Deployment.Certificates[<span style="color:#e6db74">&#34;{{client-certificate-thumbprint}}&#34;</span>];
+</code></pre></div><p>The certificate is automatically generated in Key Vault and uploaded to the app registration using <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth/blob/main/hooks/postprovision-create-and-store-client-certificate.ps1">this script</a>. The <a href="https://github.com/ronaldbosma/call-apim-backend-with-oauth/blob/main/src/apis/unprotected-api/unprotected-api.bicep">unprotected-api.bicep</a> file creates an API Management certificate resource that references the Key Vault certificate, making it accessible to policy expressions through the certificate&rsquo;s thumbprint.</p>
+<h5 id="jwt-header-creation">JWT Header Creation</h5>
+<p>Next, we create a JWT header with the certificate&rsquo;s SHA256 thumbprint:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">var</span> sha256 = SHA256.Create();
+<span style="color:#66d9ef">byte</span>[] hash = sha256.ComputeHash(certificate.RawData);
+
+<span style="color:#66d9ef">var</span> header = <span style="color:#66d9ef">new</span> JObject
+{
+    { <span style="color:#e6db74">&#34;alg&#34;</span>, <span style="color:#e6db74">&#34;PS256&#34;</span> },
+    { <span style="color:#e6db74">&#34;typ&#34;</span>, <span style="color:#e6db74">&#34;JWT&#34;</span> },
+    { <span style="color:#e6db74">&#34;x5t#S256&#34;</span>, ConvertBytesToBase64Url(hash) }
+};
+</code></pre></div><p>The <code>x5t#S256</code> claim contains the SHA256 thumbprint of the certificate, which Entra ID uses to validate the JWT signature.</p>
+<h5 id="jwt-claims-creation">JWT Claims Creation</h5>
+<p>After creating the header, we build the JWT claims (payload) with the required fields for Entra ID:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">var</span> jwtLifetimeInSeconds = <span style="color:#ae81ff">600</span>; <span style="color:#75715e">// Ten minutes
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> nbf = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+<span style="color:#66d9ef">var</span> exp = (DateTimeOffset.UtcNow + TimeSpan.FromSeconds(jwtLifetimeInSeconds)).ToUnixTimeSeconds();
+
+<span style="color:#66d9ef">var</span> claims = <span style="color:#66d9ef">new</span> JObject
+{
+    { <span style="color:#e6db74">&#34;aud&#34;</span>, <span style="color:#e6db74">&#34;{{oauth-token-url}}&#34;</span> },
+    { <span style="color:#e6db74">&#34;exp&#34;</span>, exp },
+    { <span style="color:#e6db74">&#34;iss&#34;</span>, <span style="color:#e6db74">&#34;{{client-id}}&#34;</span> },
+    { <span style="color:#e6db74">&#34;jti&#34;</span>, Guid.NewGuid().ToString() },
+    { <span style="color:#e6db74">&#34;nbf&#34;</span>, nbf },
+    { <span style="color:#e6db74">&#34;sub&#34;</span>, <span style="color:#e6db74">&#34;{{client-id}}&#34;</span> },
+    { <span style="color:#e6db74">&#34;iat&#34;</span>, nbf }
+};
+</code></pre></div><p>These claims are required by Entra ID for certificate-based authentication and include the token&rsquo;s audience, expiration time, issuer and unique identifier.</p>
+<h5 id="base64url-encoding">Base64Url Encoding</h5>
+<p>Both the header and claims objects need to be Base64Url encoded, as the JWT specification requires this format which differs from standard Base64 encoding:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">var</span> headerBase64UrlEncoded = ConvertJObjectToBase64Url(header);
+<span style="color:#66d9ef">var</span> claimsBase64UrlEncoded = ConvertJObjectToBase64Url(claims);
+</code></pre></div><h5 id="jwt-signing">JWT Signing</h5>
+<p>With both parts encoded, we can now sign the JWT using the certificate&rsquo;s private key:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#75715e">// Create the string to be signed: header.payload
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> stringToSign = <span style="color:#66d9ef">string</span>.Concat(headerBase64UrlEncoded, <span style="color:#e6db74">&#34;.&#34;</span>, claimsBase64UrlEncoded);
+<span style="color:#66d9ef">var</span> bytesToSign = System.Text.Encoding.UTF8.GetBytes(stringToSign);
+
+<span style="color:#75715e">// Sign the data using the certificate&#39;s private key with PSS padding
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> rsa = certificate.GetRSAPrivateKey();
+<span style="color:#66d9ef">var</span> signature = rsa.SignData(bytesToSign, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+<span style="color:#66d9ef">var</span> signatureBase64UrlEncoded = ConvertBytesToBase64Url(signature);
+
+<span style="color:#75715e">// Return the complete JWT: header.payload.signature
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">return</span> <span style="color:#66d9ef">string</span>.Concat(stringToSign, <span style="color:#e6db74">&#34;.&#34;</span>, signatureBase64UrlEncoded);
+</code></pre></div><p>The signing process uses RSA with PSS padding and SHA256 hashing, which matches the &ldquo;PS256&rdquo; algorithm specified in the JWT header. The signature bytes are then Base64Url encoded to create the final part of the assertion.</p>
+<h5 id="helper-methods">Helper Methods</h5>
+<p>Two local functions handle the Base64Url encoding requirements:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">string</span> ConvertJObjectToBase64Url(JObject input)
+{
+    <span style="color:#66d9ef">var</span> jsonString = input.ToString(Newtonsoft.Json.Formatting.None);
+    <span style="color:#66d9ef">var</span> bytes = System.Text.Encoding.UTF8.GetBytes(jsonString);
+    <span style="color:#66d9ef">return</span> ConvertBytesToBase64Url(bytes);
+}
+        
+<span style="color:#66d9ef">string</span> ConvertBytesToBase64Url(<span style="color:#66d9ef">byte</span>[] bytes)
+{
+    <span style="color:#75715e">// The JWT spec requires Base64Url encoding, which is similar to Base64 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// but uses &#39;-&#39; and &#39;_&#39; instead of &#39;+&#39; and &#39;/&#39; and omits padding characters (&#39;=&#39;).
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> Convert.ToBase64String(bytes)
+        .Replace(<span style="color:#e6db74">&#34;+&#34;</span>, <span style="color:#e6db74">&#34;-&#34;</span>)
+        .Replace(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#e6db74">&#34;_&#34;</span>)
+        .TrimEnd(<span style="color:#e6db74">&#39;=&#39;</span>);
+}
+</code></pre></div><p>Base64Url encoding uses &lsquo;-&rsquo; and &lsquo;_&rsquo; instead of &lsquo;+&rsquo; and &lsquo;/&rsquo; and omits padding characters ('=') to make the encoded string URL-safe.</p>
+<h4 id="step-3-token-acquisition">Step 3: Token Acquisition</h4>
+<p>The signed JWT assertion is sent to Entra ID using the <a href="https://learn.microsoft.com/en-us/azure/api-management/send-request-policy">send-request</a> policy with the Client Credentials Flow:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;send-request</span> <span style="color:#a6e22e">mode=</span><span style="color:#e6db74">&#34;new&#34;</span> <span style="color:#a6e22e">timeout=</span><span style="color:#e6db74">&#34;20&#34;</span> <span style="color:#a6e22e">response-variable-name=</span><span style="color:#e6db74">&#34;get-access-token-response&#34;</span> <span style="color:#a6e22e">ignore-error=</span><span style="color:#e6db74">&#34;false&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;set-url&gt;</span>{{oauth-token-url}}<span style="color:#f92672">&lt;/set-url&gt;</span>
+    <span style="color:#f92672">&lt;set-method&gt;</span>POST<span style="color:#f92672">&lt;/set-method&gt;</span>
+    <span style="color:#f92672">&lt;set-header</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;Content-Type&#34;</span> <span style="color:#a6e22e">exists-action=</span><span style="color:#e6db74">&#34;override&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;value&gt;</span>application/x-www-form-urlencoded<span style="color:#f92672">&lt;/value&gt;</span>
+    <span style="color:#f92672">&lt;/set-header&gt;</span>
+    <span style="color:#f92672">&lt;set-body&gt;</span>@{
+        var scope = &#34;{{oauth-scope}}&#34;;
+        var clientId = &#34;{{client-id}}&#34;;
+        var clientAssertion = (string)context.Variables[&#34;signed-client-assertion&#34;];
+
+        return $&#34;scope={scope}&amp;client_id={clientId}&amp;client_assertion={clientAssertion}&amp;client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&amp;grant_type=client_credentials&#34;;
+    }<span style="color:#f92672">&lt;/set-body&gt;</span>
+<span style="color:#f92672">&lt;/send-request&gt;</span>
+</code></pre></div><p>The policy uses several named values that are configured in API Management:</p>
+<ul>
+<li><code>oauth-token-url</code>: The OAuth 2.0 token endpoint URL</li>
+<li><code>client-id</code>: The &ldquo;Application (client) ID&rdquo; of the client app registration</li>
+<li><code>oauth-scope</code>: The Application ID URI of the backend&rsquo;s app registration</li>
+</ul>
+<p>The <code>client_assertion_type</code> parameter in the body tells Entra ID that we&rsquo;re using a JWT bearer assertion for authentication.</p>
+<p>The <code>ignore-error</code> attribute is set to false so we can perform detailed error handling and tracing.</p>
+<h4 id="step-4-token-caching">Step 4: Token Caching</h4>
+<p>When token retrieval succeeds, the policy extracts the access token and caches it using <a href="https://learn.microsoft.com/en-us/azure/api-management/cache-store-value-policy">cache-store-value</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;set-variable</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;access-token&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@(((JObject)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response-body&#34;]).Value&lt;string</span><span style="color:#f92672">&gt;</span>(&#34;access_token&#34;))&#34; /&gt;
+<span style="color:#f92672">&lt;set-variable</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;access-token-expires-in&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@(((JObject)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response-body&#34;]).Value&lt;int</span><span style="color:#f92672">&gt;</span>(&#34;expires_in&#34;))&#34; /&gt;
+
+<span style="color:#75715e">&lt;!-- Cache the access token for 95% of its lifetime to prevent expiration issues --&gt;</span>
+<span style="color:#f92672">&lt;cache-store-value</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;access-token-from-certificate&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@((string)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">access-token&#34;])&#34;</span> 
+                   <span style="color:#a6e22e">duration=</span><span style="color:#e6db74">&#34;@((int)(0.95 * (int)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">access-token-expires-in&#34;]))&#34;</span> 
+                   <span style="color:#a6e22e">caching-type=</span><span style="color:#e6db74">&#34;internal&#34;</span> <span style="color:#f92672">/&gt;</span>
+</code></pre></div><p>The policy caches the token for 95% of its lifetime to prevent expiration issues during processing.</p>
+<h4 id="step-5-error-handling-and-tracing">Step 5: Error Handling and Tracing</h4>
+<p>Requests made by the send-request policy are not automatically logged in Application Insights. When something goes wrong, we need to log this explicitly using the <a href="https://learn.microsoft.com/en-us/azure/api-management/trace-policy">trace</a> policy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;trace</span> <span style="color:#a6e22e">source=</span><span style="color:#e6db74">&#34;getAccessTokenUsingCertificate&#34;</span> <span style="color:#a6e22e">severity=</span><span style="color:#e6db74">&#34;error&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;message&gt;</span>Retrieval of access token failed<span style="color:#f92672">&lt;/message&gt;</span>
+    <span style="color:#f92672">&lt;metadata</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;ResponseBody&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@{
+</span><span style="color:#e6db74">        // To prevent exceptions, ensure the message is never null or empty by always providing a value.
+</span><span style="color:#e6db74">        var body = ((JObject)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response-body&#34;])?.ToString();</span>
+        <span style="color:#960050;background-color:#1e0010">return</span> <span style="color:#960050;background-color:#1e0010">!string.IsNullOrWhiteSpace(body)</span> <span style="color:#960050;background-color:#1e0010">?</span> <span style="color:#960050;background-color:#1e0010">body</span> <span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#960050;background-color:#1e0010">&#34;&lt;empty</span><span style="color:#f92672">&gt;</span>&#34;;
+    }&#34; /&gt;
+    <span style="color:#f92672">&lt;metadata</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;ResponseStatusCode&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;@{
+</span><span style="color:#e6db74">        // To prevent exceptions, ensure the status code is never null or empty by always providing a value.
+</span><span style="color:#e6db74">        var statusCode = ((IResponse)context.Variables[&#34;</span><span style="color:#960050;background-color:#1e0010">get-access-token-response&#34;])?.StatusCode.ToString();</span>
+        <span style="color:#960050;background-color:#1e0010">return</span> <span style="color:#960050;background-color:#1e0010">!string.IsNullOrWhiteSpace(statusCode)</span> <span style="color:#960050;background-color:#1e0010">?</span> <span style="color:#960050;background-color:#1e0010">statusCode</span> <span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#960050;background-color:#1e0010">&#34;&lt;empty</span><span style="color:#f92672">&gt;</span>&#34;;
+    }&#34; /&gt;
+<span style="color:#f92672">&lt;/trace&gt;</span>
+</code></pre></div><p>The code includes null checks for both the response body and status code because the trace policy&rsquo;s metadata values must always have a value. If either is null or an empty string, an exception will be thrown.</p>
+<p>When retrieval of the token fails, we return the detailed error response for demo and troubleshooting purposes, which you shouldn&rsquo;t do in real world scenarios.</p>
+<h4 id="step-6-authorization-header">Step 6: Authorization Header</h4>
+<p>Once the token is available (either from cache or newly acquired), the policy adds it to the Authorization header:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;set-header</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;Authorization&#34;</span> <span style="color:#a6e22e">exists-action=</span><span style="color:#e6db74">&#34;override&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;value&gt;</span>@(&#34;Bearer &#34; + (string)context.Variables[&#34;access-token&#34;])<span style="color:#f92672">&lt;/value&gt;</span>
+<span style="color:#f92672">&lt;/set-header&gt;</span>
+</code></pre></div><h4 id="step-7-cache-invalidation">Step 7: Cache Invalidation</h4>
+<p>In the outbound section, the policy handles cache invalidation when the backend returns authentication errors using <a href="https://learn.microsoft.com/en-us/azure/api-management/cache-remove-value-policy">cache-remove-value</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;choose&gt;</span>
+    <span style="color:#f92672">&lt;when</span> <span style="color:#a6e22e">condition=</span><span style="color:#e6db74">&#34;@(context.Response.StatusCode == 401 || context.Response.StatusCode == 403)&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;cache-remove-value</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;access-token-from-certificate&#34;</span> <span style="color:#a6e22e">caching-type=</span><span style="color:#e6db74">&#34;internal&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/when&gt;</span>
+<span style="color:#f92672">&lt;/choose&gt;</span>
+</code></pre></div><p>This ensures that expired or invalid tokens are removed from the cache, forcing a fresh token acquisition on the next request.</p>
+<h3 id="testing-the-implementation">Testing the Implementation</h3>
+<p>After deploying the solution, you can test the certificate-based OAuth implementation. Here&rsquo;s a sequence diagram showing the flow:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/diagrams-send-request-with-certificate.png" alt="Sequence Diagram"></p>
+<p>The flow demonstrates how:</p>
+<ol>
+<li>API Management receives a request on the unprotected API</li>
+<li>The policy checks the cache for an existing access token</li>
+<li>If no cached token exists, the policy creates and signs a JWT assertion using the client certificate</li>
+<li>API Management calls Entra ID directly using the send-request policy with the JWT assertion</li>
+<li>The policy caches the token for subsequent requests</li>
+<li>The request is forwarded to the protected backend with the token</li>
+</ol>
+<p>You can test the implementation using the following request. Replace <code>&lt;your-api-management-service-name&gt;</code> with the actual name of your API Management service:</p>
+<pre tabindex="0"><code># Operation that will call the protected backend using the send-request policy with a certificate (client_assertion)
+GET https://&lt;your-api-management-service-name&gt;.azure-api.net/unprotected/send-request-with-certificate HTTP/1.1
+</code></pre><p>The request should succeed with a 200 OK response, showing that the policy successfully created a JWT assertion, obtained an access token and called the protected backend.</p>
+<p>For demonstration purposes, the response includes the JWT token. You shouldn&rsquo;t return tokens in production environments, as this can expose sensitive information.</p>
+<p>An important security indicator in the token is the <code>azpacr</code> claim, which is set to <code>2</code>, indicating that certificate authentication was used. This differs from client secret authentication, which sets <code>azpacr</code> to <code>1</code>.</p>
+<p>If you execute the request multiple times, you&rsquo;ll notice that the <code>IssuedAt</code> value doesn&rsquo;t change initially, showing that the policy caches tokens for improved performance.</p>
+<h3 id="considerations">Considerations</h3>
+<p>The same caching considerations from the previous post apply here. The policy implementation explicitly uses <code>caching-type=&quot;internal&quot;</code> to ensure tokens are stored in API Management&rsquo;s built-in cache. According to the Microsoft <a href="https://learn.microsoft.com/en-us/azure/api-management/caching-overview">Caching overview</a> documentation: <em>&ldquo;By default in caching policies, API Management uses an external cache if configured and falls back to the built-in cache otherwise.&quot;</em> If you add an external cache like Azure Cache for Redis, access tokens could potentially be stored there, where users with sufficient permissions might view them. Caching access tokens in an external cache should be a deliberate decision with the security implications carefully considered.</p>
+<p>Both certificates and client secrets require lifecycle management, including renewal before expiration, though many people find certificate generation more challenging than working with client secrets. While certificates add complexity in terms of key management and JWT assertion creation, they provide significantly stronger security.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Certificate-based authentication with JWT assertions provides the most secure option of the three approaches we&rsquo;ve covered for calling OAuth-protected backends from API Management when you can&rsquo;t use managed identity. The key benefits include:</p>
+<ul>
+<li><strong>Enhanced security</strong>: Certificates provide stronger authentication than shared secrets through public key cryptography</li>
+<li><strong>Private key protection</strong>: The JWT assertion proves possession of the private key without transmitting it</li>
+<li><strong>Complete control</strong>: Full customization of token acquisition, JWT creation and error handling</li>
+</ul>
+<p>While this approach requires more implementation effort compared to client secrets or the credential manager, it provides better security for OAuth authentication scenarios. This approach is ideal when security requirements demand certificate-based authentication or when you need complete control over the OAuth token acquisition process.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/entra-id">Entra ID</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/oauth">OAuth</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/">Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Secret &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/apim-mtls">apim-mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
