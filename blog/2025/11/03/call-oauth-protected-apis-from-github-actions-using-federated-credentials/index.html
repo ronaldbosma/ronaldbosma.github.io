@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/cover.png"/>
+<meta name="twitter:title" content="Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials"/>
+<meta name="twitter:description" content="Learn how to execute automated integration tests against OAuth-protected APIs from GitHub Actions workflows using federated credentials. This enables secure API testing without managing secrets in your CI/CD pipeline."/>
+
+	<meta property="og:title" content="Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials" />
+<meta property="og:description" content="Learn how to execute automated integration tests against OAuth-protected APIs from GitHub Actions workflows using federated credentials. This enables secure API testing without managing secrets in your CI/CD pipeline." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-11-03T16:00:00+01:00" />
+<meta property="article:modified_time" content="2025-11-03T16:00:00+01:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Call%20OAuth-Protected%20APIs%20from%20GitHub%20Actions%20Using%20Federated%20Credentials&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f03%2fcall-oauth-protected-apis-from-github-actions-using-federated-credentials%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f03%2fcall-oauth-protected-apis-from-github-actions-using-federated-credentials%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f03%2fcall-oauth-protected-apis-from-github-actions-using-federated-credentials%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Nov 3, 2025
+                                    <i class="far fa-clock clock"></i>
+                                    10 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>When I build APIs, I like to execute automated integration tests from my pipeline after deployment. When the APIs are protected with OAuth, we need a way to retrieve a valid JWT token when calling them from a test. In this post, I&rsquo;ll show how to do this from a GitHub Actions workflow using federated credentials.</p>
+<p>This post is part of a series about OAuth and API Management:</p>
+<ul>
+<li><a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a></li>
+<li>Calling OAuth-Protected APIs with Managed Identity
+<ul>
+<li><a href="/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/">Part 1: In .NET (Azure Function)</a></li>
+<li><a href="/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/">Part 2: In Logic Apps (Standard)</a></li>
+<li><a href="/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/">Part 3: In API Management</a></li>
+</ul>
+</li>
+<li>Calling OAuth-Protected Backends from API Management
+<ul>
+<li><a href="/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/">Part 1: Using Credential Manager</a></li>
+<li><a href="/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/">Part 2: Using Send-Request Policy with Client Secret</a></li>
+<li><a href="/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/">Part 3: Using Send-Request Policy with Client Certificate</a></li>
+</ul>
+</li>
+<li>Calling OAuth-Protected APIs from CI/CD Pipelines using Federated Credentials
+<ul>
+<li><strong>Part 1: GitHub Actions - <em>this post</em></strong></li>
+<li>Part 2: Azure DevOps - <em>coming soon</em></li>
+</ul>
+</li>
+</ul>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#solution-overview">Solution Overview</a></li>
+<li><a href="#setting-up-federated-credentials">Setting Up Federated Credentials</a></li>
+<li><a href="#granting-api-access-to-the-principal">Granting API Access to the Principal</a></li>
+<li><a href="#creating-integration-tests">Creating Integration Tests</a></li>
+<li><a href="#executing-tests-in-github-actions">Executing Tests in GitHub Actions</a></li>
+<li><a href="#supporting-local-development">Supporting Local Development</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="solution-overview">Solution Overview</h3>
+<p>The solution demonstrates how to execute integration tests against OAuth-protected APIs from GitHub Actions using OpenID Connect (OIDC) with federated credentials:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/diagrams-overview-github-actions.png" alt="Overview"></p>
+<ul>
+<li><strong>GitHub Actions Workflow</strong>: Uses OIDC to authenticate with Azure using federated credentials</li>
+<li><strong>Azure API Management</strong>: Hosts the OAuth-protected API that we want to test</li>
+<li><strong>Integration Tests</strong>: .NET tests that authenticate using Azure CLI credentials and call the protected API</li>
+<li><strong>Entra ID App Registration</strong>: Represents the protected APIs and defines available app roles</li>
+</ul>
+<p>While this example uses an API on API Management, the same approach applies when calling any other API protected with OAuth using Entra ID.</p>
+<p>The Entra ID configuration follows the same pattern described in <a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a>. The key difference is that we assign the <code>Sample.Read</code> and <code>Sample.Write</code> app roles to the GitHub Actions principal in Azure instead of client app registrations.</p>
+<p>The tests are written in .NET and use the Azure Identity library for authentication. They can use the pipeline principal to obtain a valid JWT token for API calls:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/diagrams-integration-tests-to-apim.png" alt="Integration Test Flow"></p>
+<p>The implementation is straightforward with four main steps:</p>
+<ol>
+<li>Setup OIDC with federated credentials for GitHub actions (managed identity or app registration)</li>
+<li>Grant the principal app roles on the API</li>
+<li>Create integration tests using Azure Identity library to authenticate with Azure CLI credentials</li>
+<li>In the workflow: Log into Azure with Azure CLI using the federated credentials and execute tests</li>
+</ol>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity">Call API Management with Managed Identity</a> that demonstrates several scenarios related to calling OAuth-Protected APIs with managed identities. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on calling OAuth-protected APIs from GitHub Actions using federated credentials.</p>
+<h3 id="setting-up-federated-credentials">Setting Up Federated Credentials</h3>
+<p>In order to connect from GitHub Actions to Azure using OpenID Connect (OIDC), a Microsoft Entra application or managed identity with federated identity credentials needs to be set up.</p>
+<p>You can configure this manually by following <a href="https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect">Use the Azure Login action with OpenID Connect</a>. However, if you&rsquo;re using the Azure Developer CLI, you can follow the instructions in <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity?tab=readme-ov-file#setting-up-the-pipeline">Setting Up the Pipeline</a> which simplifies this process.</p>
+<p>The sample template deploys resources in Entra ID. When using the same principal for deployment and integration tests, make sure to follow the instructions on <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity?tab=readme-ov-file#setting-up-the-pipeline">Setting Up the Pipeline</a> to select the right type of principal and configure the necessary permissions.</p>
+<h3 id="granting-api-access-to-the-principal">Granting API Access to the Principal</h3>
+<p>Once you have the federated credentials configured, the principal needs to be assigned app roles from the app registration that represents your protected API. This is exactly the same process as we&rsquo;ve used in previous posts of this series when assigning roles to a client app registration or managed identity.</p>
+<p>Here&rsquo;s how to do this with Bicep:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource assignSampleReadToValidClient 'Microsoft.Graph/appRoleAssignedTo@v1.0' = {
+  resourceId: apimServicePrincipal.id
+  appRoleId: appRoleId
+  principalId: pipelineServicePrincipal.id
+}
+</code></pre><p>Properties explained:</p>
+<ul>
+<li><code>resourceId</code>: The ID of the service principal that represents the protected API (the resource being accessed)</li>
+<li><code>appRoleId</code>: The ID of the specific app role being granted (e.g. Sample.Read or Sample.Write)</li>
+<li><code>principalId</code>: The ID of the service principal that&rsquo;s being granted the role (the GitHub Actions principal)</li>
+</ul>
+<p>In my sample template, I&rsquo;m using <code>deployer().objectId</code> for the <code>principalId</code> so I can use the same principal for deployment and to execute the tests. This ensures that the pipeline has the necessary permissions when the template is deployed from the pipeline.</p>
+<p>When the template is deployed locally, the user will be granted the necessary permissions so they can run the integration tests from their local machine.</p>
+<h3 id="creating-integration-tests">Creating Integration Tests</h3>
+<p>The integration tests use the <a href="https://learn.microsoft.com/en-us/dotnet/api/overview/azure/identity-readme?view=azure-dotnet">Azure Identity library</a> to authenticate with Azure and obtain JWT tokens for API calls. Here&rsquo;s an example test method:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> Task GetAsync_PipelineHasSufficientPermissionsToCallProtected_200OkReturned()
+{
+    <span style="color:#75715e">// Arrange
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> httpClient = <span style="color:#66d9ef">new</span> HttpClient
+    {
+        BaseAddress = <span style="color:#66d9ef">new</span> Uri(<span style="color:#e6db74">&#34;https://&lt;your-api-management-service-name&gt;.azure-api.net&#34;</span>)
+    };
+
+    <span style="color:#75715e">// Create token credential that uses either the Azure CLI or Azure Developer CLI credentials
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> tokenCredential = <span style="color:#66d9ef">new</span> ChainedTokenCredential(
+        <span style="color:#66d9ef">new</span> AzureCliCredential(), 
+        <span style="color:#66d9ef">new</span> AzureDeveloperCliCredential());
+    
+    <span style="color:#75715e">// Retrieve JWT access token and use it in the Authorization header
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> tokenResult = <span style="color:#66d9ef">await</span> tokenCredential.GetTokenAsync(
+        <span style="color:#66d9ef">new</span> TokenRequestContext([<span style="color:#e6db74">&#34;&lt;application-id-uri&gt;/.default&#34;</span>]));
+    httpClient.DefaultRequestHeaders.Authorization = 
+        <span style="color:#66d9ef">new</span> AuthenticationHeaderValue(<span style="color:#e6db74">&#34;Bearer&#34;</span>, tokenResult.Token);
+    
+    <span style="color:#75715e">// Act
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> response = <span style="color:#66d9ef">await</span> httpClient.GetAsync(<span style="color:#e6db74">&#34;protected&#34;</span>);
+
+    <span style="color:#75715e">// Assert
+</span><span style="color:#75715e"></span>    Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, <span style="color:#e6db74">&#34;Unexpected status code returned&#34;</span>);
+}
+</code></pre></div><p>Replace <code>&lt;your-api-management-service-name&gt;</code> with your API Management service name and <code>&lt;application-id-uri&gt;</code> with your Application ID URI, such as <code>api://apim-managedidentity-sdc-wcazc</code>.</p>
+<p>The code uses a <code>ChainedTokenCredential</code> that tries both Azure CLI and Azure Developer CLI credentials. This provides flexibility for different authentication scenarios.</p>
+<p>The <code>TokenRequestContext</code> specifies the scope for the token request. This should be the &lsquo;Application ID URI&rsquo; of the app registration representing the protected API. Make sure to include the <code>/.default</code> suffix. Without it, retrieving a token with <code>AzureDeveloperCliCredential</code> will fail.</p>
+<p>The retrieved token is used in the <code>Authorization</code> header of the HTTP request to call the protected API.</p>
+<h3 id="executing-tests-in-github-actions">Executing Tests in GitHub Actions</h3>
+<p>Here&rsquo;s a snippet from the integration test job in the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/.github/workflows/azure-dev.yml">azure-dev.yml</a> workflow of the template:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">integration-tests</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Execute Integration Tests</span>
+  <span style="color:#f92672">needs</span>: <span style="color:#ae81ff">deploy</span>
+  <span style="color:#f92672">runs-on</span>: <span style="color:#ae81ff">ubuntu-latest</span>
+  <span style="color:#f92672">permissions</span>:
+    <span style="color:#f92672">id-token</span>: <span style="color:#ae81ff">write</span> <span style="color:#75715e"># Required to fetch an OIDC token for Azure authentication</span>
+  
+  <span style="color:#f92672">steps</span>:
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Setup .NET 9</span>
+    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/setup-dotnet@v4</span>
+    <span style="color:#f92672">with</span>:
+      <span style="color:#f92672">dotnet-version</span>: <span style="color:#e6db74">&#39;9.0.x&#39;</span>
+
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Download Integration Tests Package</span>
+    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/download-artifact@v4</span>
+    <span style="color:#f92672">with</span>:
+      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">integration-tests-package</span>
+      <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/integration-tests</span>
+
+  <span style="color:#75715e"># Login to the Azure CLI with OpenID Connect (OIDC) using federated identity credentials.</span>
+  <span style="color:#75715e"># This is necessary for the integration test to access Azure resources if needed.</span>
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Azure CLI Login</span>
+    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">azure/login@v2</span>
+    <span style="color:#f92672">with</span>:
+      <span style="color:#f92672">client-id</span>: <span style="color:#ae81ff">${{ secrets.AZURE_CLIENT_ID }}</span>
+      <span style="color:#f92672">tenant-id</span>: <span style="color:#ae81ff">${{ secrets.AZURE_TENANT_ID }}</span>
+      <span style="color:#f92672">subscription-id</span>: <span style="color:#ae81ff">${{ secrets.AZURE_SUBSCRIPTION_ID }}</span>
+
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Run Integration Tests</span>
+    <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      </span>      <span style="color:#ae81ff">dotnet ./artifacts/integration-tests/IntegrationTests.dll --report-trx --results-directory ./artifacts/integration-tests/TestResults</span>
+    <span style="color:#f92672">working-directory</span>: <span style="color:#ae81ff">./</span>
+
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Upload Test Results</span>
+    <span style="color:#f92672">if</span>: <span style="color:#ae81ff">always()</span>
+    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/upload-artifact@v4</span>
+    <span style="color:#f92672">with</span>:
+      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">integration-test-results</span>
+      <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/integration-tests/TestResults/</span>
+      <span style="color:#f92672">retention-days</span>: <span style="color:#ae81ff">1</span>
+</code></pre></div><p>The critical components are:</p>
+<ul>
+<li><strong>Permissions</strong>: The <code>id-token: write</code> permission is required to fetch an OIDC token for Azure authentication</li>
+<li><strong>Azure CLI Login</strong>: This step uses the <code>azure/login@v2</code> action to authenticate with Azure using OIDC and the federated credentials</li>
+<li><strong>Environment</strong>: Once logged in, the Azure CLI credentials are available to the integration tests</li>
+</ul>
+<p>After the Azure CLI login step, the integration tests can use the <code>AzureCliCredential</code> to obtain tokens for calling protected APIs.</p>
+<blockquote>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/core/testing/microsoft-testing-platform-intro?tabs=dotnetcli">Microsoft.Testing.Platform</a> is used to execute the tests, so we don&rsquo;t need to use <code>dotnet test</code>.</p>
+</blockquote>
+<h3 id="supporting-local-development">Supporting Local Development</h3>
+<p>You don&rsquo;t just want to run these integration tests from a pipeline, but also locally while developing them. When running tests locally, the Azure CLI or Azure Developer CLI will use your user credentials. However, with the setup we&rsquo;ve used so far, retrieving a token will fail because it only works for service principals using the client credential flow.</p>
+<p>To support local development, we need to add a scope to the app registration that represents the API. In Bicep, we can use the <code>oauth2PermissionScopes</code> property of the <a href="https://learn.microsoft.com/en-us/graph/templates/bicep/reference/applications?view=graph-bicep-1.0">Microsoft.Graph/application</a> resource:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">var apiAccessScope = 'API.Access'
+
+resource apimAppRegistration 'Microsoft.Graph/applications@v1.0' = {
+  api: {
+    // Add OAuth2 permission scope so users can request an access token to access the API
+    oauth2PermissionScopes: [
+      {
+        id: guid(tenantId, name, apiAccessScope)
+        adminConsentDescription: 'Allows API access for users'
+        adminConsentDisplayName: apiAccessScope
+        isEnabled: true
+        type: 'User'
+        userConsentDescription: null
+        userConsentDisplayName: null
+        value: apiAccessScope
+      }
+    ]
+  }
+}
+</code></pre><p>This creates a delegated permission scope that allows users (not just service principals) to request access tokens for the API.</p>
+<blockquote>
+<p>I&rsquo;ve excluded other configuration like the app roles for brevity. See <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/infra/modules/entra-id/apim-app-registration.bicep">apim-app-registration.bicep</a> for the complete configuration.</p>
+</blockquote>
+<p>Once deployed, you can see the new scope in the &lsquo;Expose an API&rsquo; screen of the app registration:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/app-registration-scopes.png" alt="API Registration Scopes"></p>
+<p>We also need to ensure that the Azure CLI is granted permission to retrieve tokens on behalf of the user. You can add the Azure CLI to the &lsquo;Authorized client applications&rsquo; section of the app registration in the &lsquo;Expose an API&rsquo; screen. Authorizing a client application indicates that this API trusts the application and users should not be asked to consent when the client calls this API.</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/app-registration-authorized-client-applications.png" alt="Authorized Client Applications"></p>
+<p>I tried to configure this through Bicep by setting the <code>preAuthorizedApplications</code> property on the <code>Microsoft.Graph/applications</code> resource. However, this failed because the delegated permission couldn&rsquo;t be found, since the <code>oauth2PermissionScopes</code> is created at the same time.</p>
+<p>Instead, I&rsquo;m using the <a href="https://learn.microsoft.com/en-us/graph/templates/bicep/reference/oauth2permissiongrants?view=graph-bicep-1.0">Microsoft.Graph/oauth2PermissionGrants</a> resource:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">// Get Azure CLI service principal, create it if does not exist
+@onlyIfNotExists()
+resource azureCliServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
+  appId: '04b07795-8ddb-461a-bbee-02f9e1bf7b46'
+}
+
+// Add OAuth2 permission grant to allow the Azure CLI service principal to access the API Management app registration impersonating a user
+// NOTE: The user still needs to be granted app roles in order to access the API
+resource oauth2PermissionGrantForAzureCli 'Microsoft.Graph/oauth2PermissionGrants@v1.0' = {
+  clientId: azureCliServicePrincipal!.id
+  resourceId: apimServicePrincipal.id
+  consentType: 'AllPrincipals'
+  scope: apiAccessScope
+}
+</code></pre><p>This configuration does the following:</p>
+<ul>
+<li>Creates a service principal for the Azure CLI if it doesn&rsquo;t exist.<br>
+The service principal is required to grant permissions to, and it didn&rsquo;t exist in my tenant initially. Note that <code>04b07795-8ddb-461a-bbee-02f9e1bf7b46</code> is a well-known ID for the Azure CLI.</li>
+<li>Adds an OAuth2 permission grant that allows the Azure CLI service principal to access our API registration on behalf of users</li>
+<li>Uses <code>consentType: 'AllPrincipals'</code> to grant this permission for all users in the tenant</li>
+</ul>
+<blockquote>
+<p>Even with this permission grant, users still need to be assigned app roles to successfully access the API, as we&rsquo;re doing under <a href="#granting-api-access-to-the-principal">Granting API Access to the Principal</a>. The permission grant only allows the Azure CLI to request tokens; the actual API authorization still depends on the assigned roles.</p>
+</blockquote>
+<p>After the service principal is created for the Azure CLI, it can be found under Enterprise Applications. The Azure Developer CLI currently uses the same client ID as the Azure CLI.</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/enterprise-applications-azure-cli.png" alt="Enterprise Application - Azure CLI"></p>
+<h3 id="considerations">Considerations</h3>
+<p>There are several considerations when implementing this approach:</p>
+<p><strong>User API Access</strong>: You might not want to allow users to call your APIs if this isn&rsquo;t necessary for your application. Consider making it optional and only allowing it in development environments so developers can create and test their integration tests from their local machines. Don&rsquo;t allow it in other environments unless required. The azd template used in this blog post has a parameter called <code>allowApiAccessForUsers</code> that is used to conditionally deploy the resources required to allow users access to the API.</p>
+<p><strong>Credential Separation</strong>: In my azd template, I&rsquo;m using the same service principal to deploy the resources to Azure and to execute the integration tests for convenience. In a real-world scenario, you might want to separate these into different credentials to follow the principle of least privilege. Use one for deploying resources and another for integration tests.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Using federated credentials with GitHub Actions provides a secure and maintainable way to execute integration tests against OAuth-protected APIs. The approach eliminates the need to manage secrets in your CI/CD pipeline while providing the flexibility to run tests both in the pipeline and during local development.</p>
+<p>The key benefits of this approach include:</p>
+<ul>
+<li><strong>No secret management</strong>: Federated credentials eliminate the need to store and rotate client secrets</li>
+<li><strong>Secure authentication</strong>: OIDC provides a secure, industry-standard way to authenticate with Azure</li>
+<li><strong>Local development support</strong>: With proper configuration, developers can run the same tests locally using their user credentials</li>
+</ul>
+<p>For teams building APIs with OAuth protection, this pattern provides a robust foundation for automated testing.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/entra-id">Entra ID</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/github-actions">GitHub Actions</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/oauth">OAuth</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/">Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Certificate &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/apim-mtls">apim-mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
