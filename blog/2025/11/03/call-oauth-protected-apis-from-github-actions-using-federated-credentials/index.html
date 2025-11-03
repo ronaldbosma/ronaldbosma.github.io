@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2025-11-03T16:00:00+01:00" />
-<meta property="article:modified_time" content="2025-11-03T16:00:00+01:00" />
+<meta property="article:modified_time" content="2025-11-03T20:00:00+01:00" />
 
 
 
@@ -360,7 +360,7 @@ resource oauth2PermissionGrantForAzureCli 'Microsoft.Graph/oauth2PermissionGrant
 </code></pre><p>This configuration does the following:</p>
 <ul>
 <li>Creates a service principal for the Azure CLI if it doesn&rsquo;t exist.<br>
-The service principal is required to grant permissions to, and it didn&rsquo;t exist in my tenant initially. Note that <code>04b07795-8ddb-461a-bbee-02f9e1bf7b46</code> is a well-known ID for the Azure CLI.</li>
+The service principal is required to grant permissions to, and it didn&rsquo;t exist in my tenant initially. Note that <code>04b07795-8ddb-461a-bbee-02f9e1bf7b46</code> is a well-known ID for the Azure CLI. You can find an extensive list of Microsoft first-party services and their IDs <a href="https://learn.microsoft.com/en-us/power-platform/admin/apps-to-allow">here</a>.</li>
 <li>Adds an OAuth2 permission grant that allows the Azure CLI service principal to access our API registration on behalf of users</li>
 <li>Uses <code>consentType: 'AllPrincipals'</code> to grant this permission for all users in the tenant</li>
 </ul>
@@ -369,6 +369,9 @@ The service principal is required to grant permissions to, and it didn&rsquo;t e
 </blockquote>
 <p>After the service principal is created for the Azure CLI, it can be found under Enterprise Applications. The Azure Developer CLI currently uses the same client ID as the Azure CLI.</p>
 <p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/enterprise-applications-azure-cli.png" alt="Enterprise Application - Azure CLI"></p>
+<blockquote>
+<p>Shout-out to Dan Rios for the idea to set it up this way, inspired by his blog post <a href="https://rios.engineer/securing-api-to-api-calls-in-azure-with-entra-and-api-management">Securing API to API calls in Azure with Entra and API Management</a>.</p>
+</blockquote>
 <h3 id="considerations">Considerations</h3>
 <p>There are several considerations when implementing this approach:</p>
 <p><strong>User API Access</strong>: You might not want to allow users to call your APIs if this isn&rsquo;t necessary for your application. Consider making it optional and only allowing it in development environments so developers can create and test their integration tests from their local machines. Don&rsquo;t allow it in other environments unless required. The azd template used in this blog post has a parameter called <code>allowApiAccessForUsers</code> that is used to conditionally deploy the resources required to allow users access to the API.</p>
