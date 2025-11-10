@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Series on Ronald&#39;s Blog</title>
+    <link>https://ronaldbosma.github.io/series/</link>
+    <description>Recent content in Series on Ronald&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Ronald Bosma - All rights reserved</copyright>
+    <lastBuildDate>Mon, 10 Nov 2025 16:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/series/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>OAuth and Azure API Management</title>
+      <link>https://ronaldbosma.github.io/series/oauth-and-api-management/</link>
+      <pubDate>Mon, 10 Nov 2025 16:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/series/oauth-and-api-management/</guid>
+      <description>This series explores different scenarios for implementing OAuth with Azure API Management. We cover both protecting APIs with OAuth and calling OAuth-protected resources from various Azure services and CI/CD pipelines.</description>
+    </item>
+    
+    <item>
+      <title>Client Certificates and mTLS in API Management</title>
+      <link>https://ronaldbosma.github.io/series/client-certificates-and-mtls-in-api-management/</link>
+      <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/series/client-certificates-and-mtls-in-api-management/</guid>
+      <description>This series covers how to work with client certificates in Azure API Management to set up mutual TLS (mTLS) connections. We explore both validating client certificates in API Management and connecting to backends using mTLS.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -50,7 +50,7 @@
       <pubDate>Mon, 06 Oct 2025 16:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/</guid>
-      <description>Azure API Management’s credential manager provides a simple, managed way to handle OAuth flows with automatic token acquisition and caching. In this post, I show how to configure it using Bicep and integrate it into your APIs. I also highlight key considerations to help you decide when credential manager is the right choice versus custom token handling.</description>
+      <description>Azure API Management&amp;rsquo;s credential manager provides a simple, managed way to handle OAuth flows with automatic token acquisition and caching. In this post, I show how to configure it using Bicep and integrate it into your APIs. I also highlight key considerations to help you decide when credential manager is the right choice versus custom token handling.</description>
     </item>
     
     <item>
@@ -68,7 +68,7 @@
       <pubDate>Wed, 24 Sep 2025 17:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/</guid>
-      <description>Azure Logic Apps Standard makes it easy to call OAuth-protected APIs using managed identity. This post demonstrates how to use the HTTP action’s built-in authentication and token caching for secure, reliable calls.</description>
+      <description>Azure Logic Apps Standard makes it easy to call OAuth-protected APIs using managed identity. This post demonstrates how to use the HTTP action&amp;rsquo;s built-in authentication and token caching for secure, reliable calls.</description>
     </item>
     
     <item>
@@ -149,7 +149,7 @@
       <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/</guid>
-      <description>In this third post on working with client certificates in Azure API Management, we’ll focus on securing backend connections with mTLS. We’ll deploy two API Management instances. The first will serve as the backend and require a client certificate for authentication. The second will act as the client. We will call the client using TLS, and it will, in turn, connect to the backend using mTLS.</description>
+      <description>In this third post on working with client certificates in Azure API Management, we&amp;rsquo;ll focus on securing backend connections with mTLS. We&amp;rsquo;ll deploy two API Management instances. The first will serve as the backend and require a client certificate for authentication. The second will act as the client. We will call the client using TLS, and it will, in turn, connect to the backend using mTLS.</description>
     </item>
     
     <item>

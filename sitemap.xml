@@ -29,7 +29,13 @@
     <loc>https://ronaldbosma.github.io/tags/oauth/</loc>
     <lastmod>2025-11-10T16:00:00+01:00</lastmod>
   </url><url>
+    <loc>https://ronaldbosma.github.io/series/oauth-and-api-management/</loc>
+    <lastmod>2025-11-10T16:00:00+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/</loc>
+    <lastmod>2025-11-10T16:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/series/</loc>
     <lastmod>2025-11-10T16:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/</loc>
@@ -128,10 +134,10 @@
     <loc>https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/</loc>
     <lastmod>2025-06-08T10:45:00+02:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/tags/apim-mtls/</loc>
+    <loc>https://ronaldbosma.github.io/tags/client-certificates/</loc>
     <lastmod>2024-11-13T17:45:00+01:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/tags/client-certificates/</loc>
+    <loc>https://ronaldbosma.github.io/series/client-certificates-and-mtls-in-api-management/</loc>
     <lastmod>2024-11-13T17:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/mtls/</loc>

@@ -59,7 +59,7 @@
       <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/</guid>
-      <description>In this third post on working with client certificates in Azure API Management, we’ll focus on securing backend connections with mTLS. We’ll deploy two API Management instances. The first will serve as the backend and require a client certificate for authentication. The second will act as the client. We will call the client using TLS, and it will, in turn, connect to the backend using mTLS.</description>
+      <description>In this third post on working with client certificates in Azure API Management, we&amp;rsquo;ll focus on securing backend connections with mTLS. We&amp;rsquo;ll deploy two API Management instances. The first will serve as the backend and require a client certificate for authentication. The second will act as the client. We will call the client using TLS, and it will, in turn, connect to the backend using mTLS.</description>
     </item>
     
     <item>
