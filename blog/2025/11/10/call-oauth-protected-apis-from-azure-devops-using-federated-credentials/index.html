@@ -4,21 +4,21 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="generator" content="Hugo 0.92.2" />
 	
-	<title>Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials | Ronald&#39;s Blog</title>
+	<title>Call OAuth-Protected APIs from Azure DevOps Using Federated Credentials | Ronald&#39;s Blog</title>
 	
 	
 
 	<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/cover.png"/>
-<meta name="twitter:title" content="Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials"/>
-<meta name="twitter:description" content="Learn how to execute automated integration tests against OAuth-protected APIs from GitHub Actions workflows using federated credentials. This enables secure API testing without managing secrets in your CI/CD pipeline."/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/cover.png"/>
+<meta name="twitter:title" content="Call OAuth-Protected APIs from Azure DevOps Using Federated Credentials"/>
+<meta name="twitter:description" content="Learn how to execute automated integration tests against OAuth-protected APIs from Azure DevOps pipelines using federated credentials. This enables secure API testing without managing secrets in your CI/CD pipeline."/>
 
-	<meta property="og:title" content="Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials" />
-<meta property="og:description" content="Learn how to execute automated integration tests against OAuth-protected APIs from GitHub Actions workflows using federated credentials. This enables secure API testing without managing secrets in your CI/CD pipeline." />
+	<meta property="og:title" content="Call OAuth-Protected APIs from Azure DevOps Using Federated Credentials" />
+<meta property="og:description" content="Learn how to execute automated integration tests against OAuth-protected APIs from Azure DevOps pipelines using federated credentials. This enables secure API testing without managing secrets in your CI/CD pipeline." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/cover.png"/><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2025-11-03T16:00:00+01:00" />
-<meta property="article:modified_time" content="2025-11-03T20:00:00+01:00" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-11-10T16:00:00+01:00" />
+<meta property="article:modified_time" content="2025-11-10T16:00:00+01:00" />
 
 
 
@@ -91,19 +91,19 @@
     <p>Share</p>
     <ul>
         <li class="ml-1 mr-1">
-        <a target="_blank" href="https://twitter.com/intent/tweet?text=Call%20OAuth-Protected%20APIs%20from%20GitHub%20Actions%20Using%20Federated%20Credentials&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f03%2fcall-oauth-protected-apis-from-github-actions-using-federated-credentials%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Call%20OAuth-Protected%20APIs%20from%20Azure%20DevOps%20Using%20Federated%20Credentials&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f10%2fcall-oauth-protected-apis-from-azure-devops-using-federated-credentials%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
         <i class="fab fa-x-twitter"></i>
         </a>
         </li>
         
         <li class="ml-1 mr-1">
-        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f03%2fcall-oauth-protected-apis-from-github-actions-using-federated-credentials%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f10%2fcall-oauth-protected-apis-from-azure-devops-using-federated-credentials%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
         <i class="fab fa-facebook-f"></i>
         </a>
         </li>
 
         <li class="ml-1 mr-1">
-        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f03%2fcall-oauth-protected-apis-from-github-actions-using-federated-credentials%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f10%2fcall-oauth-protected-apis-from-azure-devops-using-federated-credentials%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
         <i class="fab fa-xing"></i>
         </a>
         </li>        
@@ -128,7 +128,7 @@
                                 <span class="author-description">
                                     Software Architect<br>
                                     <i class="far fa-star"></i>
-                                    Nov 3, 2025
+                                    Nov 10, 2025
                                     <i class="far fa-clock clock"></i>
                                     10 min read
                                 </span>					
@@ -138,19 +138,21 @@
                         
                                                 
                         
-                        <h1 class="posttitle">Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials</h1> 
+                        <h1 class="posttitle">Call OAuth-Protected APIs from Azure DevOps Using Federated Credentials</h1> 
                     </div>
 
                     
                     
                     
-                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/cover.png" alt="thumbnail for this post">
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/cover.png" alt="thumbnail for this post">
                     
                     
 
                     
                     <div class="article-post">
-                        <p>When I build APIs, I like to execute automated integration tests from my pipeline after deployment. When the APIs are protected with OAuth, we need a way to retrieve a valid JWT token when calling them from a test. In this post, I&rsquo;ll show how to do this from a GitHub Actions workflow using federated credentials.</p>
+                        <p>When I build APIs, I like to execute automated integration tests from my pipeline after deployment. When the APIs are protected with OAuth, we need a way to retrieve a valid JWT token when calling them from a test.</p>
+<p>In my <a href="/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/">previous post</a>, I showed how to do this from a GitHub Actions workflow. 
+In this post, I&rsquo;ll show how to do this from a Azure DevOps pipeline using federated credentials.</p>
 <p>This post is part of a series about OAuth and API Management:</p>
 <ul>
 <li><a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a></li>
@@ -170,8 +172,8 @@
 </li>
 <li>Calling OAuth-Protected APIs from CI/CD Pipelines using Federated Credentials
 <ul>
-<li><strong>Part 1: GitHub Actions - <em>this post</em></strong></li>
-<li><a href="/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/">Part 2: Azure DevOps</a></li>
+<li><a href="/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/">Part 1: GitHub Actions</a></li>
+<li><strong>Part 2: Azure DevOps - <em>this post</em></strong></li>
 </ul>
 </li>
 </ul>
@@ -181,35 +183,35 @@
 <li><a href="#setting-up-federated-credentials">Setting Up Federated Credentials</a></li>
 <li><a href="#granting-api-access-to-the-principal">Granting API Access to the Principal</a></li>
 <li><a href="#creating-integration-tests">Creating Integration Tests</a></li>
-<li><a href="#executing-tests-in-github-actions">Executing Tests in GitHub Actions</a></li>
+<li><a href="#executing-tests-in-azure-devops-pipeline">Executing Tests in Azure DevOps pipeline</a></li>
 <li><a href="#supporting-local-development">Supporting Local Development</a></li>
 <li><a href="#considerations">Considerations</a></li>
 <li><a href="#conclusion">Conclusion</a></li>
 </ul>
 <h3 id="solution-overview">Solution Overview</h3>
-<p>The solution demonstrates how to execute integration tests against OAuth-protected APIs from GitHub Actions using OpenID Connect (OIDC) with federated credentials:</p>
-<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/diagrams-overview-github-actions.png" alt="Overview"></p>
+<p>The solution demonstrates how to execute integration tests against OAuth-protected APIs from an Azure DevOps pipeline using OpenID Connect (OIDC) with federated credentials:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/diagrams-overview-azure-devops.png" alt="Overview"></p>
 <ul>
-<li><strong>GitHub Actions Workflow</strong>: Uses OIDC to authenticate with Azure using federated credentials</li>
+<li><strong>Azure DevOps pipeline</strong>: Uses OIDC to authenticate with Azure using federated credentials</li>
 <li><strong>Azure API Management</strong>: Hosts the OAuth-protected API that we want to test</li>
 <li><strong>Integration Tests</strong>: .NET tests that authenticate using Azure CLI credentials and call the protected API</li>
 <li><strong>Entra ID App Registration</strong>: Represents the protected APIs and defines available app roles</li>
 </ul>
 <p>While this example uses an API on API Management, the same approach applies when calling any other API protected with OAuth using Entra ID.</p>
-<p>The Entra ID configuration follows the same pattern described in <a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a>. The key difference is that we assign the <code>Sample.Read</code> and <code>Sample.Write</code> app roles to the GitHub Actions principal in Azure instead of client app registrations.</p>
-<p>The tests are written in .NET and use the Azure Identity library for authentication. They can use the pipeline principal to obtain a valid JWT token for API calls:</p>
-<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/diagrams-integration-tests-to-apim.png" alt="Integration Test Flow"></p>
+<p>The Entra ID configuration follows the same pattern described in <a href="/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/">Protect APIs in Azure API Management with OAuth</a>. The key difference is that we assign the <code>Sample.Read</code> and <code>Sample.Write</code> app roles to the Azure DevOps service connection principal in Azure instead of client app registrations.</p>
+<p>The tests are written in .NET and use the Azure Identity library for authentication. They can use the service connection principal to obtain a valid JWT token for API calls:</p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/diagrams-integration-tests-to-apim.png" alt="Integration Test Flow"></p>
 <p>The implementation is straightforward with four main steps:</p>
 <ol>
-<li>Setup OIDC with federated credentials for GitHub actions (managed identity or app registration)</li>
+<li>Setup OIDC with federated credentials for Azure DevOps (managed identity or app registration)</li>
 <li>Grant the principal app roles on the API</li>
 <li>Create integration tests using Azure Identity library to authenticate with Azure CLI credentials</li>
-<li>In the workflow: Log into Azure with Azure CLI using the federated credentials and execute tests</li>
+<li>In the pipeline, use the <code>AzureCLI</code> task to execute the tests</li>
 </ol>
-<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity">Call API Management with Managed Identity</a> that demonstrates several scenarios related to calling OAuth-Protected APIs with managed identities. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on calling OAuth-protected APIs from GitHub Actions using federated credentials.</p>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity">Call API Management with Managed Identity</a> that demonstrates several scenarios related to calling OAuth-Protected APIs with managed identities. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on calling OAuth-protected APIs from Azure DevOps pipelines using federated credentials.</p>
 <h3 id="setting-up-federated-credentials">Setting Up Federated Credentials</h3>
-<p>In order to connect from GitHub Actions to Azure using OpenID Connect (OIDC), a Microsoft Entra application or managed identity with federated identity credentials needs to be set up.</p>
-<p>You can configure this manually by following <a href="https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect">Use the Azure Login action with OpenID Connect</a>. However, if you&rsquo;re using the Azure Developer CLI, you can follow the instructions in <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity?tab=readme-ov-file#setting-up-the-pipeline">Setting Up the Pipeline</a> which simplifies this process.</p>
+<p>In order to connect from Azure DevOps to Azure using OpenID Connect (OIDC), a Microsoft Entra application or managed identity with federated identity credentials needs to be set up.</p>
+<p>You can configure this manually by following the Microsoft documentation <a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/library/connect-to-azure?view=azure-devops">Connect to Azure with an Azure Resource Manager service connection</a> which can be used to setup a service connection with federated credentials in Azure DevOps. However, if you&rsquo;re using the Azure Developer CLI, you can follow the instructions in <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity?tab=readme-ov-file#setting-up-the-pipeline">Setting Up the Pipeline</a> which simplifies this process.</p>
 <p>The sample template deploys resources in Entra ID. When using the same principal for deployment and integration tests, make sure to follow the instructions on <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity?tab=readme-ov-file#setting-up-the-pipeline">Setting Up the Pipeline</a> to select the right type of principal and configure the necessary permissions.</p>
 <h3 id="granting-api-access-to-the-principal">Granting API Access to the Principal</h3>
 <p>Once you have the federated credentials configured, the principal needs to be assigned app roles from the app registration that represents your protected API. This is exactly the same process as we&rsquo;ve used in previous posts of this series when assigning roles to a client app registration or managed identity.</p>
@@ -223,7 +225,7 @@
 <ul>
 <li><code>resourceId</code>: The ID of the service principal that represents the protected API (the resource being accessed)</li>
 <li><code>appRoleId</code>: The ID of the specific app role being granted (e.g. Sample.Read or Sample.Write)</li>
-<li><code>principalId</code>: The ID of the service principal that&rsquo;s being granted the role (the GitHub Actions principal)</li>
+<li><code>principalId</code>: The ID of the service principal that&rsquo;s being granted the role (the Azure DevOps service connection principal)</li>
 </ul>
 <p>In my sample template, I&rsquo;m using <code>deployer().objectId</code> for the <code>principalId</code> so I can use the same principal for deployment and to execute the tests. This ensures that the pipeline has the necessary permissions when the template is deployed from the pipeline.</p>
 <p>When the template is deployed locally, the user will be granted the necessary permissions so they can run the integration tests from their local machine.</p>
@@ -259,55 +261,46 @@
 <p>The code uses a <code>ChainedTokenCredential</code> that tries both Azure CLI and Azure Developer CLI credentials. This provides flexibility for different authentication scenarios.</p>
 <p>The <code>TokenRequestContext</code> specifies the scope for the token request. This should be the &lsquo;Application ID URI&rsquo; of the app registration representing the protected API. Make sure to include the <code>/.default</code> suffix. Without it, retrieving a token with <code>AzureDeveloperCliCredential</code> will fail.</p>
 <p>The retrieved token is used in the <code>Authorization</code> header of the HTTP request to call the protected API.</p>
-<h3 id="executing-tests-in-github-actions">Executing Tests in GitHub Actions</h3>
-<p>Here&rsquo;s a simplified snippet from the integration test job in the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/.github/workflows/azure-dev.yml">azure-dev.yml</a> workflow of the template:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">integration-tests</span>:
-  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Execute Integration Tests</span>
-  <span style="color:#f92672">needs</span>: <span style="color:#ae81ff">deploy</span>
-  <span style="color:#f92672">runs-on</span>: <span style="color:#ae81ff">ubuntu-latest</span>
-  <span style="color:#f92672">permissions</span>:
-    <span style="color:#f92672">id-token</span>: <span style="color:#ae81ff">write</span> <span style="color:#75715e"># Required to fetch an OIDC token for Azure authentication</span>
-  
+<h3 id="executing-tests-in-azure-devops-pipeline">Executing Tests in Azure DevOps pipeline</h3>
+<p>Here&rsquo;s a simplified snippet from the integration test job in the <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/.azdo/pipelines/azure-dev.yml">azure-dev.yml</a> pipeline of the template:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">job</span>: <span style="color:#ae81ff">integration_tests</span>
+  <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Execute Integration Tests&#39;</span>
+  <span style="color:#f92672">dependsOn</span>: <span style="color:#ae81ff">deploy</span>
+  <span style="color:#f92672">condition</span>: <span style="color:#ae81ff">succeeded()</span>
   <span style="color:#f92672">steps</span>:
-  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Setup .NET 9</span>
-    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/setup-dotnet@v4</span>
-    <span style="color:#f92672">with</span>:
-      <span style="color:#f92672">dotnet-version</span>: <span style="color:#e6db74">&#39;9.0.x&#39;</span>
+  - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">UseDotNet@2</span>
+    <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Setup .NET 9&#39;</span>
+    <span style="color:#f92672">inputs</span>:
+      <span style="color:#f92672">packageType</span>: <span style="color:#e6db74">&#39;sdk&#39;</span>
+      <span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;9.0.x&#39;</span>
 
-  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Download Integration Tests Package</span>
-    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/download-artifact@v4</span>
-    <span style="color:#f92672">with</span>:
-      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">integration-tests-package</span>
-      <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/integration-tests</span>
+  - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">DownloadPipelineArtifact@2</span>
+    <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Download Integration Tests Package&#39;</span>
+    <span style="color:#f92672">inputs</span>:
+      <span style="color:#f92672">buildType</span>: <span style="color:#e6db74">&#39;current&#39;</span>
+      <span style="color:#f92672">artifactName</span>: <span style="color:#e6db74">&#39;integration-tests-package&#39;</span>
+      <span style="color:#f92672">targetPath</span>: <span style="color:#e6db74">&#39;./artifacts/integration-tests&#39;</span>
 
-  <span style="color:#75715e"># Login to the Azure CLI with OpenID Connect (OIDC) using federated identity credentials.</span>
+  <span style="color:#75715e"># Use AzureCLI task to authenticate via service connection with federated credentials.</span>
   <span style="color:#75715e"># This is necessary for the integration test to access Azure resources if needed.</span>
-  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Azure CLI Login</span>
-    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">azure/login@v2</span>
-    <span style="color:#f92672">with</span>:
-      <span style="color:#f92672">client-id</span>: <span style="color:#ae81ff">${{ secrets.AZURE_CLIENT_ID }}</span>
-      <span style="color:#f92672">tenant-id</span>: <span style="color:#ae81ff">${{ secrets.AZURE_TENANT_ID }}</span>
-      <span style="color:#f92672">subscription-id</span>: <span style="color:#ae81ff">${{ secrets.AZURE_SUBSCRIPTION_ID }}</span>
+  - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">AzureCLI@2</span>
+    <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Run Integration Tests&#39;</span>
+    <span style="color:#f92672">inputs</span>:
+      <span style="color:#f92672">azureSubscription</span>: <span style="color:#e6db74">&#39;$(AZURE_SERVICE_CONNECTION)&#39;</span>
+      <span style="color:#f92672">scriptType</span>: <span style="color:#e6db74">&#39;pscore&#39;</span>
+      <span style="color:#f92672">scriptLocation</span>: <span style="color:#e6db74">&#39;inlineScript&#39;</span>
+      <span style="color:#f92672">inlineScript</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">        </span>        <span style="color:#ae81ff">dotnet ./artifacts/integration-tests/IntegrationTests.dll --report-trx --results-directory ./artifacts/integration-tests/TestResults</span>
 
-  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Run Integration Tests</span>
-    <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
-</span><span style="color:#e6db74">      </span>      <span style="color:#ae81ff">dotnet ./artifacts/integration-tests/IntegrationTests.dll --report-trx --results-directory ./artifacts/integration-tests/TestResults</span>
-    <span style="color:#f92672">working-directory</span>: <span style="color:#ae81ff">./</span>
-
-  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Upload Test Results</span>
-    <span style="color:#f92672">if</span>: <span style="color:#ae81ff">always()</span>
-    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/upload-artifact@v4</span>
-    <span style="color:#f92672">with</span>:
-      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">integration-test-results</span>
-      <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/integration-tests/TestResults/</span>
-      <span style="color:#f92672">retention-days</span>: <span style="color:#ae81ff">1</span>
-</code></pre></div><p>The critical components are:</p>
-<ul>
-<li><strong>Permissions</strong>: The <code>id-token: write</code> permission is required to fetch an OIDC token for Azure authentication</li>
-<li><strong>Azure CLI Login</strong>: This step uses the <code>azure/login@v2</code> action to authenticate with Azure using OIDC and the federated credentials</li>
-<li><strong>Environment</strong>: Once logged in, the Azure CLI credentials are available to the integration tests</li>
-</ul>
-<p>After the Azure CLI login step, the integration tests can use the <code>AzureCliCredential</code> to obtain tokens for calling protected APIs.</p>
+  - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">PublishTestResults@2</span>
+    <span style="color:#f92672">displayName</span>: <span style="color:#e6db74">&#39;Publish Test Results&#39;</span>
+    <span style="color:#f92672">condition</span>: <span style="color:#ae81ff">always()</span>
+    <span style="color:#f92672">inputs</span>:
+      <span style="color:#f92672">testResultsFormat</span>: <span style="color:#e6db74">&#39;VSTest&#39;</span>
+      <span style="color:#f92672">testResultsFiles</span>: <span style="color:#e6db74">&#39;**/*.trx&#39;</span>
+      <span style="color:#f92672">searchFolder</span>: <span style="color:#e6db74">&#39;$(System.DefaultWorkingDirectory)/artifacts/integration-tests/TestResults&#39;</span> 
+      <span style="color:#f92672">failTaskOnFailedTests</span>: <span style="color:#66d9ef">true</span>
+</code></pre></div><p>The <code>AzureCLI</code> task is the important part. In GitHub Actions, this is split into separate &lsquo;Azure CLI Login&rsquo; and &lsquo;Run Integration Tests&rsquo; steps. With Azure DevOps, we run the integration tests in the context of the Azure CLI by using the <code>AzureCLI</code> task and the service connection takes care of logging into Azure. By doing so, the integration tests can use the <code>AzureCliCredential</code> to obtain tokens for calling protected APIs.</p>
 <blockquote>
 <p><a href="https://learn.microsoft.com/en-us/dotnet/core/testing/microsoft-testing-platform-intro?tabs=dotnetcli">Microsoft.Testing.Platform</a> is used to execute the tests, so we don&rsquo;t need to use <code>dotnet test</code>.</p>
 </blockquote>
@@ -338,9 +331,9 @@ resource apimAppRegistration 'Microsoft.Graph/applications@v1.0' = {
 <p>I&rsquo;ve excluded other configuration like the app roles for brevity. See <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/infra/modules/entra-id/apim-app-registration.bicep">apim-app-registration.bicep</a> for the complete configuration.</p>
 </blockquote>
 <p>Once deployed, you can see the new scope in the &lsquo;Expose an API&rsquo; screen of the app registration:</p>
-<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/app-registration-scopes.png" alt="API Registration Scopes"></p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/app-registration-scopes.png" alt="API Registration Scopes"></p>
 <p>We also need to ensure that the Azure CLI is granted permission to retrieve tokens on behalf of the user. You can add the Azure CLI to the &lsquo;Authorized client applications&rsquo; section of the app registration in the &lsquo;Expose an API&rsquo; screen. Authorizing a client application indicates that this API trusts the application and users should not be asked to consent when the client calls this API.</p>
-<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/app-registration-authorized-client-applications.png" alt="Authorized Client Applications"></p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/app-registration-authorized-client-applications.png" alt="Authorized Client Applications"></p>
 <p>I tried to configure this through Bicep by setting the <code>preAuthorizedApplications</code> property on the <code>Microsoft.Graph/applications</code> resource. However, this failed because the delegated permission couldn&rsquo;t be found, since the <code>oauth2PermissionScopes</code> is created at the same time.</p>
 <p>Instead, I&rsquo;m using the <a href="https://learn.microsoft.com/en-us/graph/templates/bicep/reference/oauth2permissiongrants?view=graph-bicep-1.0">Microsoft.Graph/oauth2PermissionGrants</a> resource:</p>
 <pre tabindex="0"><code class="language-bicep" data-lang="bicep">// Get Azure CLI service principal, create it if does not exist
@@ -368,7 +361,7 @@ The service principal is required to grant permissions to, and it didn&rsquo;t e
 <p>Even with this permission grant, users still need to be assigned app roles to successfully access the API, as we&rsquo;re doing under <a href="#granting-api-access-to-the-principal">Granting API Access to the Principal</a>. The permission grant only allows the Azure CLI to request tokens; the actual API authorization still depends on the assigned roles.</p>
 </blockquote>
 <p>After the service principal is created for the Azure CLI, it can be found under Enterprise Applications. The Azure Developer CLI currently uses the same client ID as the Azure CLI.</p>
-<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-github-actions-using-federated-credentials/enterprise-applications-azure-cli.png" alt="Enterprise Application - Azure CLI"></p>
+<p><img src="../../../../../images/apim-oauth-series/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/enterprise-applications-azure-cli.png" alt="Enterprise Application - Azure CLI"></p>
 <blockquote>
 <p>Shout-out to Dan Rios for this approach, which I learned from his blog post <a href="https://rios.engineer/securing-api-to-api-calls-in-azure-with-entra-and-api-management">Securing API to API calls in Azure with Entra and API Management</a>.</p>
 </blockquote>
@@ -377,7 +370,7 @@ The service principal is required to grant permissions to, and it didn&rsquo;t e
 <p><strong>User API Access</strong>: You might not want to allow users to call your APIs if this isn&rsquo;t necessary for your application. Consider making it optional and only allowing it in development environments so developers can create and test their integration tests from their local machines. Don&rsquo;t allow it in other environments unless required. The azd template used in this blog post has a parameter called <code>allowApiAccessForUsers</code> that is used to conditionally deploy the resources required to allow users access to the API.</p>
 <p><strong>Credential Separation</strong>: In my azd template, I&rsquo;m using the same service principal to deploy the resources to Azure and to execute the integration tests for convenience. In a real-world scenario, you might want to separate these into different credentials to follow the principle of least privilege. Use one for deploying resources and another for integration tests.</p>
 <h3 id="conclusion">Conclusion</h3>
-<p>Using federated credentials with GitHub Actions provides a secure and maintainable way to execute integration tests against OAuth-protected APIs. The approach eliminates the need to manage secrets in your CI/CD pipeline while providing the flexibility to run tests both in the pipeline and during local development.</p>
+<p>Using federated credentials with Azure DevOps pipelines provides a secure and maintainable way to execute integration tests against OAuth-protected APIs. The approach eliminates the need to manage secrets in your CI/CD pipeline while providing the flexibility to run tests both in the pipeline and during local development.</p>
 <p>The key benefits of this approach include:</p>
 <ul>
 <li><strong>No secret management</strong>: Federated credentials eliminate the need to store and rotate client secrets</li>
@@ -385,7 +378,6 @@ The service principal is required to grant permissions to, and it didn&rsquo;t e
 <li><strong>Local development support</strong>: With proper configuration, developers can run the same tests locally using their user credentials</li>
 </ul>
 <p>For teams building APIs with OAuth protection, this pattern provides a robust foundation for automated testing.</p>
-<p>In my <a href="/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/">next post</a>, I&rsquo;ll demonstrate how to implement the same approach using Azure DevOps pipelines.</p>
 
                     </div>
                     
@@ -398,6 +390,10 @@ The service principal is required to grant permissions to, and it didn&rsquo;t e
                         </li>
                         
                         <li>
+                        <a href="/tags/azure-devops">Azure DevOps</a>
+                        </li>
+                        
+                        <li>
                         <a href="/tags/api-management">API Management</a>
                         </li>
                         
@@ -406,11 +402,11 @@ The service principal is required to grant permissions to, and it didn&rsquo;t e
                         </li>
                         
                         <li>
-                        <a href="/tags/entra-id">Entra ID</a>
+                        <a href="/tags/azure-pipelines">Azure Pipelines</a>
                         </li>
                         
                         <li>
-                        <a href="/tags/github-actions">GitHub Actions</a>
+                        <a href="/tags/entra-id">Entra ID</a>
                         </li>
                         
                         <li>
@@ -424,10 +420,8 @@ The service principal is required to grant permissions to, and it didn&rsquo;t e
                     
                     <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
                     
-                        <a class="d-block col-md-6" href="https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/"> &laquo; Call OAuth-Protected APIs from Azure DevOps Using Federated Credentials</a>
                     
-                    
-                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/">Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Certificate &raquo;</a>
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/">Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials &raquo;</a>
                     
                     <div class="clearfix"></div>
                     </div>

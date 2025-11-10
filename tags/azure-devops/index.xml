@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 16 Mar 2021 00:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-devops/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 10 Nov 2025 16:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-devops/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Call OAuth-Protected APIs from Azure DevOps Using Federated Credentials</title>
+      <link>https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/</link>
+      <pubDate>Mon, 10 Nov 2025 16:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/</guid>
+      <description>Learn how to execute automated integration tests against OAuth-protected APIs from Azure DevOps pipelines using federated credentials. This enables secure API testing without managing secrets in your CI/CD pipeline.</description>
+    </item>
+    
     <item>
       <title>Provision an Azure VM in an Azure Pipelines Environment</title>
       <link>https://ronaldbosma.github.io/blog/2021/03/16/provision-an-azure-vm-in-an-azure-pipelines-environment/</link>
