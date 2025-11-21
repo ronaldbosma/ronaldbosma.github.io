@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2025-10-13T16:00:00+02:00" />
-<meta property="article:modified_time" content="2025-10-13T16:00:00+02:00" />
+<meta property="article:modified_time" content="2025-11-21T12:15:00+01:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/" />
 
 
@@ -203,7 +203,7 @@
 </ul>
 </li>
 <li><strong>Azure Key Vault</strong>: Stores the client secret securely and provides it to API Management through a named value</li>
-<li><strong>Entra ID App Registrations</strong>: Separate app registrations for the backend API and the client, with proper role assignments</li>
+<li><strong>Entra ID App Registrations</strong>: Separate app registrations for the backend API and two clients (one using a client secret and one using a client certificate), with proper role assignments</li>
 <li><strong>Supporting Resources</strong>: Application Insights and Log Analytics workspace for monitoring</li>
 </ul>
 <p>While this example uses an API on API Management as the protected backend, you can use the same approach to call any API protected with OAuth via Entra ID and other Identity Providers.</p>
