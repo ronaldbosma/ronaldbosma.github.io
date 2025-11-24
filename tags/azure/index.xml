@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 10 Nov 2025 16:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 24 Nov 2025 09:30:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sanitizing Response Headers in API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2025/11/24/sanitizing-response-headers-in-api-management/</link>
+      <pubDate>Mon, 24 Nov 2025 09:30:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/11/24/sanitizing-response-headers-in-api-management/</guid>
+      <description>By default, Azure API Management returns all headers from the backend to the client, which may include sensitive information. This post demonstrates three approaches to sanitizing response headers: explicit removal, allowlist-based filtering and blocklist-based filtering.</description>
+    </item>
+    
     <item>
       <title>Call OAuth-Protected APIs from Azure DevOps Using Federated Credentials</title>
       <link>https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/</link>

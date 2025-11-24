@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Sanitizing Response Headers in API Management | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/11/24/sanitizing-response-headers-in-api-management/cover.png"/>
+<meta name="twitter:title" content="Sanitizing Response Headers in API Management"/>
+<meta name="twitter:description" content="By default, Azure API Management returns all headers from the backend to the client, which may include sensitive information. This post demonstrates three approaches to sanitizing response headers: explicit removal, allowlist-based filtering and blocklist-based filtering."/>
+
+	<meta property="og:title" content="Sanitizing Response Headers in API Management" />
+<meta property="og:description" content="By default, Azure API Management returns all headers from the backend to the client, which may include sensitive information. This post demonstrates three approaches to sanitizing response headers: explicit removal, allowlist-based filtering and blocklist-based filtering." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/11/24/sanitizing-response-headers-in-api-management/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/11/24/sanitizing-response-headers-in-api-management/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-11-24T09:30:00+01:00" />
+<meta property="article:modified_time" content="2025-11-24T09:30:00+01:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Sanitizing%20Response%20Headers%20in%20API%20Management&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f24%2fsanitizing-response-headers-in-api-management%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f24%2fsanitizing-response-headers-in-api-management%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f11%2f24%2fsanitizing-response-headers-in-api-management%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Nov 24, 2025
+                                    <i class="far fa-clock clock"></i>
+                                    9 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Sanitizing Response Headers in API Management</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/11/24/sanitizing-response-headers-in-api-management/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>What happens when your backend services return headers with sensitive information? By default, API Management forwards all headers from the backend to the client, which can inadvertently leak information about your infrastructure.</p>
+<p>In this post, I&rsquo;ll demonstrate three approaches to sanitizing response headers in API Management: explicit removal, allowlist-based filtering and blocklist-based filtering.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#solutions">Solutions</a>
+<ul>
+<li><a href="#solution-1-explicitly-remove-headers">Solution 1: Explicitly Remove Headers</a></li>
+<li><a href="#solution-2-sanitize-headers-based-on-allowlist">Solution 2: Sanitize Headers Based on Allowlist</a></li>
+<li><a href="#solution-3-sanitize-headers-based-on-blocklist">Solution 3: Sanitize Headers Based on Blocklist</a></li>
+</ul>
+</li>
+<li><a href="#testing-the-solutions">Testing the Solutions</a></li>
+<li><a href="#comparison">Comparison</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>To follow along with this post, you&rsquo;ll need an Azure API Management service instance. If you don&rsquo;t have one yet, you can use my <a href="https://github.com/ronaldbosma/azure-integration-services-quickstart">Azure Integration Services Quickstart</a> template to deploy one quickly.</p>
+<p>I&rsquo;ve created a <a href="https://github.com/ronaldbosma/azure-apim-samples/tree/main/sanitize-response-headers">sample implementation</a> that includes two components:</p>
+<ul>
+<li><strong>Backend API</strong> - A simple API that simulates a backend service returning headers. It accepts two query parameters (<code>numberOfSafeHeadersToReturn</code> and <code>numberOfUnsafeHeadersToReturn</code>) to control how many &lsquo;safe&rsquo; and &lsquo;unsafe&rsquo; headers are returned.</li>
+<li><strong>Sanitizing API</strong> - An API that applies different sanitization policies to demonstrate the three approaches.</li>
+</ul>
+<p>For demonstration purposes, the sample applies the sanitization policies at the operation scope. However, in a real-world scenario, I&rsquo;d recommend applying these policies at the global scope so they protect all APIs in your API Management instance.</p>
+<p>You can test the implementations using the requests in <a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/sanitize-response-headers/tests.http">tests.http</a>.</p>
+<h3 id="solutions">Solutions</h3>
+<p>The <a href="https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html">HTTP Security Response Headers Cheat Sheet</a> from OWASP provides guidance on which headers to remove or set to non-informative values. Common examples include <code>Server</code>, <code>X-Powered-By</code>, <code>X-AspNet-Version</code> and <code>X-AspNetMvc-Version</code>.</p>
+<p>Let&rsquo;s explore three different approaches to removing these headers from your API responses.</p>
+<h4 id="solution-1-explicitly-remove-headers">Solution 1: Explicitly Remove Headers</h4>
+<p>The most straightforward approach is to explicitly remove specific headers using the <code>set-header</code> policy with <code>exists-action=&quot;delete&quot;</code>:</p>
+<pre tabindex="0"><code>&lt;set-header name=&quot;Server&quot; exists-action=&quot;delete&quot; /&gt;
+&lt;set-header name=&quot;X-Powered-By&quot; exists-action=&quot;delete&quot; /&gt;
+&lt;set-header name=&quot;X-AspNet-Version&quot; exists-action=&quot;delete&quot; /&gt;
+&lt;set-header name=&quot;X-AspNetMvc-Version&quot; exists-action=&quot;delete&quot; /&gt;
+&lt;set-header name=&quot;Unsafe-Header-1&quot; exists-action=&quot;delete&quot; /&gt;
+&lt;set-header name=&quot;Unsafe-Header-2&quot; exists-action=&quot;delete&quot; /&gt;
+&lt;set-header name=&quot;Unsafe-Header-3&quot; exists-action=&quot;delete&quot; /&gt;
+</code></pre><p>This approach is clear and easy to understand. Each header you want to remove is explicitly listed.</p>
+<p>Here&rsquo;s what a response looks like without sanitization:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-http" data-lang="http"><span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span> <span style="color:#ae81ff">200</span> <span style="color:#a6e22e">OK</span>
+Content-Length<span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>
+Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">close</span>
+Date<span style="color:#f92672">:</span> <span style="color:#ae81ff">Sat, 22 Nov 2025 09:24:17 GMT</span>
+Cache-Control<span style="color:#f92672">:</span> <span style="color:#ae81ff">private</span>
+Safe-Header-1<span style="color:#f92672">:</span> <span style="color:#ae81ff">Safe-Header-1</span>
+Safe-Header-2<span style="color:#f92672">:</span> <span style="color:#ae81ff">Safe-Header-2</span>
+Safe-Header-3<span style="color:#f92672">:</span> <span style="color:#ae81ff">Safe-Header-3</span>
+Unsafe-Header-1<span style="color:#f92672">:</span> <span style="color:#ae81ff">Unsafe-Header-1</span>
+Unsafe-Header-2<span style="color:#f92672">:</span> <span style="color:#ae81ff">Unsafe-Header-2</span>
+Unsafe-Header-3<span style="color:#f92672">:</span> <span style="color:#ae81ff">Unsafe-Header-3</span>
+Request-Context<span style="color:#f92672">:</span> <span style="color:#ae81ff">appId=cid-v1:34bdc010-6c3a-4508-9b73-672241fea0b2</span>
+</code></pre></div><p>And after applying the explicit removal policy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-http" data-lang="http"><span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span> <span style="color:#ae81ff">200</span> <span style="color:#a6e22e">OK</span>
+Content-Length<span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>
+Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">close</span>
+Date<span style="color:#f92672">:</span> <span style="color:#ae81ff">Sat, 22 Nov 2025 09:24:43 GMT</span>
+Cache-Control<span style="color:#f92672">:</span> <span style="color:#ae81ff">private</span>
+Safe-Header-1<span style="color:#f92672">:</span> <span style="color:#ae81ff">Safe-Header-1</span>
+Safe-Header-2<span style="color:#f92672">:</span> <span style="color:#ae81ff">Safe-Header-2</span>
+Safe-Header-3<span style="color:#f92672">:</span> <span style="color:#ae81ff">Safe-Header-3</span>
+Request-Context<span style="color:#f92672">:</span> <span style="color:#ae81ff">appId=cid-v1:34bdc010-6c3a-4508-9b73-672241fea0b2</span>
+</code></pre></div><p>As you can see, the three unsafe headers have been removed.</p>
+<p>This approach has some drawbacks though. Every header must be manually configured, which means high maintenance overhead. You might miss headers in your analysis and if your backend starts returning new sensitive headers, they&rsquo;ll slip through until you update the policy.</p>
+<p>Additionally, you can&rsquo;t use wildcards to remove headers matching a pattern. For example, if a system returns multiple headers starting with <code>Unsafe-</code>, you&rsquo;d need to list each one individually. The following two approaches can dynamically remove headers based on patterns.</p>
+<h4 id="solution-2-sanitize-headers-based-on-allowlist">Solution 2: Sanitize Headers Based on Allowlist</h4>
+<p>An allowlist approach defines which headers are safe to return and removes everything else. This ensures you have complete control over what the client receives.</p>
+<p>The complete implementation can be found in <a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/sanitize-response-headers/sanitizing-api/sanitize-with-allowlist.xml">sanitize-with-allowlist.xml</a>. Here&rsquo;s how it works:</p>
+<p>First, we define the allowlist of safe headers and identify which response headers need to be removed in a single policy expression:</p>
+<pre tabindex="0"><code>&lt;set-variable name=&quot;responseHeadersToRemove&quot; value=&quot;@{
+    HashSet&lt;string&gt; allowlist = new HashSet&lt;string&gt;(StringComparer.InvariantCultureIgnoreCase) {
+        &quot;Cache-Control&quot;, &quot;Connection&quot;, &quot;Content-disposition&quot;, &quot;Content-encoding&quot;,
+        &quot;Content-length&quot;, &quot;Content-security-policy&quot;, &quot;Content-type&quot;, &quot;Date&quot;,
+        &quot;ETag&quot;, &quot;Expires&quot;, &quot;Last-Modified&quot;, &quot;Link&quot;, &quot;Memento-Datetime&quot;,
+        &quot;Ocp-Apim-Trace-Location&quot;, &quot;P3P&quot;, &quot;Pragma&quot;, &quot;Referrer-Policy&quot;,
+        &quot;Request-Context&quot;, &quot;Retry-After&quot;, &quot;Set-Cookie&quot;, &quot;Strict-Transport-Security&quot;,
+        &quot;Transfer-Encoding&quot;, &quot;Vary&quot;, &quot;WWW-Authenticate&quot;, &quot;X-Content-Type-Options&quot;,
+        &quot;x-ms-request-id&quot;
+    };
+    
+    // Headers that are not in the allowlist and do not start with 'Safe-' should be removed
+    var headersToRemove = context.Response.Headers.Keys.Where(key =&gt; {
+        return !allowlist.Contains(key) &amp;&amp; 
+               !key.StartsWith(&quot;Safe-&quot;, StringComparison.InvariantCultureIgnoreCase);
+    });
+
+    return string.Join(&quot;,&quot;, headersToRemove);
+}&quot; /&gt;
+</code></pre><p>The allowlist includes common safe headers like <code>Cache-Control</code>, <code>Content-Type</code>, <code>Content-Length</code> and others, based on the <a href="https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html">OWASP HTTP Security Response Headers Cheat Sheet</a> and <a href="https://learn.microsoft.com/en-us/azure/azure-app-configuration/rest-api-headers">Microsoft documentation</a>. Headers starting with <code>Safe-</code> are also allowed for demonstration purposes. All other headers will be marked for removal.</p>
+<p>Note that we&rsquo;re using <code>string.Join</code> to store the headers as a comma-separated string. This isn&rsquo;t ideal, but we can&rsquo;t store a <code>string[]</code> in a variable. See the <a href="https://learn.microsoft.com/en-us/azure/api-management/set-variable-policy#allowed-types">set-variable policy documentation</a> for the allowed types.</p>
+<p><strong>Warning</strong>: Be careful not to remove the <code>Content-Length</code> header from the allowlist. Attempting to delete this header in API Management will result in the exception: &ldquo;Expression value is invalid. Header name is invalid or restricted from modification.&rdquo;</p>
+<p>Now comes the interesting part. We can&rsquo;t manipulate the <code>context.Response.Headers</code> collection directly because it&rsquo;s read-only. We need to use the <code>set-header</code> policy to remove each header.</p>
+<pre tabindex="0"><code>&lt;choose&gt;
+    &lt;when condition=&quot;@(!string.IsNullOrWhiteSpace((string)context.Variables[&quot;responseHeadersToRemove&quot;]))&quot;&gt;
+        &lt;set-variable name=&quot;indexOfHeaderToRemove&quot; value=&quot;@(0)&quot; /&gt;
+        &lt;set-variable name=&quot;numberOfHeadersToRemove&quot; value=&quot;@{
+            string responseHeadersToRemove = (string)context.Variables[&quot;responseHeadersToRemove&quot;];
+            return responseHeadersToRemove.Split(',').Length;
+        }&quot; /&gt;
+
+        &lt;retry condition=&quot;@((int)context.Variables[&quot;indexOfHeaderToRemove&quot;] &lt; (int)context.Variables[&quot;numberOfHeadersToRemove&quot;])&quot; 
+               count=&quot;50&quot; interval=&quot;0&quot;&gt;
+            &lt;set-header name=&quot;@{
+                string[] headersToRemoveArray = ((string)context.Variables[&quot;responseHeadersToRemove&quot;]).Split(',');
+                int index = (int)context.Variables[&quot;indexOfHeaderToRemove&quot;];
+                return headersToRemoveArray[index];
+            }&quot; exists-action=&quot;delete&quot; /&gt;
+
+            &lt;set-variable name=&quot;indexOfHeaderToRemove&quot; value=&quot;@((int)context.Variables[&quot;indexOfHeaderToRemove&quot;] + 1)&quot; /&gt;
+        &lt;/retry&gt;
+    &lt;/when&gt;
+&lt;/choose&gt;
+</code></pre><p>Here&rsquo;s how this logic works:</p>
+<ol>
+<li>The <code>choose</code> policy checks if there are any headers to remove. This prevents exceptions when the list is empty.</li>
+<li>We initialize a counter starting at 0 to track which header we&rsquo;re removing.</li>
+<li>We calculate the number of headers to remove by splitting the comma-separated list.</li>
+<li>We loop through the headers to remove using the <code>retry</code> policy:
+<ul>
+<li>We split the header list, retrieve the header name at the current index and remove it.</li>
+<li>We increment the counter for the next iteration.</li>
+</ul>
+</li>
+</ol>
+<p>We&rsquo;re using the <code>retry</code> policy as a workaround for a while loop, which doesn&rsquo;t exist in API Management policies. The <code>count=&quot;50&quot;</code> means it can retry up to 50 times (plus the initial execution = 51 total). 50 is the maximum value allowed for the count attribute, see the <a href="https://learn.microsoft.com/en-us/azure/api-management/retry-policy">retry policy documentation</a>. Using the <code>retry</code> policy this way is inspired by an answer on <a href="https://learn.microsoft.com/en-us/answers/questions/1334169/how-to-(dynamically)-remove-all-unwanted-backend-r">this Microsoft Q&amp;A thread</a>.</p>
+<p>Because we only have 50 retries, this approach can only handle removing up to 51 headers (initial execution plus 50 retries). If there are more headers to remove, the remaining headers will not be deleted. To demonstrate this limitation, if you specify that the backend returns 52 unsafe headers, you&rsquo;ll see that one unsafe header remains:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-http" data-lang="http"><span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span> <span style="color:#ae81ff">200</span> <span style="color:#a6e22e">OK</span>
+Content-Length<span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>
+Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">close</span>
+Date<span style="color:#f92672">:</span> <span style="color:#ae81ff">Sat, 22 Nov 2025 09:25:06 GMT</span>
+Cache-Control<span style="color:#f92672">:</span> <span style="color:#ae81ff">private</span>
+Safe-Header-1<span style="color:#f92672">:</span> <span style="color:#ae81ff">Safe-Header-1</span>
+Safe-Header-2<span style="color:#f92672">:</span> <span style="color:#ae81ff">Safe-Header-2</span>
+Safe-Header-3<span style="color:#f92672">:</span> <span style="color:#ae81ff">Safe-Header-3</span>
+Unsafe-Header-52<span style="color:#f92672">:</span> <span style="color:#ae81ff">Unsafe-Header-52</span>
+Request-Context<span style="color:#f92672">:</span> <span style="color:#ae81ff">appId=cid-v1:34bdc010-6c3a-4508-9b73-672241fea0b2</span>
+</code></pre></div><p>The <code>Unsafe-Header-52</code> remains because we&rsquo;ve hit the retry limit.</p>
+<p>You can work around this limitation by using nested <code>retry</code> policies, but this adds complexity and can possibly impact performance. For most scenarios, removing a maximum of 51 headers should probably be sufficient.</p>
+<p><strong>Tip</strong>: If you have critical headers that must always be removed (like <code>Server</code> or <code>X-Powered-By</code>), add explicit <code>set-header</code> policies before the dynamic removal logic. This ensures they&rsquo;re removed even if you hit the retry limit.</p>
+<p>One of the biggest challenges with the allowlist approach is determining which headers to allow. I&rsquo;ve included some common safe headers in the sample, but there are many more used across the internet, and most could be considered safe. Removing headers that clients or intermediaries expect might impact functionality in unforeseen ways. For this reason, using a blocklist might be a better approach.</p>
+<h4 id="solution-3-sanitize-headers-based-on-blocklist">Solution 3: Sanitize Headers Based on Blocklist</h4>
+<p>With a blocklist, instead of defining what&rsquo;s allowed, we define what should be removed and let everything else through.</p>
+<p>The complete implementation can be found in <a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/sanitize-response-headers/sanitizing-api/sanitize-with-blocklist.xml">sanitize-with-blocklist.xml</a>. Here&rsquo;s the key part of the policy:</p>
+<pre tabindex="0"><code>&lt;set-variable name=&quot;responseHeadersToRemove&quot; value=&quot;@{
+    HashSet&lt;string&gt; blocklist = new HashSet&lt;string&gt;(StringComparer.InvariantCultureIgnoreCase) {
+        &quot;Server&quot;, &quot;X-Powered-By&quot;,
+        &quot;X-AspNet-Version&quot;, &quot;X-AspNetMvc-Version&quot;
+    };
+
+    // Headers in the blocklist or that start with 'Unsafe-' should be removed
+    var headersToRemove = context.Response.Headers.Keys.Where(key =&gt; {
+        return blocklist.Contains(key) || 
+               key.StartsWith(&quot;Unsafe-&quot;, StringComparison.InvariantCultureIgnoreCase);
+    });
+    
+    return string.Join(&quot;,&quot;, headersToRemove);
+}&quot; /&gt;
+</code></pre><p>This logic identifies headers that match the OWASP recommendations (like <code>Server</code> and <code>X-Powered-By</code>) and headers starting with <code>Unsafe-</code> for demonstration purposes. The removal logic using the <code>retry</code> policy is the same as in the allowlist approach.</p>
+<p>The blocklist approach is more flexible because you only need to maintain a list of known problematic headers. However, this means an unsafe header you haven&rsquo;t identified yet could slip through and be returned to clients.</p>
+<p>If you&rsquo;re concerned about this risk, consider creating automated tests that verify your APIs only return expected headers. If an unexpected header appears, the test fails and you can review whether it should be added to the blocklist or allowed.</p>
+<h3 id="testing-the-solutions">Testing the Solutions</h3>
+<p>You can test all three solutions using the <a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/sanitize-response-headers/tests.http">tests.http</a> file in the sample repository. It includes five test scenarios:</p>
+<ol>
+<li><strong>Direct Backend Call</strong> - Calls the backend API directly to see all headers it returns</li>
+<li><strong>No Sanitization</strong> - Calls backend through API Management without any sanitization policy</li>
+<li><strong>Explicit Removal Sanitization</strong> - Tests the explicit removal approach</li>
+<li><strong>Allowlist Sanitization</strong> - Tests the allowlist-based filtering</li>
+<li><strong>Blocklist Sanitization</strong> - Tests the blocklist-based filtering</li>
+</ol>
+<p>The test file uses variables to configure the base URL and the number of safe and unsafe headers the backend should return, making it easy to experiment with different scenarios.</p>
+<h3 id="comparison">Comparison</h3>
+<p>Each approach has its trade-offs:</p>
+<p><strong>Explicit Removal</strong> is the clearest approach. You can see exactly which headers are being removed. However, it requires the highest maintenance effort. Every new header must be added manually and you can&rsquo;t use wildcards or patterns.</p>
+<p><strong>Allowlist</strong> gives you guaranteed control over what headers are returned. You know exactly what the client receives. But this comes with the risk of removing headers that clients or intermediaries need, potentially breaking functionality in unexpected ways.</p>
+<p><strong>Blocklist</strong> is the most flexible approach. You maintain a list of known problematic headers and let everything else through. The downside is that new sensitive headers might be exposed until you add them to the blocklist.</p>
+<p>What risk you&rsquo;re willing to accept depends on your security requirements and risk tolerance. For most scenarios, I&rsquo;d recommend the blocklist approach combined with comprehensive testing to catch unexpected headers.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Sanitizing response headers is an important security practice that prevents leaking sensitive information about your backend infrastructure. Azure API Management provides the flexibility to implement this in different ways depending on your needs.</p>
+<p>For most scenarios, I&rsquo;d recommend the blocklist approach. It balances security and maintainability well, especially when combined with automated testing to catch any headers you might have missed. The allowlist approach provides stronger guarantees but requires more careful consideration of which headers to include.</p>
+<p>As mentioned earlier, the sample applies policies at the operation scope to demonstrate the different approaches. In production I&rsquo;d recommend applying your sanitization logic at the global (API-wide) outbound scope so every API and operation is covered automatically and you avoid gaps when new operations are added.</p>
+<p>You can find the complete sample implementation with all three approaches <a href="https://github.com/ronaldbosma/azure-apim-samples/tree/main/sanitize-response-headers">here</a>. The sample includes a working backend API, the sanitization policies and test requests you can use to try it out yourself.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/security">Security</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/">Call OAuth-Protected APIs from Azure DevOps Using Federated Credentials &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

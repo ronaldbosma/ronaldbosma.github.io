@@ -3,22 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ronaldbosma.github.io/tags/api-management/</loc>
-    <lastmod>2025-11-21T12:15:00+01:00</lastmod>
+    <lastmod>2025-11-24T09:30:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure/</loc>
-    <lastmod>2025-11-21T12:15:00+01:00</lastmod>
+    <lastmod>2025-11-24T09:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/azure-integration-services/</loc>
+    <lastmod>2025-11-24T09:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/</loc>
+    <lastmod>2025-11-24T09:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/</loc>
+    <lastmod>2025-11-24T09:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/2025/11/24/sanitizing-response-headers-in-api-management/</loc>
+    <lastmod>2025-11-24T09:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/security/</loc>
+    <lastmod>2025-11-24T09:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/</loc>
+    <lastmod>2025-11-24T09:30:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-devops/</loc>
     <lastmod>2025-11-10T16:00:00+01:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/tags/azure-integration-services/</loc>
-    <lastmod>2025-11-21T12:15:00+01:00</lastmod>
-  </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-pipelines/</loc>
     <lastmod>2025-11-10T16:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/blog/</loc>
-    <lastmod>2025-11-21T12:15:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/</loc>
     <lastmod>2025-11-10T16:00:00+01:00</lastmod>
@@ -32,13 +44,7 @@
     <loc>https://ronaldbosma.github.io/series/oauth-and-api-management/</loc>
     <lastmod>2025-11-21T12:15:00+01:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2025-11-21T12:15:00+01:00</lastmod>
-  </url><url>
     <loc>https://ronaldbosma.github.io/series/</loc>
-    <lastmod>2025-11-21T12:15:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/</loc>
     <lastmod>2025-11-21T12:15:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/</loc>
@@ -145,9 +151,6 @@
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/</loc>
     <lastmod>2024-11-08T11:30:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/security/</loc>
-    <lastmod>2024-11-13T17:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/application-gateway/</loc>
     <lastmod>2024-11-13T17:45:00+01:00</lastmod>

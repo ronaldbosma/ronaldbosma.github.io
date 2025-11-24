@@ -7,11 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 10 Nov 2025 16:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 24 Nov 2025 09:30:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>API Management</title>
       <link>https://ronaldbosma.github.io/tags/api-management/</link>
-      <pubDate>Mon, 10 Nov 2025 16:00:00 +0100</pubDate>
+      <pubDate>Mon, 24 Nov 2025 09:30:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/api-management/</guid>
       <description></description>
@@ -20,9 +20,27 @@
     <item>
       <title>Azure</title>
       <link>https://ronaldbosma.github.io/tags/azure/</link>
-      <pubDate>Mon, 10 Nov 2025 16:00:00 +0100</pubDate>
+      <pubDate>Mon, 24 Nov 2025 09:30:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Integration Services</title>
+      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
+      <pubDate>Mon, 24 Nov 2025 09:30:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Security</title>
+      <link>https://ronaldbosma.github.io/tags/security/</link>
+      <pubDate>Mon, 24 Nov 2025 09:30:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/security/</guid>
       <description></description>
     </item>
     
@@ -32,15 +50,6 @@
       <pubDate>Mon, 10 Nov 2025 16:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure-devops/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Azure Integration Services</title>
-      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
-      <pubDate>Mon, 10 Nov 2025 16:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
       <description></description>
     </item>
     
@@ -230,15 +239,6 @@
       <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/mtls/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Security</title>
-      <link>https://ronaldbosma.github.io/tags/security/</link>
-      <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/security/</guid>
       <description></description>
     </item>
     
