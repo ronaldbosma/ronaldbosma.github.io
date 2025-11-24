@@ -18,6 +18,87 @@
     </item>
     
     <item>
+      <title>Call OAuth-Protected APIs from Azure DevOps Using Federated Credentials</title>
+      <link>https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/</link>
+      <pubDate>Mon, 10 Nov 2025 16:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/11/10/call-oauth-protected-apis-from-azure-devops-using-federated-credentials/</guid>
+      <description>Learn how to execute automated integration tests against OAuth-protected APIs from Azure DevOps pipelines using federated credentials. This enables secure API testing without managing secrets in your CI/CD pipeline.</description>
+    </item>
+    
+    <item>
+      <title>Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials</title>
+      <link>https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/</link>
+      <pubDate>Mon, 03 Nov 2025 16:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/</guid>
+      <description>Learn how to execute automated integration tests against OAuth-protected APIs from GitHub Actions workflows using federated credentials. This enables secure API testing without managing secrets in your CI/CD pipeline.</description>
+    </item>
+    
+    <item>
+      <title>Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Certificate</title>
+      <link>https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/</link>
+      <pubDate>Mon, 20 Oct 2025 16:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/</guid>
+      <description>Learn how to implement certificate-based OAuth authentication in API Management using JWT assertions and the send-request policy. This approach provides stronger security than client secrets by proving possession of a private key without transmitting it.</description>
+    </item>
+    
+    <item>
+      <title>Call OAuth-Protected Backends from API Management using Send-Request Policy with Client Secret</title>
+      <link>https://ronaldbosma.github.io/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/</link>
+      <pubDate>Mon, 13 Oct 2025 16:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/10/13/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-secret/</guid>
+      <description>When API Management&amp;rsquo;s credential manager isn&amp;rsquo;t suitable for your OAuth scenarios, you can implement token handling directly using policies. In this post, I show how to call OAuth-protected backends using the send-request policy with Client Credentials Flow and a client secret stored in Key Vault.</description>
+    </item>
+    
+    <item>
+      <title>Call OAuth-Protected Backends from API Management using Credential Manager</title>
+      <link>https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/</link>
+      <pubDate>Mon, 06 Oct 2025 16:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/10/06/call-oauth-protected-backends-from-api-management-using-credential-manager/</guid>
+      <description>Azure API Management&amp;rsquo;s credential manager provides a simple, managed way to handle OAuth flows with automatic token acquisition and caching. In this post, I show how to configure it using Bicep and integrate it into your APIs. I also highlight key considerations to help you decide when credential manager is the right choice versus custom token handling.</description>
+    </item>
+    
+    <item>
+      <title>Call OAuth-Protected APIs with Managed Identity from API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/</link>
+      <pubDate>Mon, 29 Sep 2025 16:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/09/29/call-oauth-protected-apis-with-managed-identity-from-api-management/</guid>
+      <description>Learn how to use API Management to call OAuth-protected APIs with managed identity. This enables secure API-to-API communication and privilege delegation patterns without managing secrets.</description>
+    </item>
+    
+    <item>
+      <title>Call OAuth-Protected APIs with Managed Identity from Logic Apps</title>
+      <link>https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/</link>
+      <pubDate>Wed, 24 Sep 2025 17:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/</guid>
+      <description>Azure Logic Apps Standard makes it easy to call OAuth-protected APIs using managed identity. This post demonstrates how to use the HTTP action&amp;rsquo;s built-in authentication and token caching for secure, reliable calls.</description>
+    </item>
+    
+    <item>
+      <title>Call OAuth-Protected APIs with Managed Identity from .NET</title>
+      <link>https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/</link>
+      <pubDate>Sat, 20 Sep 2025 14:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/</guid>
+      <description>Learn how to call OAuth-protected APIs from .NET applications using Azure managed identity. This post shows how to implement secure API calls from Azure Functions without managing secrets, using the Azure Identity library and custom HTTP message handlers.</description>
+    </item>
+    
+    <item>
+      <title>Protect APIs in Azure API Management with OAuth</title>
+      <link>https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/</link>
+      <pubDate>Tue, 16 Sep 2025 19:30:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/09/16/protect-apis-in-azure-api-management-with-oauth/</guid>
+      <description>Discover how to secure APIs in Azure API Management with OAuth 2.0 and Microsoft Entra ID using a fully automated, infrastructure-as-code approach. This post walks through deploying everything with Bicep, including app registrations via the Microsoft Graph Bicep extension, so you can avoid manual portal setup and ensure repeatable deployments.</description>
+    </item>
+    
+    <item>
       <title>Securing backend connections with mTLS in API Management</title>
       <link>https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/</link>
       <pubDate>Fri, 24 May 2024 10:15:00 +0200</pubDate>
