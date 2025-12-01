@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 24 Nov 2025 09:30:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 01 Dec 2025 17:15:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Generic Error Handling in API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2025/12/01/generic-error-handling-in-api-management/</link>
+      <pubDate>Mon, 01 Dec 2025 17:15:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2025/12/01/generic-error-handling-in-api-management/</guid>
+      <description>Learn how to implement centralized error handling in Azure API Management at the global scope, reducing duplicate logic and ensuring consistent error responses across all APIs while maintaining flexibility for custom scenarios.</description>
+    </item>
+    
     <item>
       <title>Sanitizing Response Headers in API Management</title>
       <link>https://ronaldbosma.github.io/blog/2025/11/24/sanitizing-response-headers-in-api-management/</link>

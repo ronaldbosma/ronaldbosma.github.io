@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Generic Error Handling in API Management | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2025/12/01/generic-error-handling-in-api-management/cover.png"/>
+<meta name="twitter:title" content="Generic Error Handling in API Management"/>
+<meta name="twitter:description" content="Learn how to implement centralized error handling in Azure API Management at the global scope, reducing duplicate logic and ensuring consistent error responses across all APIs while maintaining flexibility for custom scenarios."/>
+
+	<meta property="og:title" content="Generic Error Handling in API Management" />
+<meta property="og:description" content="Learn how to implement centralized error handling in Azure API Management at the global scope, reducing duplicate logic and ensuring consistent error responses across all APIs while maintaining flexibility for custom scenarios." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2025/12/01/generic-error-handling-in-api-management/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2025/12/01/generic-error-handling-in-api-management/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-12-01T17:15:00+01:00" />
+<meta property="article:modified_time" content="2025-12-01T17:15:00+01:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Generic%20Error%20Handling%20in%20API%20Management&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f12%2f01%2fgeneric-error-handling-in-api-management%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f12%2f01%2fgeneric-error-handling-in-api-management%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2025%2f12%2f01%2fgeneric-error-handling-in-api-management%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Dec 1, 2025
+                                    <i class="far fa-clock clock"></i>
+                                    11 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Generic Error Handling in API Management</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2025/12/01/generic-error-handling-in-api-management/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working with Azure API Management for a while now and I&rsquo;ve seen (and built) solutions where every API, or worse, every operation, had its own error handling logic. Those approaches often duplicate logic and lead to inconsistencies. Some APIs return only a status code, while others include problem details or use the default error schema that API Management provides. By implementing generic error handling, you can prevent duplication while improving consistency.</p>
+<p>In this post, I&rsquo;ll show you how to implement generic error handling at the global scope in API Management and how to customize its behaviour when needed.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#why-generic-error-handling">Why Generic Error Handling?</a></li>
+<li><a href="#understanding-api-management-scopes">Understanding API Management Scopes</a></li>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#implementation">Implementation</a>
+<ul>
+<li><a href="#global-error-handling-implementation">Global Error Handling Implementation</a></li>
+<li><a href="#scenario-1-default-behaviour">Scenario 1: Default Behaviour</a></li>
+<li><a href="#scenario-2-bypass-generic-error-handling">Scenario 2: Bypass Generic Error Handling</a></li>
+<li><a href="#scenario-3-custom-error-handling">Scenario 3: Custom Error Handling</a></li>
+<li><a href="#scenario-4-override-passthrough-error-codes">Scenario 4: Override Passthrough Error Codes</a></li>
+</ul>
+</li>
+<li><a href="#testing-the-solution">Testing the Solution</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="why-generic-error-handling">Why Generic Error Handling?</h3>
+<p>Applying generic error handling in API Management isn&rsquo;t useful when API Management is a pure proxy where all requests and responses are passthrough. But it is valuable when you have custom logic in API Management. For example:</p>
+<ul>
+<li>When clients connect to API Management via OAuth, but the backends that API Management connects to use different authentication implementations. Some might use basic authentication while others require an API Key or OAuth. If the backend returns 401 Unauthorized or 403 Forbidden, it means the credentials API Management used are invalid. You don&rsquo;t want to return this status code to the client since their credentials are valid. A 500 Internal Server Error makes more sense.</li>
+<li>If you&rsquo;re doing custom transformations and the backend returns 400 Bad Request, it doesn&rsquo;t always make sense to return that to the client. It could be a bug in your transformation code and a 500 Internal Server Error might make more sense.</li>
+</ul>
+<p>You can implement the error handling in each API or operation, but that leads to duplicated logic and inconsistencies. A better approach is to implement generic error handling at the global scope, which applies to all APIs by default. This way, you define the error handling logic once and ensure consistent behaviour across all APIs. When specific APIs or operations need custom behaviour, they can override or bypass the global logic as needed.</p>
+<h3 id="understanding-api-management-scopes">Understanding API Management Scopes</h3>
+<p>Before we dive into the implementation, it&rsquo;s important to understand how <a href="https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-policies#scopes">API Management Scopes</a> work. Policies in API Management can be defined at different levels:</p>
+<ul>
+<li><strong>Global scope</strong> - Applies to all APIs in the instance</li>
+<li><strong>Workspace scope</strong> - Applies to all APIs in a workspace (for workspaces feature)</li>
+<li><strong>Product scope</strong> - Applies to all APIs within a product</li>
+<li><strong>API scope</strong> - Applies to all operations in an API</li>
+<li><strong>Operation scope</strong> - Applies to a specific operation</li>
+</ul>
+<p>Policies at lower scopes can inherit policies from parent scopes using the <code>&lt;base /&gt;</code> element. This allows you to define common logic once at a higher scope and selectively override or extend it at lower scopes.</p>
+<p>In this post, we&rsquo;ll provide generic error handling at the global scope and use policies at the operation scope to influence its behaviour if necessary.</p>
+<h3 id="requirements">Requirements</h3>
+<p>Let&rsquo;s start with the requirements for our generic error handling solution:</p>
+<ol>
+<li>
+<p><strong>Default passthrough codes</strong> - Status codes 404 (Not Found), 409 (Conflict), 413 (Payload Too Large) and 429 (Too Many Requests) are returned as-is, but with the response body cleared. These are some error codes that I&rsquo;ve found useful to passthrough, but you can adjust this list as needed.</p>
+</li>
+<li>
+<p><strong>Error transformation</strong> - All other error status codes (400 and above, except the passthrough codes) are converted to 500 Internal Server Error with the response body cleared.</p>
+</li>
+<li>
+<p><strong>Success codes unchanged</strong> - Success status codes (2xx and 3xx) are passed through without modification.</p>
+</li>
+<li>
+<p><strong>Custom error handling</strong> - APIs or operations can set the <code>errorHandled</code> variable to <code>true</code> to indicate they&rsquo;ve handled errors themselves, which skips the global error handling and returns responses as-is.</p>
+</li>
+<li>
+<p><strong>Customizable passthrough codes</strong> - APIs or operations can override which status codes should pass through by setting the <code>passthroughErrorStatusCodes</code> variable to a comma-separated list of status codes.</p>
+</li>
+</ol>
+<p>These requirements can be used as a starting point. You can adjust them based on your specific needs.</p>
+<h3 id="implementation">Implementation</h3>
+<p>I&rsquo;ve created a <a href="https://github.com/ronaldbosma/azure-apim-samples/tree/main/generic-error-handling">sample implementation</a> on GitHub that you can use as a reference. It includes:</p>
+<ul>
+<li>The global error handling policy</li>
+<li>An Error Handling API with four operations, each demonstrating a different scenario</li>
+<li>A backend API that simulates different backend responses by returning any HTTP status code (100-599) based on a parameter</li>
+</ul>
+<p>You can deploy this sample to your own API Management instance using Bicep and experiment with it. If you don&rsquo;t have an API Management instance yet, you can use my <a href="https://github.com/ronaldbosma/azure-integration-services-quickstart">Azure Integration Services Quickstart</a> template to deploy one quickly.</p>
+<p>Let&rsquo;s start with the global error handling policy.</p>
+<h4 id="global-error-handling-implementation">Global Error Handling Implementation</h4>
+<p>Here&rsquo;s the error handling logic that goes in the <code>&lt;outbound&gt;</code> section of the global policy:</p>
+<pre tabindex="0"><code>&lt;choose&gt;
+    &lt;!-- 
+        If an error occured and it has not been handled yet:
+            - if status code should be passed through, then return status code as is
+            - else return 500 Internal Server Error
+    --&gt;
+    &lt;when condition=&quot;@(
+            context.Response.StatusCode &gt;= 400 &amp;&amp; 
+            context.Variables.GetValueOrDefault&lt;bool&gt;(&quot;errorHandled&quot;, false) == false
+    )&quot;&gt;
+        &lt;choose&gt;
+            &lt;!-- Set the passthrough error status codes to a default set if not already set--&gt;
+            &lt;when condition=&quot;@(!context.Variables.ContainsKey(&quot;passthroughErrorStatusCodes&quot;))&quot;&gt;
+                &lt;set-variable name=&quot;passthroughErrorStatusCodes&quot; value=&quot;404,409,413,429&quot; /&gt;
+            &lt;/when&gt;
+        &lt;/choose&gt;
+
+        &lt;choose&gt;
+            &lt;!-- If the error status code is in the passthrough list, clear the body and return the status code as is --&gt;
+            &lt;when condition=&quot;@{
+                string[] passthroughErrorStatusCodes = ((string)context.Variables[&quot;passthroughErrorStatusCodes&quot;]).Split(',');
+                return passthroughErrorStatusCodes.Contains(context.Response.StatusCode.ToString());
+            }&quot;&gt;
+                &lt;set-body /&gt;
+            &lt;/when&gt;
+            &lt;!-- Otherwise, return a 500 Internal Server Error --&gt;
+            &lt;otherwise&gt;
+                &lt;set-status code=&quot;500&quot; reason=&quot;Internal Server Error&quot; /&gt;
+                &lt;set-body /&gt;
+            &lt;/otherwise&gt;
+        &lt;/choose&gt;
+    &lt;/when&gt;
+&lt;/choose&gt;
+</code></pre><p>Here&rsquo;s how this logic works:</p>
+<ol>
+<li>
+<p><strong>Check for errors</strong> - The outer <code>&lt;when&gt;</code> condition checks if the response status code is 400 or higher (an error) and the <code>errorHandled</code> variable is not set to <code>true</code>.</p>
+</li>
+<li>
+<p><strong>Set default passthrough codes</strong> - If the <code>passthroughErrorStatusCodes</code> variable hasn&rsquo;t been set by a lower scope, it defaults to &ldquo;404,409,413,429&rdquo;.</p>
+</li>
+<li>
+<p><strong>Check if status code should pass through</strong> - The inner <code>&lt;when&gt;</code> condition splits the passthrough codes into an array and checks if the current status code is in the list.</p>
+<blockquote>
+<p>We split a comma-separated <code>string</code> into an array because API Management variables do not support <code>string[]</code>. Variables support types like <code>string</code>, <code>bool</code> and <code>int</code>. See the <a href="https://learn.microsoft.com/en-us/azure/api-management/set-variable-policy#allowed-types">set-variable policy documentation</a> for the allowed types.</p>
+</blockquote>
+</li>
+<li>
+<p><strong>Clear body for passthrough codes</strong> - If the status code is in the passthrough list, only the response body is cleared. The status code remains unchanged.</p>
+</li>
+<li>
+<p><strong>Convert to 500</strong> - For all other error codes, the status is set to 500 Internal Server Error and the body is cleared.</p>
+</li>
+</ol>
+<p>In this example, we&rsquo;re clearing the response body for all error responses, but in a real implementation you might first log the original error response and then return a structured error payload.</p>
+<p>Now let&rsquo;s look at different scenarios that demonstrate how to use the global error handling policy.</p>
+<h4 id="scenario-1-default-behaviour">Scenario 1: Default Behaviour</h4>
+<p>The simplest scenario is when an operation or API doesn&rsquo;t provide any custom error handling. It just inherits the global policy:</p>
+<pre tabindex="0"><code>&lt;outbound&gt;
+    &lt;!-- No error handling, which means the default behaviour applies --&gt;
+    &lt;base /&gt;
+&lt;/outbound&gt;
+</code></pre><p>With this configuration:</p>
+<ul>
+<li>Status codes 404, 409, 413 and 429 from the backend are returned as-is</li>
+<li>All other error codes (400, 401, 403, 500, etc.) are converted to 500</li>
+<li>Success codes (200, 201, 204, etc.) pass through unchanged</li>
+</ul>
+<p>This provides a consistent error handling baseline across all APIs without requiring any additional configuration.</p>
+<h4 id="scenario-2-bypass-generic-error-handling">Scenario 2: Bypass Generic Error Handling</h4>
+<p>Sometimes you need complete control over error responses. You can bypass the global error handling by setting the <code>errorHandled</code> variable to <code>true</code>:</p>
+<pre tabindex="0"><code>&lt;outbound&gt;
+    &lt;!-- 
+        All errors are marked as handled, which means 
+        the global error handling is skipped and they are returned as is 
+    --&gt;
+    &lt;set-variable name=&quot;errorHandled&quot; value=&quot;@(true)&quot; /&gt;
+    &lt;base /&gt;
+&lt;/outbound&gt;
+</code></pre><p>When <code>errorHandled</code> is <code>true</code>, all status codes (success and error) are returned exactly as the backend sent them. No body clearing, no status code transformation.</p>
+<p>This is useful when an API or operation doesn&rsquo;t require any error handling and you want to preserve the backend&rsquo;s responses exactly, or when custom error handling is necessary.</p>
+<h4 id="scenario-3-custom-error-handling">Scenario 3: Custom Error Handling</h4>
+<p>You can also implement custom error handling that works together with the global policy. Here&rsquo;s an example that transforms specific status codes:</p>
+<pre tabindex="0"><code>&lt;outbound&gt;
+    &lt;choose&gt;
+        &lt;!-- 
+            We turn a 201 into a 418. Because we don't set errorHandled to true, 
+            this should be turned into a 500 by the global error handling.
+        --&gt;
+        &lt;when condition=&quot;@(context.Response.StatusCode == 201)&quot;&gt;
+            &lt;set-status code=&quot;418&quot; reason=&quot;I'm a teapot&quot; /&gt;
+        &lt;/when&gt;
+
+        &lt;!-- 
+            We turn a 204 into a 418. Because we set errorHandled to true, 
+            the global error handling is skipped and it is returned as is.
+        --&gt;
+        &lt;when condition=&quot;@(context.Response.StatusCode == 204)&quot;&gt;
+            &lt;set-status code=&quot;418&quot; reason=&quot;I'm a teapot&quot; /&gt;
+            &lt;set-variable name=&quot;errorHandled&quot; value=&quot;@(true)&quot; /&gt;
+        &lt;/when&gt;
+    &lt;/choose&gt;
+
+    &lt;base /&gt;
+&lt;/outbound&gt;
+</code></pre><p>This example is a bit silly, returning 418 (I&rsquo;m a teapot), but it clearly demonstrates two patterns:</p>
+<p><strong>Pattern 1: Transform then apply global logic</strong></p>
+<ul>
+<li>When the backend returns 201, it&rsquo;s changed to 418 (I&rsquo;m a teapot)</li>
+<li>Since <code>errorHandled</code> is not set, the global policy sees the 418 error code</li>
+<li>The global policy converts it to 500 Internal Server Error</li>
+<li>Result: Client receives 500</li>
+</ul>
+<p><strong>Pattern 2: Transform and bypass global logic</strong></p>
+<ul>
+<li>When the backend returns 204, it&rsquo;s changed to 418 (I&rsquo;m a teapot)</li>
+<li><code>errorHandled</code> is set to <code>true</code>, so the global policy is bypassed</li>
+<li>Result: Client receives 418 as-is</li>
+</ul>
+<p>This pattern is for example useful when the backend returns a success code (like 200 OK) but the response body indicates a failure. You can transform it to an error code and let the global policy handle it consistently.</p>
+<h4 id="scenario-4-override-passthrough-error-codes">Scenario 4: Override Passthrough Error Codes</h4>
+<p>Sometimes you might want to change which error codes are passed through.
+You can customize this by setting the <code>passthroughErrorStatusCodes</code> variable:</p>
+<pre tabindex="0"><code>&lt;outbound&gt;
+    &lt;!-- 
+        Override which error status codes are passed through as is, 
+        and which should be turned into a 500 Internal Server Error 
+    --&gt;
+    &lt;set-variable name=&quot;passthroughErrorStatusCodes&quot; value=&quot;401,403,404,503&quot; /&gt;
+    &lt;base /&gt;
+&lt;/outbound&gt;
+</code></pre><p>With this configuration:</p>
+<ul>
+<li>Status codes 401, 403, 404 and 503 are returned as-is</li>
+<li>The default passthrough codes 409, 413 and 429 are now converted to 500 (since they&rsquo;re not in the custom list)</li>
+<li>All other error codes are still converted to 500</li>
+</ul>
+<p>This is useful when you have specific error codes that have meaning to your clients and should be returned as-is. For example, you might want to return 401 Unauthorized or 403 Forbidden when the client&rsquo;s credentials are forwarded to the backend and are invalid, but convert other errors to 500.</p>
+<h3 id="testing-the-solution">Testing the Solution</h3>
+<p>The sample includes a .NET test suite that validates all scenarios. Tests call the Error Handling API with specific status codes, the backend echoes them, and assertions verify the expected behaviour. You can run these tests against your own API Management instance. See the <a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/generic-error-handling/README.md#test">test section</a> in the sample implementation for details.</p>
+<h3 id="considerations">Considerations</h3>
+<p>While this solution provides a robust approach to generic error handling, there are a few things to keep in mind:</p>
+<p><strong>Azure Policy Compliance</strong></p>
+<p>The solution does not comply with the Azure policy <a href="https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Fd5448c98-e503-4fdd-bcd2-784960c00d04">API Management policies should inherit parent scope policies using <!-- raw HTML omitted --></a> that ensures that every API Management policy includes the <code>&lt;base /&gt;</code> tag <strong>at the beginning</strong> of each policy section - <code>&lt;inbound&gt;</code>, <code>&lt;outbound&gt;</code>, <code>&lt;backend&gt;</code> and <code>&lt;on-error&gt;</code> - to inherit policies from parent scopes.</p>
+<p>In some scenarios shown above, we&rsquo;ve added conditions and set variables before calling <code>&lt;base /&gt;</code> in the <code>&lt;outbound&gt;</code> section. Omitting <code>&lt;base /&gt;</code> at the beginning can lead to bypassing shared rules such as logging and other critical controls and should not be done lightly.</p>
+<p>In my post <a href="https://ronaldbosma.github.io/blog/2024/09/02/validate-api-management-policies-with-psrule/">Validate API Management policies with PSRule</a>, I describe how you can validate your API Management policies with PSRule. You could create custom rules that verify that the <code>&lt;base /&gt;</code> policy in the <code>&lt;outbound&gt;</code> section is only preceded by certain policies (like <code>set-variable</code>) to make sure important logic on a higher scope isn&rsquo;t bypassed.</p>
+<p><strong>Migrating Existing Environments</strong></p>
+<p>If you&rsquo;re implementing this solution in an existing environment with APIs that already have their own error handling, you might change their behaviour unintentionally. Here&rsquo;s a migration approach:</p>
+<ol>
+<li>
+<p><strong>Add bypass logic</strong> - Wrap the error handling in the global policy in a check so it&rsquo;s only executed if the <code>skipGenericErrorHandling</code> variable is not set to <code>true</code>:</p>
+<pre tabindex="0"><code>&lt;when condition=&quot;@(context.Response.StatusCode &gt;= 400 &amp;&amp; 
+                   !context.Variables.GetValueOrDefault&lt;bool&gt;(&quot;errorHandled&quot;, false) &amp;&amp;
+                   !context.Variables.GetValueOrDefault&lt;bool&gt;(&quot;skipGenericErrorHandling&quot;, false))&quot;&gt;
+</code></pre></li>
+<li>
+<p><strong>Opt out existing APIs</strong> - Set <code>skipGenericErrorHandling</code> to <code>true</code> in every existing API to make sure the generic error handling is skipped and current behaviour is preserved.</p>
+</li>
+<li>
+<p><strong>Migrate incrementally</strong> - For each API:</p>
+<ul>
+<li>Remove the <code>skipGenericErrorHandling</code> variable</li>
+<li>Remove current error handling logic that duplicates the generic behaviour</li>
+<li>Implement custom error handling if needed using the patterns shown above</li>
+<li>Test thoroughly</li>
+</ul>
+</li>
+<li>
+<p><strong>Clean up</strong> - Once all APIs are migrated, remove the <code>skipGenericErrorHandling</code> logic from the global scope.</p>
+</li>
+</ol>
+<p>This approach allows you to migrate APIs one at a time without disrupting existing functionality.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Generic error handling in Azure API Management provides a centralized way to handle errors consistently across all your APIs. By implementing the logic at the global scope, you eliminate duplicate code and increase consistency.</p>
+<p>This solution is flexible enough to allow customization when needed. You can bypass the global error handling logic entirely, transform specific status codes or customize which codes should pass through. This gives you the best of both worlds: consistent defaults with the ability to handle special cases.</p>
+<p>The <a href="https://github.com/ronaldbosma/azure-apim-samples/tree/main/generic-error-handling">sample implementation on GitHub</a> includes working examples of all scenarios, automated tests and Bicep templates for deployment. You can use it as a starting point for implementing generic error handling in your own API Management instance.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2025/11/24/sanitizing-response-headers-in-api-management/">Sanitizing Response Headers in API Management &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
