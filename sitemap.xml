@@ -3,31 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ronaldbosma.github.io/tags/api-management/</loc>
-    <lastmod>2025-12-01T17:15:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure/</loc>
-    <lastmod>2025-12-01T17:15:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-integration-services/</loc>
-    <lastmod>2025-12-01T17:15:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/</loc>
-    <lastmod>2025-12-01T17:15:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2025/12/01/generic-error-handling-in-api-management/</loc>
     <lastmod>2025-12-01T17:15:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2025-12-01T17:15:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/</loc>
-    <lastmod>2025-12-01T17:15:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2025/11/24/sanitizing-response-headers-in-api-management/</loc>
     <lastmod>2025-11-24T09:30:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/security/</loc>
-    <lastmod>2025-11-24T09:30:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-devops/</loc>
     <lastmod>2025-11-10T16:00:00+01:00</lastmod>
@@ -48,7 +48,7 @@
     <lastmod>2025-11-21T12:15:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/series/</loc>
-    <lastmod>2025-11-21T12:15:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/</loc>
     <lastmod>2025-11-03T20:00:00+01:00</lastmod>
@@ -87,7 +87,7 @@
     <lastmod>2025-10-03T09:30:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/bicep/</loc>
-    <lastmod>2025-10-03T09:30:00+02:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/microsoft-graph/</loc>
     <lastmod>2025-10-03T09:30:00+02:00</lastmod>
@@ -108,7 +108,7 @@
     <lastmod>2025-02-21T11:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/infra-as-code/</loc>
-    <lastmod>2025-09-12T10:00:00+02:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/service-bus/</loc>
     <lastmod>2025-02-21T11:00:00+01:00</lastmod>
@@ -144,22 +144,22 @@
     <lastmod>2025-06-08T10:45:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/client-certificates/</loc>
-    <lastmod>2024-11-13T17:45:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/series/client-certificates-and-mtls-in-api-management/</loc>
-    <lastmod>2024-11-13T17:45:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/mtls/</loc>
-    <lastmod>2024-11-13T17:45:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/</loc>
     <lastmod>2024-11-08T11:30:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/application-gateway/</loc>
-    <lastmod>2024-11-13T17:45:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/</loc>
-    <lastmod>2024-11-13T17:45:00+01:00</lastmod>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/</loc>
     <lastmod>2024-11-08T11:30:00+01:00</lastmod>

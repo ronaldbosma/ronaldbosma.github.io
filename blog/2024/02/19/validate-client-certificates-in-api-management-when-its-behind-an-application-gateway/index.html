@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2024-02-19T19:00:00+01:00" />
-<meta property="article:modified_time" content="2024-11-13T17:45:00+01:00" />
+<meta property="article:modified_time" content="2025-12-05T10:45:00+01:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/" />
 
 
@@ -168,6 +168,9 @@
 <p>We&rsquo;ll configure the application gateway with an mTLS listener to validate client certificates and forward them to API Management for further processing. You can find an example of the communication flow in the figure below:</p>
 <p><img src="../../../../../images/apim-client-certificate-series/02-validate-client-certificate-in-apim-behind-agw/diagrams-overview.png" alt=""></p>
 <p>Note that the application gateway terminates the TLS session, as described <a href="https://learn.microsoft.com/en-us/azure/application-gateway/ssl-overview">here</a>. This results in the client certificate not being sent to API Management, which means we can&rsquo;t rely on the options provided in the previous post to validate the client certificate.</p>
+<blockquote>
+<p><strong>UPDATE</strong>: Microsoft announced the general availability of <a href="https://azure.microsoft.com/en-us/updates?id=488990">Azure Application Gateway mTLS passthrough support</a> in November 2025. This post assumes mutual TLS strict mode is used and the client certificate is not automatically forwarded to the backend. See <a href="https://learn.microsoft.com/en-us/azure/application-gateway/mutual-authentication-overview?tabs=powershell#mutual-authentication">Overview of mutual authentication with Application Gateway</a> for more information about the mutual TLS passthrough mode.</p>
+</blockquote>
 <p>This post provides a solution in the form of a step-by-step guide, once again using Bicep to deploy all components to Azure. If you&rsquo;re interested in the final result, you can find it <a href="https://github.com/ronaldbosma/azure-apim-samples/tree/main/apim-client-certificate-series/02-validate-client-certificate-in-apim-behind-agw">here</a>. <em>(Please note that the deployment process may take up to 30-45 minutes to complete.)</em></p>
 <p>The application gateway configuration outlined in this post can also be applied to other scenarios, such as ASP.NET APIs hosted in App Services.</p>
 <h3 id="table-of-contents">Table of Contents</h3>
