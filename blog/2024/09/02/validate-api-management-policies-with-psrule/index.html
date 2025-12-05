@@ -189,7 +189,7 @@
 </ol>
 <h3 id="prerequisites">Prerequisites</h3>
 <p>Follow the instructions on <a href="https://microsoft.github.io/PSRule/v2/install/">Install PSRule</a> to install PSRule. Please note that this blog post is written using version <code>2.9.0</code> of PSRule.</p>
-<p>We&rsquo;ll also need some sample policies to test our rules against. You can download them <a href="https://github.com/ronaldbosma/blog-code-examples/raw/master/validate-apim-policies-with-psrule/start-sample-policies.zip">here</a>.</p>
+<p>We&rsquo;ll also need some sample policies to test our rules against. You can download them <a href="https://github.com/ronaldbosma/azure-apim-samples/raw/refs/heads/main/validate-apim-policies-with-psrule/start-sample-policies.zip">here</a>.</p>
 <p>To get started, create a new root folder and unzip the sample policies into this folder. After unzipping, your folder structure should look like this:</p>
 <pre tabindex="0"><code>/your-root
     /src
@@ -442,8 +442,8 @@ Rule <span style="color:#e6db74">&#34;APIM.Policy.UseBackendEntity&#34;</span> `
         <span style="color:#75715e">&lt;!-- Do something --&gt;</span>
     <span style="color:#f92672">&lt;/when&gt;</span>
 <span style="color:#f92672">&lt;/choose&gt;</span>
-</code></pre></div><p>To test this yourself, download <a href="https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/validate-apim-policies-with-psrule/src/bad/invalid-xml-1.operation.cshtml">invalid-xml-1.operation.cshtml</a> and <a href="https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/validate-apim-policies-with-psrule/src/bad/invalid-xml-2.operation.cshtml">invalid-xml-2.operation.cshtml</a>, and place them in the <code>bad</code> folder.</p>
-<p>Also download <a href="https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/validate-apim-policies-with-psrule/src/good/good.operation.cshtml">good.operation.cshtml</a> and place it in the <code>good</code> folder. This file includes the suggested solutions for the invalid XML syntax.</p>
+</code></pre></div><p>To test this yourself, download <a href="https://raw.githubusercontent.com/ronaldbosma/azure-apim-samples/main/validate-apim-policies-with-psrule/src/bad/invalid-xml-1.operation.cshtml">invalid-xml-1.operation.cshtml</a> and <a href="https://raw.githubusercontent.com/ronaldbosma/azure-apim-samples/main/validate-apim-policies-with-psrule/src/bad/invalid-xml-2.operation.cshtml">invalid-xml-2.operation.cshtml</a>, and place them in the <code>bad</code> folder.</p>
+<p>Also download <a href="https://raw.githubusercontent.com/ronaldbosma/azure-apim-samples/main/validate-apim-policies-with-psrule/src/good/good.operation.cshtml">good.operation.cshtml</a> and place it in the <code>good</code> folder. This file includes the suggested solutions for the invalid XML syntax.</p>
 <p>When you run PSRule again, you might initially think everything is working because you see output for the <code>APIM.Policy.FileExtension</code> rule. However, if you scroll to the top of the output, you&rsquo;ll find an error indicating that a policy file with invalid XML could not be loaded:</p>
 <pre tabindex="0"><code>Invoke-PSRule: Cannot convert value &quot;&lt;policies&gt;
     &lt;inbound&gt;
@@ -590,7 +590,7 @@ Rule <span style="color:#e6db74">&#39;Azure.APIM.PolicyBase&#39;</span> -Ref <sp
 <p>The choice between the approach described in this post and using PSRule for Azure depends on your specific needs. Note that you can also use the method outlined here to validate API Management policies and leverage PSRule for Azure for Bicep or ARM configurations.</p>
 <h3 id="conclusion">Conclusion</h3>
 <p>PSRule is a powerful tool for managing the quality of your Azure API Management policies. By creating custom rules, you can validate your policies against your own standards.</p>
-<p>You can find a fully functional example <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/validate-apim-policies-with-psrule">here</a>. This sample includes additional rules and sample policies for further exploration, along with automated tests for each rule, which I discuss in <a href="/blog/2024/09/26/testing-psrule-rules-for-api-management-policies-with-pester/">Testing PSRule Rules for API Management Policies with Pester</a>.</p>
+<p>You can find a fully functional example <a href="https://github.com/ronaldbosma/azure-apim-samples/tree/main/validate-apim-policies-with-psrule">here</a>. This sample includes additional rules and sample policies for further exploration, along with automated tests for each rule, which I discuss in <a href="/blog/2024/09/26/testing-psrule-rules-for-api-management-policies-with-pester/">Testing PSRule Rules for API Management Policies with Pester</a>.</p>
 
                     </div>
                     
