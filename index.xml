@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 15 Dec 2025 16:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 06 Jan 2026 14:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rate Limiting in Azure API Management</title>
+      <link>https://ronaldbosma.github.io/blog/2026/01/06/rate-limiting-in-azure-api-management/</link>
+      <pubDate>Tue, 06 Jan 2026 14:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2026/01/06/rate-limiting-in-azure-api-management/</guid>
+      <description>Learn how to use Azure API Management&amp;rsquo;s rate-limit and rate-limit-by-key policies to protect backends from overwhelming traffic and fairly distribute capacity among clients. Includes practical examples, monitoring guidance and key considerations for different scenarios.</description>
+    </item>
+    
     <item>
       <title>Catch-All API in Azure API Management: Forward Any Request</title>
       <link>https://ronaldbosma.github.io/blog/2025/12/15/catch-all-api-in-azure-api-management-forward-any-request/</link>
