@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/01/06/rate-limiting-in-azure-api-management/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/01/06/rate-limiting-in-azure-api-management/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-01-06T14:00:00+01:00" />
-<meta property="article:modified_time" content="2026-01-06T14:00:00+01:00" />
+<meta property="article:modified_time" content="2026-01-06T16:00:00+01:00" />
 
 
 
@@ -160,6 +160,7 @@
 <ul>
 <li><a href="#rate-limit-per-subscription">Rate Limit Per Subscription</a></li>
 <li><a href="#rate-limit-per-key">Rate Limit Per Key</a></li>
+<li><a href="#using-named-values-for-configuration">Using Named Values for Configuration</a></li>
 <li><a href="#rate-limit-responses">Rate Limit Responses</a></li>
 <li><a href="#what-rate-limit-to-apply">What Rate Limit to Apply?</a></li>
 <li><a href="#considerations">Considerations</a></li>
@@ -217,7 +218,9 @@
 </code></pre><p>The delimiter <code>;</code> is safe to use because it&rsquo;s not allowed in API and operation IDs.</p>
 <p>Avoid using only the operation ID for the key. Operations with the same ID in different APIs will share the rate limit, which is almost never what you want.</p>
 <p>By including the <code>context.Subscription.Id</code> in the key, you can define a rate limit per subscription similar to what <code>rate-limit</code> does. Other identifiers that identify a client can also be included, such as values from a JWT token or custom headers.</p>
-<p>Unlike the <code>rate-limit</code> policy, the <code>rate-limit-by-key</code> policy is allowed on the global and workspace scope, which can be useful for setting cross-cutting rate limits. This policy is however, not supported in the Consumption tier.</p>
+<p>Unlike the <code>rate-limit</code> policy, the <code>rate-limit-by-key</code> policy is allowed on the global and workspace scope, which can be useful for setting cross-cutting rate limits. 
+You can also use the <code>rate-limit-by-key</code> policy multiple times within the same policy definition. For example, you can define a rate limit for the entire API and another rate limit per operation at the API scope, as I&rsquo;ve done <a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/rate-limiting/rate-limit-by-key-api/api.xml">here</a>.
+This policy is, however, not supported in the Consumption tier.</p>
 <h4 id="additional-attributes">Additional Attributes</h4>
 <p>The <code>rate-limit-by-key</code> policy has two additional attributes that are not available in the <code>rate-limit</code> policy:</p>
 <ul>
@@ -225,6 +228,11 @@
 <li><code>increment-count</code>: The number by which the counter is increased per request. Policy expressions are allowed but will postpone evaluation and counter increment to end of outbound pipeline</li>
 </ul>
 <p>These attributes provide more control over how requests are counted. For example, you can use <code>increment-condition</code> to only count requests that meet certain criteria or use <code>increment-count</code> to give different weights to different types of requests.</p>
+<h3 id="using-named-values-for-configuration">Using Named Values for Configuration</h3>
+<p>For both policies, it&rsquo;s possible to use named values to configure the calls and renewal period, as long as they have an integer value. Here&rsquo;s an example:</p>
+<pre tabindex="0"><code>&lt;rate-limit calls=&quot;{{rate-limit-calls}}&quot; renewal-period=&quot;{{rate-limit-renewal-period}}&quot; /&gt;
+</code></pre><p>This can be useful if you need to apply different rate limits per environment, or if you want to use the same values in multiple policies and prefer to manage them centrally.</p>
+<p>Note that once you use named values in the <code>calls</code> and <code>renewal-period</code> attributes, you can only set those named values to integer values. Changing them to something else will be blocked by API Management.</p>
 <h3 id="rate-limit-responses">Rate Limit Responses</h3>
 <p>When a rate limit is hit, API Management returns a <code>429 Too Many Requests</code> status code with the following default response body:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
