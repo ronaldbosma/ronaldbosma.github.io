@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Track Availability in Application Insights using Standard Test | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/cover.png"/>
+<meta name="twitter:title" content="Track Availability in Application Insights using Standard Test"/>
+<meta name="twitter:description" content="When connecting to external systems in integration projects, availability tests help you monitor system uptime, verify security measures are up to date and confirm systems can be reached. This post shows you how to create Application Insights standard tests through Bicep to automate your availability monitoring with infrastructure-as-code."/>
+
+	<meta property="og:title" content="Track Availability in Application Insights using Standard Test" />
+<meta property="og:description" content="When connecting to external systems in integration projects, availability tests help you monitor system uptime, verify security measures are up to date and confirm systems can be reached. This post shows you how to create Application Insights standard tests through Bicep to automate your availability monitoring with infrastructure-as-code." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-01-12T08:45:00+01:00" />
+<meta property="article:modified_time" content="2026-01-12T08:45:00+01:00" />
+
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Track%20Availability%20in%20Application%20Insights%20using%20Standard%20Test&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f01%2f12%2ftrack-availability-in-application-insights-using-standard-test%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f01%2f12%2ftrack-availability-in-application-insights-using-standard-test%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f01%2f12%2ftrack-availability-in-application-insights-using-standard-test%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Jan 12, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    11 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Track Availability in Application Insights using Standard Test</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working on multiple integration projects in the last couple of years using Azure Integration Services. When connecting to an external system, one of the first things I do is create an availability test. This helps me monitor if the system is up, verify that all security measures are in place and up to date (like client secrets or certificates), and verify that the system can be reached.</p>
+<p>Most of the time there are VNets, Network Security Groups, Azure Firewalls and IP whitelists between the integration resources and the backend system. I&rsquo;ve had multiple occasions where somebody cleaned up the infrastructure and removed too much. The availability test quickly identified this issue, making it easier to troubleshoot.</p>
+<p>In this post, I&rsquo;ll show you how to track availability in Application Insights using a standard test. While Microsoft&rsquo;s documentation on <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/app/availability?tabs=standard">Application Insights availability tests</a> gives a good overview of creating a standard test via the portal, I&rsquo;ll focus on creating one through Bicep.</p>
+<p>This is the first post in a series about tracking availability in Application Insights:</p>
+<ul>
+<li><strong>Track Availability in Application Insights using Standard Test - <em>this post</em></strong></li>
+<li>Track Availability in Application Insights using .NET (Azure Function) - <em>coming soon</em></li>
+<li>Track Availability in Application Insights using Logic App workflow - <em>coming soon</em></li>
+</ul>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#solution-overview">Solution Overview</a></li>
+<li><a href="#creating-a-standard-test-with-bicep">Creating a Standard Test with Bicep</a></li>
+<li><a href="#ssl-certificate-validation">SSL Certificate Validation</a></li>
+<li><a href="#viewing-availability-test-results">Viewing Availability Test Results</a></li>
+<li><a href="#setting-up-alerts">Setting Up Alerts</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h2 id="solution-overview">Solution Overview</h2>
+<p>The solution includes the following components:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-standard-test/diagrams-overview-standard-test.png" alt="Overview"></p>
+<ul>
+<li><strong>Standard Test (webtest)</strong>: A standard test that checks the availability of the API</li>
+<li><strong>API</strong>: Represents a backend system for which we want to track availability. It randomly returns a 200 OK or 503 Service Unavailable response based on a configurable &lsquo;approximate failure percentage&rsquo;</li>
+<li><strong>Application Insights</strong>: Contains the standard test and shows the availability test results</li>
+</ul>
+<p>While this example uses an API on API Management, the same approach applies when calling any other backend system for which you want to track availability.</p>
+<p>To make deployment easier, I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template: <a href="https://github.com/ronaldbosma/track-availability-in-app-insights">Track Availability in Application Insights</a>. The template demonstrates three scenarios for tracking availability: standard test (webtest), .NET Azure Function and Logic Apps workflow. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/track-availability-in-app-insights#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on the standard test.</p>
+<h2 id="creating-a-standard-test-with-bicep">Creating a Standard Test with Bicep</h2>
+<p>We can use the <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/webtests?pivots=deployment-language-bicep">Microsoft.Insights/webtests</a> resource to create a standard test in Application Insights. Here&rsquo;s an example:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = {
+  name: availabilityTestName
+  location: location
+  tags: {
+    'hidden-link:${appInsights.id}': 'Resource'
+  }
+
+  properties: {
+    Name: 'Standard Test - Backend API Status'
+    Description: 'Status of the backend API tested from a standard test (webtest)'
+    SyntheticMonitorId: 'Standard Test - API Management SSL Certificate Check'
+
+    Kind: 'standard'
+    Enabled: true
+    RetryEnabled: false
+
+    Frequency: 300
+
+    Locations: [
+      {
+        Id: 'emea-nl-ams-azr' // West Europe
+      }
+      {
+        Id: 'emea-gb-db3-azr' // North Europe
+      }
+      {
+        Id: 'emea-ru-msa-edge' // UK South
+      }
+      {
+        Id: 'emea-fr-pra-edge' // France Central
+      }
+      {
+        Id: 'emea-ch-zrh-edge' // France South
+      }
+    ]
+
+    Request: {
+      HttpVerb: 'GET'
+      RequestUrl: 'https://&lt;your-api-management-service-name&gt;.azure-api.net/backend/status'
+    }
+
+    ValidationRules: {
+      ExpectedHttpStatusCode: 200
+      IgnoreHttpStatusCode: false
+      SSLCheck: false
+    }
+  }
+}
+</code></pre><p>Let&rsquo;s break down the key configuration options:</p>
+<p>The <code>Name</code> property is what you&rsquo;ll see in the availability test overview in the Azure portal. The <code>SyntheticMonitorId</code> is the unique ID of this test and is typically the same value as the <code>Name</code> property.</p>
+<p>The <code>hidden-link</code> tag in the tags section links the web test to the Application Insights resource, which allows Application Insights to display the test results.</p>
+<p>The <code>Frequency</code> property controls how often the test runs. A frequency of 300 means the test executes every 5 minutes from all configured locations. This is an important distinction: if you have 5 locations configured, the test will run 5 times every 5 minutes, not once every 5 minutes total. The tests from different locations don&rsquo;t run at exactly the same time but are distributed across the 5-minute window. They also aren&rsquo;t distributed evenly, so there might not be a test execution every minute.</p>
+<p>The <code>Locations</code> array specifies in which Azure regions the test will run. You can find the complete list of available locations in the <a href="https://learn.microsoft.com/en-us/previous-versions/azure/azure-monitor/app/monitor-web-app-availability#location-population-tags">Microsoft documentation</a>. I typically configure multiple locations to get better coverage and to distinguish between regional issues and actual backend failures. If you expect clients from specific regions, make sure to include those regions in your test locations.</p>
+<p>The <code>Request</code> section defines what HTTP request to make. In this example, I&rsquo;m calling a status endpoint on API Management, but you can call any publicly accessible endpoint.</p>
+<p>The <code>ValidationRules</code> section specifies what constitutes a successful test. In this case, I&rsquo;m expecting a 200 status code. The <code>IgnoreHttpStatusCode</code> property is set to false, meaning the test will fail if it receives any status code other than 200.</p>
+<p>I&rsquo;ve set <code>RetryEnabled</code> to false for this demo to reduce the number of failed calls and make the test results clearer. In production scenarios, you might want to enable retries to avoid false positives from transient network issues.</p>
+<p>You can find the complete implementation in the <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/infra/modules/application/availability-tests.bicep">availability-tests.bicep</a> file in the project repository.</p>
+<h2 id="ssl-certificate-validation">SSL Certificate Validation</h2>
+<p>You&rsquo;ll notice that <code>SSLCheck</code> is set to false in the example above. I have two reasons for this approach.</p>
+<p>First, I don&rsquo;t check the SSL certificate of backends I&rsquo;m not responsible for.</p>
+<p>Second, in most integration projects Azure API Management is used as the API Gateway and I usually also create availability tests for API Management itself. In that case, I create two separate tests:</p>
+<ol>
+<li>A test that checks the availability of API Management using the standard status endpoint <code>/status-0123456789abcdef</code> (or <code>/internal-status-0123456789abcdef</code> for the Consumption tier) with <code>SSLCheck</code> disabled</li>
+<li>A second test on the same endpoint specifically to verify the SSL server certificate of API Management (or e.g. an Application Gateway if that&rsquo;s in front of API Management)</li>
+</ol>
+<p>I split this into two tests because the test with SSL check enabled will fail if the certificate is about to expire. When that happens, you need to drill down into the availability test results to verify whether the cause is certificate expiration or actual downtime of API Management. By separating these concerns, you can quickly identify if there&rsquo;s a real availability issue or just a certificate warning.</p>
+<p>Here&rsquo;s an example of a test with SSL validation enabled:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource sslValidationTest 'Microsoft.Insights/webtests@2022-06-15' = {
+  name: sslTestName
+  location: location
+  tags: {
+    'hidden-link:${appInsights.id}': 'Resource'
+  }
+
+  properties: {
+    Name: 'Standard Test - SSL Certificate Validation'
+    Description: 'Validates the SSL certificate of API Management'
+    SyntheticMonitorId: 'Standard Test - SSL Certificate Validation'
+
+    Kind: 'standard'
+    Enabled: true
+    RetryEnabled: false
+
+    Frequency: 900
+
+    Locations: [
+      {
+        Id: 'emea-nl-ams-azr' // West Europe
+      }
+    ]
+
+    Request: {
+      HttpVerb: 'GET'
+      RequestUrl: 'https://&lt;your-api-management-service-name&gt;.azure-api.net/status-0123456789abcdef'
+    }
+
+    ValidationRules: {
+      ExpectedHttpStatusCode: 200
+      IgnoreHttpStatusCode: false
+      SSLCheck: true
+      SSLCertRemainingLifetimeCheck: 30
+    }
+  }
+}
+</code></pre><p>For the SSL check, in a real-world scenario I would set the frequency to the maximum of 900 (15 minutes) and execute the test from a single location. We don&rsquo;t need to be notified the instant that the certificate expires within 30 days, and this approach minimizes costs. However, for demo purposes I set the frequency to 300 (5 minutes) and configured multiple locations in <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/infra/modules/application/availability-tests.bicep">my sample</a>.</p>
+<h2 id="viewing-availability-test-results">Viewing Availability Test Results</h2>
+<p>After deploying the availability tests, you can view the results in several places within the Azure portal.</p>
+<p>The main availability overview shows all your tests with their success rates. Navigate to your Application Insights resource and select &ldquo;Availability&rdquo; from the left menu. You&rsquo;ll see a timeline showing the availability percentage and a list of all configured tests:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-standard-test/availability-test-results.png" alt="Availability Overview"></p>
+<p>Expand on any test to see more detailed results, including which locations succeeded or failed:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-standard-test/availability-test-details.png" alt="Test Details"></p>
+<p>To view individual test run details, select the corresponding test, click on either <code>Successful</code> or <code>Failed</code>, and then click on an availability test result in the right pane to open the end-to-end transaction details:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-standard-test/standard-test-end-to-end-transaction-details.png" alt="Test Run Details"></p>
+<p>You can also query the results yourself using Kusto Query Language (KQL). The availability test results are stored in the <code>availabilityResults</code> table in Application Insights and the <code>AppAvailabilityResults</code> table in Log Analytics.</p>
+<h2 id="setting-up-alerts">Setting Up Alerts</h2>
+<p>To act on a failed availability test, you can create an alert that sends an email to your team or triggers other actions.</p>
+<p>First, create an action group using the <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/actiongroups?pivots=deployment-language-bicep">Microsoft.Insights/actionGroups</a> that defines what happens when an alert is triggered. In this example, I&rsquo;ll configure it to send an email:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource actionGroup 'Microsoft.Insights/actionGroups@2023-01-01' = {
+  name: actionGroupName
+  location: 'Global'
+
+  properties: {
+    enabled: true
+    groupShortName: 'alerts'
+    emailReceivers: [
+      {      
+        name: 'your-name'
+        emailAddress: 'your-email@example.com'
+        useCommonAlertSchema: true      
+      }
+    ]
+  }
+}
+</code></pre><p>The action group can include multiple types of receivers: email, SMS, Azure Functions, Logic Apps, webhooks and more. The <code>useCommonAlertSchema</code> property ensures the alert payload follows a consistent format across different alert types.</p>
+<p>Next, create a metric alert using the <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/metricalerts?pivots=deployment-language-bicep">Microsoft.Insights/metricAlerts</a> resource that triggers when the availability test fails:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource failedAvailabilityTestAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: failedAvailabilityTestAlertName
+  location: 'global'
+
+  properties: {
+    description: 'Alert that triggers when backend status availability test fails'
+    severity: 1
+    enabled: true
+    autoMitigate: true
+
+    scopes: [
+      appInsights.id
+      availabilityTest.id
+    ]
+
+    actions: [
+      {
+        actionGroupId: actionGroup.id
+      }
+    ]
+
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT5M'
+
+    criteria: {
+      webTestId: availabilityTest.id
+      componentId: appInsights.id
+      failedLocationCount: 1
+      'odata.type': 'Microsoft.Azure.Monitor.WebtestLocationAvailabilityCriteria'
+    }
+  }
+}
+</code></pre><p>The key properties to understand:</p>
+<p>The <code>name</code> of the alert can have white spaces so you can give the alert a descriptive name. I usually include some details about the environment, like the app insight name, to make it easier to identify the alert later.</p>
+<p>The <code>severity</code> property ranges from 0 (critical) to 4 (informational). I&rsquo;ve set it to 1 (error) because availability issues typically require prompt attention.</p>
+<p>The <code>autoMitigate</code> property automatically resolves the alert when the condition is no longer true. When the availability test starts succeeding again, the alert will resolve itself.</p>
+<p>The <code>scopes</code> array contains the list of resource id&rsquo;s that this metric alert is scoped to and includes Application Insights and the specific web test.</p>
+<p>The <code>evaluationFrequency</code> and <code>windowSize</code> properties control how often the alert rule runs and what time window it looks at. In this case, the alert evaluates every 5 minutes and looks at the last 5 minutes of data.</p>
+<p>The <code>failedLocationCount</code> in the criteria section determines how many locations must fail before the alert triggers. Setting it to 1 means the alert fires if any single location reports a failure. In production, you might want to set this to a higher number to avoid false positives from transient issues in a single region.</p>
+<p>This example creates an alert for a specific test, which means you need to create an alert per test. In the next blog post, I&rsquo;ll show how to create a single alert that covers all availability tests.</p>
+<p>Once configured, you can view fired alerts in the Azure portal by navigating to your Application Insights resource and selecting &ldquo;Alerts&rdquo; from the left menu. You&rsquo;ll see a list of all alerts with their current state:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-standard-test/alerts-overview.png" alt="Alerts Overview"></p>
+<p>When an alert fires, it will appear in this list and you&rsquo;ll receive an email notification (or whatever action you configured in the action group). The alert will automatically resolve when the availability test succeeds again.</p>
+<h2 id="considerations">Considerations</h2>
+<p>While standard tests are useful for basic availability monitoring, there are some restrictions to consider:</p>
+<p>The standard test doesn&rsquo;t support multiple steps, so you can&rsquo;t use it in scenarios where you for example first need to retrieve an access token. If you need to authenticate with OAuth or another multi-step authentication flow, you&rsquo;ll need to use custom &lsquo;TrackAvailability&rsquo; tests, which I&rsquo;ll cover in the next posts in this series.</p>
+<p>Standard tests don&rsquo;t support mutual TLS (mTLS) either. If your backend requires client certificates for authentication, you&rsquo;ll need to use a custom availability test as well.</p>
+<p>You can add headers to standard tests, like an API key, but you can&rsquo;t refer to a secret in a Key Vault. This means the API key will be stored in plain text in the standard test configuration. For scenarios requiring secret management, custom availability tests provide better security.</p>
+<p>The tests run on shared Azure resources and can&rsquo;t access resources that aren&rsquo;t exposed to the internet. If your backend is behind a private network, you&rsquo;ll need to deploy custom availability tests within your VNet.</p>
+<p>From a cost perspective, a web test costs €0.0005 per execution, which seems cheap. But if you execute it every minute, a single test will cost a bit more than €20 per month. If you have 10 tests running every minute, you&rsquo;ll spend over €200 per month, and you&rsquo;ll most likely deploy them into multiple environments. So it&rsquo;s important to carefully consider the frequency and number of locations from which you want to execute these tests. I usually have the tests execute less often in dev &amp; test environments. I also only add a few standard tests and execute the rest from e.g. Azure Functions with a service plan, where the additional cost per test is lower (mostly network traffic and logging).</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Deploying availability tests in Application Insights using Bicep provides several benefits:</p>
+<ul>
+<li><strong>Infrastructure as code</strong>: Reproduce your monitoring configuration across environments</li>
+<li><strong>Early problem detection</strong>: Catch connectivity and security issues before they impact production</li>
+<li><strong>Cost-effective monitoring</strong>: Standard tests provide basic availability monitoring at a low cost</li>
+</ul>
+<p>Standard tests work well for simple HTTP(S) availability checks of publicly accessible endpoints. For more complex scenarios involving authentication, private networks or multi-step flows, you&rsquo;ll need custom availability tests, which I&rsquo;ll cover in the upcoming posts in this series.</p>
+<p>You can find the complete working example in my <a href="https://github.com/ronaldbosma/track-availability-in-app-insights">track-availability-in-app-insights</a> repository, which includes detailed deployment instructions and examples for all three availability test approaches.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/application-insights">Application Insights</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-monitor">Azure Monitor</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/01/06/rate-limiting-in-azure-api-management/">Rate Limiting in Azure API Management &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

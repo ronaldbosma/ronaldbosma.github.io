@@ -7,7 +7,52 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 06 Jan 2026 14:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 12 Jan 2026 08:45:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Application Insights</title>
+      <link>https://ronaldbosma.github.io/tags/application-insights/</link>
+      <pubDate>Mon, 12 Jan 2026 08:45:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/application-insights/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure</title>
+      <link>https://ronaldbosma.github.io/tags/azure/</link>
+      <pubDate>Mon, 12 Jan 2026 08:45:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Integration Services</title>
+      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
+      <pubDate>Mon, 12 Jan 2026 08:45:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Monitor</title>
+      <link>https://ronaldbosma.github.io/tags/azure-monitor/</link>
+      <pubDate>Mon, 12 Jan 2026 08:45:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-monitor/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bicep</title>
+      <link>https://ronaldbosma.github.io/tags/bicep/</link>
+      <pubDate>Mon, 12 Jan 2026 08:45:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>API Management</title>
       <link>https://ronaldbosma.github.io/tags/api-management/</link>
@@ -18,38 +63,11 @@
     </item>
     
     <item>
-      <title>Azure</title>
-      <link>https://ronaldbosma.github.io/tags/azure/</link>
-      <pubDate>Tue, 06 Jan 2026 14:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Azure Integration Services</title>
-      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
-      <pubDate>Tue, 06 Jan 2026 14:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Security</title>
       <link>https://ronaldbosma.github.io/tags/security/</link>
       <pubDate>Tue, 06 Jan 2026 14:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/security/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bicep</title>
-      <link>https://ronaldbosma.github.io/tags/bicep/</link>
-      <pubDate>Mon, 15 Dec 2025 16:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
       <description></description>
     </item>
     
@@ -284,15 +302,6 @@
       <pubDate>Thu, 11 May 2023 20:45:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/specification-by-example/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Application Insights</title>
-      <link>https://ronaldbosma.github.io/tags/application-insights/</link>
-      <pubDate>Fri, 10 Mar 2023 15:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/application-insights/</guid>
       <description></description>
     </item>
     
