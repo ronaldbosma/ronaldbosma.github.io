@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Track Availability in Application Insights using .NET | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/cover.png"/>
+<meta name="twitter:title" content="Track Availability in Application Insights using .NET"/>
+<meta name="twitter:description" content="Standard availability tests in Application Insights have limitations like no multi-step authentication, no mTLS support and no access to private networks. This post shows you how to create custom availability tests using .NET and Azure Functions to overcome these restrictions while gaining full control over your monitoring logic."/>
+
+	<meta property="og:title" content="Track Availability in Application Insights using .NET" />
+<meta property="og:description" content="Standard availability tests in Application Insights have limitations like no multi-step authentication, no mTLS support and no access to private networks. This post shows you how to create custom availability tests using .NET and Azure Functions to overcome these restrictions while gaining full control over your monitoring logic." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-01-19T09:00:00+01:00" />
+<meta property="article:modified_time" content="2026-01-19T09:00:00+01:00" />
+<meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Track%20Availability%20in%20Application%20Insights%20using%20.NET&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f01%2f19%2ftrack-availability-in-application-insights-using-.net%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f01%2f19%2ftrack-availability-in-application-insights-using-.net%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f01%2f19%2ftrack-availability-in-application-insights-using-.net%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Jan 19, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    13 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Track Availability in Application Insights using .NET</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>In my <a href="/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/">previous post</a>, I showed you how to create standard availability tests in Application Insights. While these tests work well for basic HTTP(S) checks of publicly accessible endpoints, they have some restrictions that can limit their usefulness in real-world scenarios.</p>
+<p>Standard tests don&rsquo;t support multiple steps, so you can&rsquo;t use them when you e.g. first need to retrieve an access token before calling your backend. They don&rsquo;t support mutual TLS (mTLS) either, which is a problem if your backend requires client certificates for authentication. You also can&rsquo;t refer to secrets in Key Vault and standard tests can&rsquo;t access resources behind private networks since the tests run on shared Azure resources.</p>
+<p>This post shows you how to create custom TrackAvailability tests using .NET that run as Azure Functions. This approach gives you full control over the test logic and enables scenarios that aren&rsquo;t possible with standard tests. An example of this type of test is shown in Microsoft&rsquo;s documentation on <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/app/availability?tabs=track">Application Insights availability tests</a>, but I&rsquo;ve created some generic classes to make it easier to implement new tests. While I&rsquo;ll use Azure Functions in the examples, you can host these tests on other platforms like Azure App Service, Container Instances or Kubernetes as well.</p>
+<p>This is the second post in a series about tracking availability in Application Insights:</p>
+<ul>
+<li><a href="/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/">Track Availability in Application Insights using Standard Test</a></li>
+<li><strong>Track Availability in Application Insights using .NET (Azure Function) - <em>this post</em></strong></li>
+<li>Track Availability in Application Insights using Logic App workflow - <em>coming soon</em></li>
+</ul>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#solution-overview">Solution Overview</a></li>
+<li><a href="#basic-test">Basic Test</a></li>
+<li><a href="#generic-availability-test-implementation">Generic Availability Test Implementation</a></li>
+<li><a href="#http-get-request-test">HTTP GET Request Test</a></li>
+<li><a href="#viewing-availability-test-results">Viewing Availability Test Results</a></li>
+<li><a href="#setting-up-alerts">Setting Up Alerts</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h2 id="solution-overview">Solution Overview</h2>
+<p>The solution includes the following components:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-dotnet/diagrams-overview-azure-function.png" alt="Overview"></p>
+<ul>
+<li><strong>Azure Function</strong>: A timer-triggered function that executes the availability test and tracks the result in Application Insights</li>
+<li><strong>API</strong>: Represents a backend system for which we want to track availability. It randomly returns a 200 OK or 503 Service Unavailable response based on a configurable &lsquo;approximate failure percentage&rsquo;</li>
+<li><strong>Application Insights</strong>: Receives the custom availability telemetry and shows the test results</li>
+</ul>
+<p>While this example uses an API on API Management, the same approach applies when calling any other backend system for which you want to track availability.</p>
+<p>To make deployment easier, I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template: <a href="https://github.com/ronaldbosma/track-availability-in-app-insights">Track Availability in Application Insights</a>. The template demonstrates three scenarios for tracking availability: standard test (webtest), .NET Azure Function and Logic Apps workflow. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/track-availability-in-app-insights#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on the .NET implementation.</p>
+<p>As mentioned in the introduction, you can host these tests on other platforms besides Azure Functions. The core tracking logic remains the same regardless of the hosting environment.</p>
+<h2 id="basic-test">Basic Test</h2>
+<p>Let&rsquo;s start with a basic example of how to track availability in Application Insights using .NET:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">TelemetryConfiguration telemetryConfiguration = <span style="color:#66d9ef">new</span>()
+{
+    ConnectionString = Environment.GetEnvironmentVariable(<span style="color:#e6db74">&#34;APPLICATIONINSIGHTS_CONNECTION_STRING&#34;</span>),
+    TelemetryChannel = <span style="color:#66d9ef">new</span> InMemoryChannel()
+};
+TelemetryClient telemetryClient = <span style="color:#66d9ef">new</span> TelemetryClient(telemetryConfiguration);
+
+AvailabilityTelemetry availability = <span style="color:#66d9ef">new</span>()
+{
+    Name = <span style="color:#e6db74">&#34;Sample Test&#34;</span>,
+    RunLocation = Environment.GetEnvironmentVariable(<span style="color:#e6db74">&#34;REGION_NAME&#34;</span>),
+    Success = <span style="color:#66d9ef">false</span>
+};
+
+<span style="color:#66d9ef">try</span>
+{
+    <span style="color:#75715e">// Check availability
+</span><span style="color:#75715e"></span>
+    availability.Success = <span style="color:#66d9ef">true</span>;
+}
+<span style="color:#66d9ef">catch</span> (Exception ex)
+{
+    availability.Message = ex.Message;
+    <span style="color:#66d9ef">throw</span>;
+}
+<span style="color:#66d9ef">finally</span>
+{
+    telemetryClient.TrackAvailability(availability);
+    telemetryClient.Flush();
+}
+</code></pre></div><p>This example shows the core concept: initialize the <code>TelemetryClient</code>, create an <code>AvailabilityTelemetry</code> object, perform your check in a try-catch block and track the result with <code>TrackAvailability()</code>. However, looking at the sample in the <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/app/availability?tabs=track#add-and-edit-code-in-the-app-service-editor">Application Insights availability tests documentation</a>, this basic example is missing some important pieces. It doesn&rsquo;t set the start time and duration of the test. It also doesn&rsquo;t configure anything for end-to-end tracing where the availability test results and HTTP requests are correlated in Application Insights.</p>
+<p>Let&rsquo;s improve this implementation and make it reusable.</p>
+<h2 id="generic-availability-test-implementation">Generic Availability Test Implementation</h2>
+<p>Most availability tests follow the same structure: perform a check and publish the results to Application Insights. To avoid repeating this boilerplate code, I&rsquo;ve created generic classes that make it easier to add new tests.</p>
+<p>The following class diagram shows the structure:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-dotnet/diagrams-functions-class-diagram.png" alt="Class Diagram"></p>
+<p>The <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/src/functionApp/TrackAvailabilityInAppInsights.FunctionApp/AvailabilityTests/AvailabilityTest.cs">AvailabilityTest</a> class handles the core logic for tracking availability. It accepts a function that performs the actual availability check, executes it within the proper telemetry context and publishes the result to Application Insights:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e">/// Generic class for availability tests.
+</span><span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e">/// &lt;param name=&#34;name&#34;&gt;The name of the availability test.&lt;/param&gt;
+</span><span style="color:#75715e">/// &lt;param name=&#34;checkAvailability&#34;&gt;The function that checks the availability.&lt;/param&gt;
+</span><span style="color:#75715e">/// &lt;param name=&#34;telemetryClient&#34;&gt;The telemetry client to publish the result to.&lt;/param&gt;
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AvailabilityTest</span>(
+    <span style="color:#66d9ef">string</span> name, 
+    Func&lt;Task&gt; checkAvailabilityAsync, 
+    TelemetryClient telemetryClient
+) : IAvailabilityTest
+{
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> Task ExecuteAsync()
+	{
+		AvailabilityTelemetry availability = <span style="color:#66d9ef">new</span>()
+		{
+			Name = name,
+			RunLocation = Environment.GetEnvironmentVariable(<span style="color:#e6db74">&#34;REGION_NAME&#34;</span>) ?? <span style="color:#e6db74">&#34;Unknown&#34;</span>,
+			Success = <span style="color:#66d9ef">false</span>,
+			<span style="color:#75715e">// Sets the start time of availability test
+</span><span style="color:#75715e"></span>			Timestamp = DateTimeOffset.UtcNow
+		};
+
+		Stopwatch stopwatch = <span style="color:#66d9ef">new</span>();
+		stopwatch.Start();
+
+		<span style="color:#66d9ef">try</span>
+		{
+			<span style="color:#75715e">// Create activity to enable distributed tracing
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// and correlation of the telemetry in App Insights
+</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">using</span> (Activity activity = <span style="color:#66d9ef">new</span>(<span style="color:#e6db74">&#34;AvailabilityContext&#34;</span>))
+			{
+				activity.Start();
+
+				<span style="color:#75715e">// Connect the availability telemetry to the logging activity
+</span><span style="color:#75715e"></span>				availability.Id = activity.SpanId.ToString();
+				availability.Context.Operation.ParentId = activity.ParentSpanId.ToString();
+				availability.Context.Operation.Id = activity.RootId;
+
+				<span style="color:#66d9ef">await</span> checkAvailabilityAsync();
+			}
+
+			availability.Success = <span style="color:#66d9ef">true</span>;
+		}
+		<span style="color:#66d9ef">catch</span> (Exception ex)
+		{
+			availability.Message = ex.Message;
+			availability.Properties.Add(<span style="color:#e6db74">&#34;Exception&#34;</span>, ex.ToString());
+			<span style="color:#66d9ef">throw</span>;
+		}
+		<span style="color:#66d9ef">finally</span>
+		{
+			stopwatch.Stop();
+			availability.Duration = stopwatch.Elapsed;
+
+			telemetryClient.TrackAvailability(availability);
+			telemetryClient.Flush();
+		}
+	}
+}
+</code></pre></div><p>This implementation addresses the shortcomings of the basic example. It uses a <code>Stopwatch</code> to measure the test duration and sets the timestamp to capture when the test started. It also uses an <code>Activity</code> to enable distributed tracing. By creating an activity and linking it to the availability telemetry through the operation context properties, Application Insights can correlate the availability test results with any HTTP requests or other telemetry generated during the test execution. This gives you the end-to-end transaction view that&rsquo;s essential for troubleshooting failures.</p>
+<blockquote>
+<p>In the <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/app/availability?tabs=track#add-and-edit-code-in-the-app-service-editor">official documentation</a> the <code>availability.Timestamp</code> is set in the finally block, after the check has completed. However, this records the end time of the test rather than the start time, which messes up the timeline in the end-to-end transaction details in App Insights. By setting it at the beginning of the <code>ExecuteAsync</code> method, we accurately capture when the test started.</p>
+</blockquote>
+<p>The <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/src/functionApp/TrackAvailabilityInAppInsights.FunctionApp/AvailabilityTests/AvailabilityTestFactory.cs">AvailabilityTestFactory</a> creates instances of <code>AvailabilityTest</code>. I introduced this factory because <code>AvailabilityTest</code> has dependencies like <code>TelemetryClient</code> that aren&rsquo;t relevant for the client code to know about. The factory handles these dependencies and provides a clean interface for creating tests.</p>
+<p>Note that the <code>TelemetryClient</code> is also injected into the factory class. By configuring the following in your application&rsquo;s startup, the <code>TelemetryClient</code> is automatically registered with the correct connection string taken from the <code>APPLICATIONINSIGHTS_CONNECTION_STRING</code> environment variable:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">services.AddApplicationInsightsTelemetryWorkerService()
+        .ConfigureFunctionsApplicationInsights();
+</code></pre></div><p>The following sequence diagram shows how these classes work together:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-dotnet/diagrams-functions-sequence-diagram.png" alt="Sequence Diagram"></p>
+<p>The flow is straightforward. First, you create an instance of <code>AvailabilityTest</code> through the factory by passing in the test name and a function that performs the availability check. When you execute the availability test, it calls your check function and tracks the result in Application Insights using the <code>TelemetryClient</code>.</p>
+<p>Here&rsquo;s how you&rsquo;d use these classes in an Azure Function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AvailabilityTestFunction</span>(IAvailabilityTestFactory availabilityTestFactory)
+{
+<span style="color:#a6e22e">	[Function(nameof(AvailabilityTestFunction))]</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> Task Run([TimerTrigger(<span style="color:#e6db74">&#34;0 * * * * *&#34;</span>)] TimerInfo timerInfo)
+	{
+		<span style="color:#66d9ef">var</span> availabilityTest = availabilityTestFactory.CreateAvailabilityTest(
+            <span style="color:#e6db74">&#34;Sample Test Name&#34;</span>, CheckAvailabilityAsync);
+		<span style="color:#66d9ef">await</span> availabilityTest.ExecuteAsync();
+	}
+
+	<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">async</span> Task CheckAvailabilityAsync()
+	{
+		<span style="color:#75715e">// Check the availability...
+</span><span style="color:#75715e"></span>	}
+}
+</code></pre></div><p>The function receives the factory through dependency injection, creates an availability test with a name and check function and executes it. The timer trigger (<code>0 * * * * *</code>) runs the function every minute.</p>
+<p>For a complete implementation example, check out <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/src/functionApp/TrackAvailabilityInAppInsights.FunctionApp/ApimSslCertificateCheckAvailabilityTest.cs">ApimSslCertificateCheckAvailabilityTest.cs</a> in the repository. This test performs SSL certificate validation similar to what I showed in the previous post.</p>
+<h2 id="http-get-request-test">HTTP GET Request Test</h2>
+<p>In most cases I just want to perform a GET request to check if a URL is accessible. To make this even simpler, I created <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/src/functionApp/TrackAvailabilityInAppInsights.FunctionApp/AvailabilityTests/HttpGetRequestAvailabilityTest.cs">HttpGetRequestAvailabilityTest</a> that implements this generic behavior and uses <code>AvailabilityTest</code> under the covers:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e">/// Performs an HTTP GET request to check the availability of a resource.
+</span><span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HttpGetRequestAvailabilityTest</span> : IAvailabilityTest
+{
+	<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> AvailabilityTest <span style="color:#ae81ff">_</span>availabilityTest;
+	<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> <span style="color:#66d9ef">string</span> <span style="color:#ae81ff">_</span>requestUri;
+	<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> IHttpClientFactory <span style="color:#ae81ff">_</span>httpClientFactory;
+	<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> <span style="color:#66d9ef">string</span> <span style="color:#ae81ff">_</span>httpClientName;
+	<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> ILogger <span style="color:#ae81ff">_l</span>ogger;
+
+	<span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">/// Creates instance of &lt;see cref=&#34;HttpGetRequestAvailabilityTest&#34;/&gt;.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">/// &lt;param name=&#34;name&#34;&gt;The name of the test.&lt;/param&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">/// &lt;param name=&#34;requestUri&#34;&gt;The request uri to check for availability.&lt;/param&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">/// &lt;param name=&#34;telemetryClient&#34;&gt;The telemetry client to publish the result to.&lt;/param&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">/// &lt;param name=&#34;httpClientFactory&#34;&gt;Factory to create an HTTP client.&lt;/param&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">/// &lt;param name=&#34;loggerFactory&#34;&gt;Factory to create a logger.&lt;/param&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">public</span> HttpGetRequestAvailabilityTest(
+		<span style="color:#66d9ef">string</span> name,
+		<span style="color:#66d9ef">string</span> requestUri,
+		TelemetryClient telemetryClient,
+		IHttpClientFactory httpClientFactory,
+		<span style="color:#66d9ef">string</span> httpClientName,
+		ILoggerFactory loggerFactory)
+	{
+		<span style="color:#ae81ff">_</span>availabilityTest = <span style="color:#66d9ef">new</span> AvailabilityTest(name, CheckAvailabilityAsync, telemetryClient);
+
+		<span style="color:#ae81ff">_</span>requestUri = requestUri;
+		<span style="color:#ae81ff">_</span>httpClientFactory = httpClientFactory;
+		<span style="color:#ae81ff">_</span>httpClientName = httpClientName;
+		<span style="color:#ae81ff">_l</span>ogger = loggerFactory.CreateLogger&lt;HttpGetRequestAvailabilityTest&gt;();
+	}
+
+	<span style="color:#75715e">/// &lt;inheritdoc/&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> Task ExecuteAsync()
+	{
+		<span style="color:#66d9ef">await</span> <span style="color:#ae81ff">_</span>availabilityTest.ExecuteAsync();
+	}
+
+	<span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">/// Performs an HTTP GET on the request URI to check for availability.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">async</span> Task CheckAvailabilityAsync()
+	{
+		<span style="color:#66d9ef">using</span> var httpClient = <span style="color:#ae81ff">_</span>httpClientFactory.CreateClient(<span style="color:#ae81ff">_</span>httpClientName);
+
+		<span style="color:#ae81ff">_l</span>ogger.LogInformation(<span style="color:#e6db74">&#34;Test availability of {Resource} on {BaseUrl}&#34;</span>, <span style="color:#ae81ff">_</span>requestUri, httpClient.BaseAddress);
+
+		<span style="color:#66d9ef">var</span> response = <span style="color:#66d9ef">await</span> httpClient.GetAsync(<span style="color:#ae81ff">_</span>requestUri);
+		response.EnsureSuccessStatusCode();
+	}
+}
+</code></pre></div><p>This class wraps <code>AvailabilityTest</code> and provides a specialized implementation for HTTP GET requests. It uses <code>IHttpClientFactory</code> to create the HTTP client, which enables you to configure named clients with specific settings like base addresses, headers, timeout values or authentication handlers. The <code>CheckAvailabilityAsync</code> method simply performs the GET request and calls <code>EnsureSuccessStatusCode()</code> to fail the test if the response isn&rsquo;t a 2xx status code.</p>
+<p>The following sequence diagram shows the flow when using this test:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-dotnet/diagrams-functions-sequence-diagram-get-request.png" alt="Sequence Diagram GET Request"></p>
+<p>While this is more complex than the basic example, it makes creating new availability tests very simple. Here&rsquo;s how you&rsquo;d use it in an Azure Function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e">/// Function to test the availability of the Backend API.
+</span><span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BackendStatusAvailabilityTest</span>(IAvailabilityTestFactory availabilityTestFactory)
+{
+<span style="color:#a6e22e">	[Function(nameof(BackendStatusAvailabilityTest))]</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> Task Run([TimerTrigger(<span style="color:#e6db74">&#34;0 * * * * *&#34;</span>)] TimerInfo timerInfo)
+	{
+		<span style="color:#66d9ef">var</span> availabilityTest = availabilityTestFactory.CreateAvailabilityTest(
+			name: <span style="color:#e6db74">&#34;Azure Function - Backend API Status&#34;</span>,
+			requestUri: <span style="color:#e6db74">&#34;/backend/status&#34;</span>,
+			httpClientName: <span style="color:#e6db74">&#34;apim&#34;</span>);
+		<span style="color:#66d9ef">await</span> availabilityTest.ExecuteAsync();
+	}
+}
+</code></pre></div><p>Creating a new HTTP GET availability test now requires just a few lines of code: define the test name, request URI and HTTP client name, then let the factory handle the rest. The factory method creates an <code>HttpGetRequestAvailabilityTest</code> instance that performs the GET request and tracks the result. The HTTP client name refers to a named client configured in your application&rsquo;s startup, where you can set the base URL and any other HTTP client configuration.</p>
+<h2 id="viewing-availability-test-results">Viewing Availability Test Results</h2>
+<p>After deploying the availability tests, you can view the results in the same places as standard tests. Navigate to your Application Insights resource and select &ldquo;Availability&rdquo; from the left menu:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-dotnet/availability-test-results.png" alt="Availability Overview"></p>
+<p>Notice that the tests from the Azure Function have the <code>CUSTOM</code> label, indicating they are custom TrackAvailability tests rather than standard web tests. They also don&rsquo;t have the edit, disable and &hellip; buttons because there is no web test resource in Azure associated with them.</p>
+<p>When you expand a test to see detailed results, you&rsquo;ll notice that we only have results from one region:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-dotnet/availability-test-details.png" alt="Test Details"></p>
+<p>This is because we&rsquo;re executing the availability test from a function app deployed in a single region. If you need multi-region testing with custom tests, you would deploy the function app to multiple regions.</p>
+<p>The end-to-end transaction details show how the availability test result is correlated with the HTTP request and other telemetry:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-dotnet/azure-function-end-to-end-transaction-details.png" alt="End-to-End Transaction Details"></p>
+<p>This correlation is enabled by the <code>Activity</code> we created in the <code>AvailabilityTest</code> class. It allows you to see the complete flow of the test execution, including any HTTP requests, dependencies or exceptions that occurred during the test.</p>
+<h2 id="setting-up-alerts">Setting Up Alerts</h2>
+<p>The <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/app/availability?tabs=track#enable-alerts">enable alerts</a> sample in the documentation shows how to enable an alert on a standard test, similar to what I showed in the previous post (through Bicep). However, with custom availability tests we don&rsquo;t have an actual web test resource in Azure to bind the alert to. Instead, we need to create an alert based on the availability metrics.</p>
+<p>Here&rsquo;s how to create an alert that works for custom availability tests:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource failedAvailabilityTestAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: name
+  location: 'global'
+
+  properties: {
+    description: 'Alert that triggers when an availability test fails'
+    severity: 1
+    enabled: true
+    autoMitigate: true
+
+    scopes: [
+      appInsights.id
+    ]
+
+    actions: [
+      {
+        actionGroupId: actionGroupId
+      }
+    ]
+
+    evaluationFrequency: 'PT5M' // Execute every 5 minutes
+    windowSize: 'PT5M'          // Look at the availability test results from the last 5 minutes
+
+    criteria: {
+      allOf: [
+        {
+          // Available metrics can be found here: https://learn.microsoft.com/en-us/azure/azure-monitor/app/metrics-overview?tabs=standard#available-metrics
+          name: 'AvailabilityMetric'
+          metricNamespace: 'microsoft.insights/components'
+          metricName: 'availabilityResults/availabilityPercentage'
+
+          // Alert triggers if the average availability percentage is less than 100%
+          timeAggregation: 'Average'
+          operator: 'LessThan'
+          threshold: 100
+          
+          // This dimension is used to split the alerts on the name of the availability test so you get notified of each failing test separately.
+          // Available dimensions can be found here: https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-insights-components-metrics#category-availability
+          dimensions: [
+            {
+              name: 'availabilityResult/name'
+              operator: 'Include'
+              values: [
+                '*'
+              ]
+            }
+          ]
+          
+          skipMetricValidation: false
+          criterionType: 'StaticThresholdCriterion'
+        }
+      ]
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+    }
+  }
+}
+</code></pre><p>This alert configuration has several key aspects worth understanding.</p>
+<p>The alert is scoped to the Application Insights resource rather than a specific web test. It monitors the <code>availabilityResults/availabilityPercentage</code> metric, which is available for all availability tests tracked in Application Insights. The alert triggers when the average availability percentage drops below 100% within a 5-minute window. In production scenarios, you might want to tweak these settings to reduce false positives from transient network issues.</p>
+<p>The <code>availabilityResult/name</code> dimension with a wildcard value (<code>*</code>) makes this alert work for all availability tests, whether they&rsquo;re standard tests or custom TrackAvailability tests. This dimension also ensures that alerts are split by test name. When both test A and test B fail, you&rsquo;ll receive two separate alerts, one for each test. This gives you granular visibility into which tests are failing.</p>
+<p>Once configured, you can view fired alerts in the Azure portal by navigating to your Application Insights resource and selecting “Alerts” from the left menu. You’ll see a list of all alerts with their current state. If you click on a failed availability test alert and expand the &lsquo;Additional details&rsquo;, the <code>availabilityResult/name</code> dimension specifies which test has failed.</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-dotnet/alert-details.png" alt="End-to-End Transaction Details"></p>
+<p>If you&rsquo;ve set up an action group with an email address, the email subject will contain the name of the alert. To see which test triggered the alert, open the email and locate the <code>Dimensions.Dimension value1</code> property, which will contain the test name.</p>
+<p>This approach is great because you only need to set up the alert once and it will work for all current and future tests. However, in some cases you might want to create an alert that triggers on a specific test. For example, you might want to notify a different team when a particular backend fails. You can do this by specifying the test name in the <code>availabilityResult/name</code> dimension:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">dimensions: [
+  {
+    name: 'availabilityResult/name'
+    operator: 'Include'
+    values: [
+      'Azure Function - Backend API Status'
+    ]
+  }
+]
+</code></pre><p>This configuration will only trigger alerts for the specified test, allowing you to take different actions or handle different tests with different severity levels.</p>
+<h2 id="considerations">Considerations</h2>
+<p>While custom availability tests offer more flexibility than standard tests, there are some considerations to keep in mind.</p>
+<p>This solution requires you to deploy additional resources like a function app, which will incur costs. However, if you already have a function app running in your environment, depending on the hosting model, you might only pay for network traffic, logging and the minimal compute time needed to execute the tests. The cost of running a few availability tests on an existing function app is typically much lower than running multiple standard tests with high frequency from many locations.</p>
+<p>The main tradeoff is complexity. Standard tests are simpler to set up and don&rsquo;t require any code or deployments. Custom tests require more initial setup, but they give you complete control over the test logic and enable scenarios that aren&rsquo;t possible with standard tests.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Custom availability tests using .NET and Azure Functions provide several benefits over standard tests:</p>
+<ul>
+<li><strong>Full control</strong>: Implement complex scenarios like multi-step authentication, mTLS, secret management with Key Vault and custom validation logic</li>
+<li><strong>Private network access</strong>: Deploy the function app in a VNet to test resources that aren&rsquo;t publicly accessible</li>
+<li><strong>Flexibility</strong>: Use any .NET libraries or SDKs to implement your test logic</li>
+<li><strong>Cost efficiency</strong>: Run multiple tests from a single function app with minimal additional cost</li>
+</ul>
+<p>While this approach requires more setup than standard tests, the flexibility and capabilities make it worthwhile for scenarios where standard tests fall short. The generic classes I&rsquo;ve shown make it easy to create new tests with minimal code, reducing the maintenance burden once the initial infrastructure is in place.</p>
+<p>You can find the complete working example in my <a href="https://github.com/ronaldbosma/track-availability-in-app-insights">track-availability-in-app-insights</a> repository, which includes detailed deployment instructions and examples for all three availability test approaches.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/application-insights">Application Insights</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-monitor">Azure Monitor</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-functions">Azure Functions</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/.net">.NET</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/">Track Availability in Application Insights using Standard Test &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

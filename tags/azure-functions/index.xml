@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Sat, 20 Sep 2025 14:30:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-functions/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 19 Jan 2026 09:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-functions/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Track Availability in Application Insights using .NET</title>
+      <link>https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/</link>
+      <pubDate>Mon, 19 Jan 2026 09:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/</guid>
+      <description>Standard availability tests in Application Insights have limitations like no multi-step authentication, no mTLS support and no access to private networks. This post shows you how to create custom availability tests using .NET and Azure Functions to overcome these restrictions while gaining full control over your monitoring logic.</description>
+    </item>
+    
     <item>
       <title>Call OAuth-Protected APIs with Managed Identity from .NET</title>
       <link>https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/</link>
