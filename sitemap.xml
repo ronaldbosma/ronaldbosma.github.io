@@ -2,37 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://ronaldbosma.github.io/tags/application-insights/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/azure/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/azure-integration-services/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/azure-monitor/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/logic-apps/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/series/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/series/track-availability-in-app-insights/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/2026/01/26/track-availability-in-application-insights-using-logic-app-workflow/</loc>
+    <lastmod>2026-01-26T17:00:00+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/.net/</loc>
     <lastmod>2026-01-19T09:00:00+01:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/tags/application-insights/</loc>
-    <lastmod>2026-01-19T09:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/azure/</loc>
-    <lastmod>2026-01-19T09:00:00+01:00</lastmod>
-  </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-functions/</loc>
-    <lastmod>2026-01-19T09:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/azure-integration-services/</loc>
-    <lastmod>2026-01-19T09:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/azure-monitor/</loc>
-    <lastmod>2026-01-19T09:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/blog/</loc>
-    <lastmod>2026-01-19T09:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2026-01-19T09:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/series/</loc>
-    <lastmod>2026-01-19T09:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/</loc>
-    <lastmod>2026-01-19T09:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/series/track-availability-in-app-insights/</loc>
     <lastmod>2026-01-19T09:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/</loc>
@@ -102,9 +108,6 @@
     <lastmod>2025-10-03T09:30:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/</loc>
-    <lastmod>2025-10-03T09:30:00+02:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/logic-apps/</loc>
     <lastmod>2025-10-03T09:30:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2025/09/20/call-oauth-protected-apis-with-managed-identity-from-.net/</loc>

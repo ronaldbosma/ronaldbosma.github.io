@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Track Availability in Application Insights using Logic App Workflow | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/01/26/track-availability-in-application-insights-using-logic-app-workflow/cover.png"/>
+<meta name="twitter:title" content="Track Availability in Application Insights using Logic App Workflow"/>
+<meta name="twitter:description" content="I&rsquo;ve worked with clients following a low-code first strategy where Logic Apps are preferred over .NET solutions. This post shows you how to create custom availability tests using Logic App (Standard) workflows and track the results in Application Insights. This approach gives you access to all Logic App capabilities while requiring minimal code."/>
+
+	<meta property="og:title" content="Track Availability in Application Insights using Logic App Workflow" />
+<meta property="og:description" content="I&rsquo;ve worked with clients following a low-code first strategy where Logic Apps are preferred over .NET solutions. This post shows you how to create custom availability tests using Logic App (Standard) workflows and track the results in Application Insights. This approach gives you access to all Logic App capabilities while requiring minimal code." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/01/26/track-availability-in-application-insights-using-logic-app-workflow/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/01/26/track-availability-in-application-insights-using-logic-app-workflow/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-01-26T17:00:00+01:00" />
+<meta property="article:modified_time" content="2026-01-26T17:00:00+01:00" />
+<meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Track%20Availability%20in%20Application%20Insights%20using%20Logic%20App%20Workflow&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f01%2f26%2ftrack-availability-in-application-insights-using-logic-app-workflow%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f01%2f26%2ftrack-availability-in-application-insights-using-logic-app-workflow%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f01%2f26%2ftrack-availability-in-application-insights-using-logic-app-workflow%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Jan 26, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    12 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Track Availability in Application Insights using Logic App Workflow</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/01/26/track-availability-in-application-insights-using-logic-app-workflow/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>In my <a href="/blog/2026/01/19/track-availability-in-application-insights-using-.net/">previous post</a>, I showed you how to create custom availability tests using .NET and Azure Functions. While that solution gives you full control over the test logic and enables complex scenarios, it requires writing and maintaining code.</p>
+<p>I&rsquo;ve worked with clients following a low-code first strategy where Logic Apps are preferred over high-code solutions like .NET Azure Functions. For those cases, I&rsquo;ve created a solution where a Logic App (Standard) workflow can be used as an availability test. It still has a bit of code to track the results in Application Insights, but most logic can be created in the workflow itself, meaning you can use all the features that Logic Apps provide.</p>
+<p>Additionally, if you already have a Logic App deployed you don&rsquo;t have to deploy additional resources like a Function App and App Service Plan (depending on your hosting model and tier), which could increase costs. But there are some considerations to keep in mind related to costs, which I discuss later in this post.</p>
+<p>This is the third post in a series about tracking availability in Application Insights:</p>
+<ul>
+<li><a href="/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/">Track Availability in Application Insights using Standard Test</a></li>
+<li><a href="/blog/2026/01/19/track-availability-in-application-insights-using-.net/">Track Availability in Application Insights using .NET (Azure Function)</a></li>
+<li><strong>Track Availability in Application Insights using Logic App Workflow - <em>this post</em></strong></li>
+</ul>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#solution-overview">Solution Overview</a></li>
+<li><a href="#backend-availability-test-workflow">Backend Availability Test Workflow</a></li>
+<li><a href="#ssl-certificate-validation-workflow">SSL Certificate Validation Workflow</a></li>
+<li><a href="#viewing-availability-test-results">Viewing Availability Test Results</a></li>
+<li><a href="#setting-up-alerts">Setting Up Alerts</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h2 id="solution-overview">Solution Overview</h2>
+<p>The solution includes the following components:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-logic-app-workflow/diagrams-overview-logic-app-workflow.png" alt="Overview"></p>
+<ul>
+<li><strong>Logic App (Standard) workflow</strong>: Timer-triggered workflow that executes the availability test and tracks the result in Application Insights using custom functions</li>
+<li><strong>API</strong>: Represents a backend system for which we want to track availability. It randomly returns a 200 OK or 503 Service Unavailable response based on a configurable &lsquo;approximate failure percentage&rsquo;</li>
+<li><strong>Application Insights</strong>: Receives the custom availability telemetry and shows the test results</li>
+</ul>
+<p>While this example uses an API on API Management, the same approach applies when calling any other backend system for which you want to track availability. You can also use other Logic App connectors besides HTTP, like calling a function in SAP using an SAP-specific connector.</p>
+<p>To make deployment easier, I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template: <a href="https://github.com/ronaldbosma/track-availability-in-app-insights">Track Availability in Application Insights</a>. The template demonstrates three scenarios for tracking availability: standard test (webtest), .NET Azure Function and Logic App workflow. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/track-availability-in-app-insights#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on the Logic App implementation.</p>
+<h2 id="backend-availability-test-workflow">Backend Availability Test Workflow</h2>
+<p>The first workflow performs a simple HTTP GET request to check if the backend API is available. Here&rsquo;s what the workflow looks like in the designer:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-logic-app-workflow/logic-app-workflow-backend-status.png" alt="Logic App Workflow - Backend Status"></p>
+<p>The workflow needs to be stateful because it uses the Recurrence trigger, which is only available for stateful workflows. It is structured as follows:</p>
+<ul>
+<li><strong>Recurrence trigger</strong>: Executes the workflow every minute</li>
+<li><strong>Initialize TestName</strong>: Sets a variable with the test name that will be used when tracking availability</li>
+<li><strong>Start time</strong>: Captures the current timestamp to track the start time and test duration</li>
+<li><strong>HTTP action</strong>: Makes a GET request to the <code>/backend/status</code> endpoint in API Management</li>
+<li><strong>Conditional branching</strong>: Depending on the response status code:
+<ul>
+<li>If successful (200 OK), the <code>Track is available (in App Insights)</code> action is called</li>
+<li>If failed (any other status), the <code>Track is unavailable (in App Insights)</code> action is called</li>
+</ul>
+</li>
+</ul>
+<p>This workflow demonstrates an advantage of using Logic Apps: most of the logic is visual and doesn&rsquo;t require coding. You can easily modify the HTTP request, add authentication or include additional steps using the workflow designer.</p>
+<p>The logic to track availability in Application Insights is implemented in C# using a <a href="https://learn.microsoft.com/en-us/azure/logic-apps/create-run-custom-code-functions">Logic App with custom code project</a>, which lets you deploy .NET code directly to the Logic App without additional resources like a Function App. I&rsquo;ve created functions similar to what I showed in the previous post, but packaged as Logic App custom functions.</p>
+<blockquote>
+<p>I started on a <a href="https://github.com/ronaldbosma/LogicApps.ServiceProviders.ApplicationInsights.TrackAvailability">custom connector</a>, but the deploy size went from several KBs to hundreds of MBs. So I decided to use a custom code project instead because the size then increases to only ~600KB.</p>
+</blockquote>
+<p>The following image shows the use of the <code>TrackIsAvailable</code> function in the <code>Track is available (in App Insights)</code> action:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-logic-app-workflow/track-is-available-action.png" alt="Track is available action"></p>
+<p>The function takes the test name and start time as parameters and tracks a successful availability test. The <code>TrackIsUnavailable</code> function tracks a failure and takes an additional parameter for the error message.</p>
+<p>Here&rsquo;s the implementation from <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/src/logicApp/Functions/AvailabilityTestFunctions.cs">AvailabilityTestFunctions.cs</a> with both functions:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AvailabilityTestFunctions</span>
+{
+	<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> TelemetryClient <span style="color:#ae81ff">_</span>telemetryClient;
+	<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">readonly</span> ILogger&lt;AvailabilityTestFunctions&gt; <span style="color:#ae81ff">_l</span>ogger;
+
+	<span style="color:#66d9ef">public</span> AvailabilityTestFunctions(TelemetryClient telemetryClient, ILoggerFactory loggerFactory)
+	{
+		<span style="color:#ae81ff">_</span>telemetryClient = telemetryClient;
+		<span style="color:#ae81ff">_l</span>ogger = loggerFactory.CreateLogger&lt;AvailabilityTestFunctions&gt;();
+	}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">	[Function(&#34;TrackIsAvailable&#34;)]</span>
+	<span style="color:#66d9ef">public</span> Task TrackIsAvailable([WorkflowActionTrigger] <span style="color:#66d9ef">string</span> testName, DateTimeOffset startTime)
+	{
+		<span style="color:#ae81ff">_l</span>ogger.LogInformation(<span style="color:#e6db74">&#34;TrackIsAvailable function invoked with testName: {TestName}, startTime: {StartTime}&#34;</span>, testName, startTime);
+
+		<span style="color:#66d9ef">return</span> TrackAvailability(testName, <span style="color:#66d9ef">true</span>, startTime, <span style="color:#66d9ef">null</span>);
+	}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">	[Function(&#34;TrackIsUnavailable&#34;)]</span>
+	<span style="color:#66d9ef">public</span> Task TrackIsUnavailable(
+<span style="color:#a6e22e">		[WorkflowActionTrigger]</span> <span style="color:#66d9ef">string</span> testName, 
+		DateTimeOffset startTime, 
+		<span style="color:#66d9ef">string</span> message)
+	{
+		<span style="color:#ae81ff">_l</span>ogger.LogInformation(<span style="color:#e6db74">&#34;TrackIsUnavailable function invoked with testName: {TestName}, startTime: {StartTime}, message: {Message}&#34;</span>, testName, startTime, message);
+
+		<span style="color:#66d9ef">return</span> TrackAvailability(testName, <span style="color:#66d9ef">false</span>, startTime, message);
+	}
+
+	<span style="color:#66d9ef">public</span> Task TrackAvailability(
+<span style="color:#a6e22e">		[WorkflowActionTrigger]</span> <span style="color:#66d9ef">string</span> testName, 
+		<span style="color:#66d9ef">bool</span> success, 
+		DateTimeOffset startTime, 
+		<span style="color:#66d9ef">string</span> message)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(testName, nameof(testName));
+
+		AvailabilityTelemetry availability = <span style="color:#66d9ef">new</span>()
+		{
+			Name = testName,
+			RunLocation = Environment.GetEnvironmentVariable(<span style="color:#e6db74">&#34;REGION_NAME&#34;</span>) ?? <span style="color:#e6db74">&#34;Unknown&#34;</span>,
+			Success = success,
+			Message = message,
+			Timestamp = startTime,
+			Duration = DateTimeOffset.UtcNow - startTime
+		};
+
+		<span style="color:#75715e">// Create activity to enable distributed tracing and correlation of the telemetry in App Insights
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">using</span> (Activity activity = <span style="color:#66d9ef">new</span>(<span style="color:#e6db74">&#34;AvailabilityContext&#34;</span>))
+		{
+			activity.Start();
+			
+			<span style="color:#75715e">// Connect the availability telemetry to the logging activity
+</span><span style="color:#75715e"></span>			availability.Id = activity.SpanId.ToString();
+			availability.Context.Operation.ParentId = activity.ParentSpanId.ToString();
+			availability.Context.Operation.Id = activity.RootId;
+			
+			<span style="color:#ae81ff">_</span>telemetryClient.TrackAvailability(availability);
+			<span style="color:#ae81ff">_</span>telemetryClient.Flush();
+		}
+		
+		<span style="color:#66d9ef">return</span> Task.CompletedTask;
+	}
+}
+</code></pre></div><p>The <code>AvailabilityTestFunctions</code> class provides two public functions that can be called from workflows:</p>
+<ul>
+<li><strong>TrackIsAvailable</strong>: Tracks a successful availability test by calling <code>TrackAvailability</code> with <code>success</code> set to <code>true</code></li>
+<li><strong>TrackIsUnavailable</strong>: Tracks a failed test by calling <code>TrackAvailability</code> with <code>success</code> set to <code>false</code> and includes an error message</li>
+</ul>
+<p>The <code>TrackAvailability</code> method does the actual work:</p>
+<ul>
+<li>Creates an <code>AvailabilityTelemetry</code> object with the test results including the run location (retrieved from an environment variable)</li>
+<li>Calculates the test duration by subtracting the start time from the current time</li>
+<li>Creates an <code>Activity</code> to enable distributed tracing and correlation of telemetry in Application Insights</li>
+<li>Sets various IDs on the availability telemetry to enable end-to-end correlation</li>
+<li>Publishes the telemetry to Application Insights using the <code>TelemetryClient</code></li>
+</ul>
+<p>The <code>TelemetryClient</code> is registered in the <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/src/logicApp/Functions/Startup.cs">Startup.cs</a> of the Logic App&rsquo;s custom code project. The <code>ILoggerFactory</code> is already registered by the Logic App runtime.</p>
+<blockquote>
+<p>I could have created a single function that performed both the HTTP GET and tracked the (un)availability of the backend, which would look similar to what I describe in my previous post. But I decided to only put the &lsquo;track availability&rsquo; code in functions to visualize the logic and so other logic can rely on the Logic App capabilities. For example, using a managed identity to call a backend is super easy in a workflow, as I describe in my post <a href="/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/">Call OAuth-Protected APIs with Managed Identity from Logic Apps</a>.</p>
+</blockquote>
+<h2 id="ssl-certificate-validation-workflow">SSL Certificate Validation Workflow</h2>
+<p>Similar to my previous posts, I&rsquo;ve also created a separate availability test to check the SSL server certificate of API Management. Here&rsquo;s what this workflow looks like in the designer:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-logic-app-workflow/logic-app-workflow-ssl-cert-check.png" alt="Logic App Workflow - SSL Certificate Check"></p>
+<p>The workflow is structured as follows:</p>
+<ul>
+<li><strong>Recurrence trigger</strong>: Executes the workflow every minute</li>
+<li><strong>Initialize TestName</strong>: Sets a variable with the test name</li>
+<li><strong>Start time</strong>: Captures the current timestamp</li>
+<li><strong>Get APIM SSL server certificate expiration in days</strong>: Calls a custom function to retrieve the number of days until the certificate expires</li>
+<li><strong>Conditional branching</strong>: Depending on the expiration days:
+<ul>
+<li>If the certificate expires soon or has expired (less than or equal to the configured threshold), the workflow:
+<ul>
+<li>Tracks the test as unavailable in Application Insights, including the number of remaining days in the error message</li>
+<li>Terminates with a failed status</li>
+</ul>
+</li>
+<li>If the certificate is still valid (more than the threshold days remaining), the workflow tracks the test as available</li>
+</ul>
+</li>
+<li><strong>Error handling</strong>: If determining the expiry fails, the test is tracked as unavailable</li>
+</ul>
+<p>The <code>GetSslServerCertificateExpirationInDays</code> function retrieves the SSL certificate of a host and calculates how many days remain until it expires. Here&rsquo;s the implementation from <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/src/logicApp/Functions/SslServerCertificateFunctions.cs">SslServerCertificateFunctions.cs</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[Function(&#34;GetSslServerCertificateExpirationInDays&#34;)]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> Task&lt;<span style="color:#66d9ef">int</span>&gt; GetSslServerCertificateExpirationInDays(
+<span style="color:#a6e22e">	[WorkflowActionTrigger]</span> <span style="color:#66d9ef">string</span> hostname, 
+	<span style="color:#66d9ef">int</span> port)
+{
+	<span style="color:#ae81ff">_l</span>ogger.LogInformation(<span style="color:#e6db74">&#34;GetSslServerCertificateExpirationInDays function invoked with hostname: {Hostname}, port: {Port}&#34;</span>, hostname, port);
+	
+	<span style="color:#66d9ef">try</span>
+	{
+		<span style="color:#75715e">// Connect client to remote TCP host using provided hostname and port
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">using</span> var tcpClient = <span style="color:#66d9ef">new</span> TcpClient();
+		<span style="color:#66d9ef">await</span> tcpClient.ConnectAsync(hostname, port);
+
+		<span style="color:#75715e">// Create an SSL stream over the TCP connection and authenticate with the server
+</span><span style="color:#75715e"></span>		<span style="color:#75715e">// This will trigger the SSL/TLS handshake and allow us to access the server&#39;s certificate
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">using</span> var sslStream = <span style="color:#66d9ef">new</span> SslStream(tcpClient.GetStream());
+		<span style="color:#66d9ef">await</span> sslStream.AuthenticateAsClientAsync(hostname);
+
+		<span style="color:#75715e">// Retrieve the remote server&#39;s SSL certificate from the authenticated connection
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">var</span> certificate = sslStream.RemoteCertificate;
+		<span style="color:#66d9ef">if</span> (certificate != <span style="color:#66d9ef">null</span>)
+		{
+			<span style="color:#75715e">// Calculate the remaining lifetime of the certificate in days
+</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">var</span> x509Certificate = <span style="color:#66d9ef">new</span> X509Certificate2(certificate);
+			<span style="color:#66d9ef">return</span> (x509Certificate.NotAfter - DateTime.UtcNow).Days;
+		}
+
+		<span style="color:#75715e">// Throw an exception if no certificate was found
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Exception(<span style="color:#e6db74">$&#34;No SSL server certificate found for host {hostname} on port {port}&#34;</span>);
+	}
+	<span style="color:#66d9ef">catch</span> (Exception ex)	{
+		<span style="color:#ae81ff">_l</span>ogger.LogError(
+			ex, <span style="color:#e6db74">&#34;Error retrieving SSL server certificate expiration for host {Hostname} on port {Port}: {Exception}&#34;</span>, 
+			hostname, port, ex.ToString());
+		<span style="color:#66d9ef">throw</span>;
+	}
+}
+</code></pre></div><p>The function performs the following steps:</p>
+<ul>
+<li>Connects to the remote host using a <code>TcpClient</code> with the provided hostname and port</li>
+<li>Creates an <code>SslStream</code> over the TCP connection to establish an SSL/TLS handshake</li>
+<li>Authenticates with the server using <code>AuthenticateAsClientAsync</code>, which retrieves the server&rsquo;s certificate</li>
+<li>Extracts the certificate&rsquo;s expiration date and calculates the remaining days until expiry</li>
+<li>Returns the number of days or throws an exception if the certificate couldn&rsquo;t be retrieved</li>
+</ul>
+<p>Note that I&rsquo;m explicitly logging the exception in the catch block because I&rsquo;ve noticed that the Logic App&rsquo;s end-to-end transaction details don&rsquo;t show exception details like the message or stack trace. By explicitly logging the error, the information is captured in Application Insights and available when troubleshooting issues.</p>
+<h2 id="viewing-availability-test-results">Viewing Availability Test Results</h2>
+<p>After deploying the availability tests, you can view the results in the same places as standard tests and Azure Function tests. Navigate to your Application Insights resource and select &ldquo;Availability&rdquo; from the left menu:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-logic-app-workflow/availability-test-results.png" alt="Availability Test Details"></p>
+<p>As with the Azure Function tests, the Logic App workflow tests have the <code>CUSTOM</code> label, indicating they are custom TrackAvailability tests rather than standard web tests. They also don&rsquo;t have the edit, disable and &hellip; buttons because there is no web test resource in Azure associated with them.</p>
+<p>When you expand a test to see detailed results, you&rsquo;ll notice that we only have results from one region:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-logic-app-workflow/availability-test-details.png" alt="Availability Test Details"></p>
+<p>This is because we&rsquo;re executing the availability test from a Logic App deployed in a single region. If you need multi-region testing with custom tests, you would deploy the Logic App to multiple regions.</p>
+<p>When you drill into the details of a specific test result, you can view the end-to-end transaction details:</p>
+<p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-logic-app-workflow/logic-app-workflow-end-to-end-transaction-details.png" alt="End-to-end Transaction Details"></p>
+<p>The end-to-end transaction view shows the correlation between the Logic App workflow execution, the HTTP request to API Management and the availability test result. The timeline is a bit &lsquo;messy&rsquo; compared to the Azure Function implementation because of the way the workflow tracks the availability result as a separate action after the HTTP call is performed. However, all the telemetry is properly correlated, allowing you to trace the complete flow.</p>
+<h2 id="setting-up-alerts">Setting Up Alerts</h2>
+<p>Setting up alerts for Logic App-based availability tests works the same as for Azure Function-based tests. For more details, see the <a href="/blog/2026/01/19/track-availability-in-application-insights-using-.net/#setting-up-alerts">Setting Up Alerts</a> section of the previous post.</p>
+<h2 id="considerations">Considerations</h2>
+<p>While Logic App workflows provide a great low-code solution for availability testing, there are some considerations to keep in mind:</p>
+<p>This solution can save costs but can also have additional costs compared to running your availability tests in Azure Functions. If you have an existing Logic App (Standard) hosted on a Workflow Service Plan, you can&rsquo;t deploy a Function App on the same plan. So, if you don&rsquo;t have a Function App deployed yet, using Logic App workflows can save costs because you don&rsquo;t have to deploy additional resources.</p>
+<p>On the other hand, the availability test workflows need to be stateful because of the Recurrence trigger. If you have diagnostic settings enabled on your Logic App and Storage Account, you&rsquo;ll incur additional costs. I deployed the sample template with and without diagnostic settings and let the tests run for a day. The costs were almost €1.50 higher, primarily from &ldquo;Analytics Logs Data Ingestion&rdquo; for the Storage Account, which was about 56% of the total Log Analytics usage.</p>
+<p>Considering that we have two tests running every minute, if you extrapolate that to a month, the additional cost would be around €15 - €20 per test. This is similar to the cost of a standard availability test in Application Insights (if you ignore the Logic App resource costs). These expenses can accumulate if you have many tests running across multiple environments.</p>
+<p>If you enabled the diagnostic settings on the storage account primarily for logging on your own queues, containers, etc. rather than the ones the Logic App creates, you could reduce costs by using separate storage accounts. Create your custom resources in a storage account with diagnostic settings enabled while keeping the storage account used by the Logic App without diagnostic settings.</p>
+<p>Another approach to reduce costs could be to execute the availability tests less frequently in, e.g., your development and test environments. Unfortunately, you can&rsquo;t set the interval or frequency of the Recurrence trigger using an app setting, making it difficult to use different schedules per environment. You could put a placeholder in the <code>workflow.json</code> and add the correct values during deployment, but that adds complexity to your deployment process. So, it&rsquo;s a trade-off between ease of configuration and cost optimization.</p>
+<p>If you expect to create multiple availability tests, consider creating a generic workflow with an HTTP trigger that takes the test name and the URL to test. That workflow will perform the HTTP GET and track the availability. You can then create a simplified workflow per availability test that has the Recurrence trigger and calls the generic workflow with the correct test name and URL. I&rsquo;ve used this in one of my own projects and it works great.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Logic App workflows provide a good option for implementing custom availability tests, especially when working in organizations with a low-code first strategy. The approach combines the flexibility of custom code for tracking availability in Application Insights with the visual, low-code nature of Logic App workflows for the actual testing logic.</p>
+<p>The key benefits include:</p>
+<ul>
+<li>Visual workflow design that&rsquo;s easy to understand and maintain</li>
+<li>Access to all Logic App connectors and capabilities</li>
+<li>Minimal custom code required (only for tracking availability)</li>
+<li>Potential cost savings if you already have a Logic App deployed, but beware of stateful workflow costs in combination with diagnostic settings (as mentioned in the considerations)</li>
+</ul>
+<p>While there are some limitations around configuration and multi-region testing, the Logic App approach offers a practical solution for many availability testing scenarios. The generic custom functions I&rsquo;ve shown can be reused across multiple workflows, making it straightforward to add new availability tests as needed.</p>
+<p>For organizations committed to low-code solutions or those already using Logic Apps, this approach provides a natural way to implement custom availability monitoring without requiring extensive .NET development expertise.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/application-insights">Application Insights</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-monitor">Azure Monitor</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/logic-apps">Logic Apps</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/">Track Availability in Application Insights using .NET &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
