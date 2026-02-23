@@ -7,7 +7,43 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 02 Feb 2026 17:45:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 23 Feb 2026 07:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>azd</title>
+      <link>https://ronaldbosma.github.io/tags/azd/</link>
+      <pubDate>Mon, 23 Feb 2026 07:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure</title>
+      <link>https://ronaldbosma.github.io/tags/azure/</link>
+      <pubDate>Mon, 23 Feb 2026 07:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Developer CLI</title>
+      <link>https://ronaldbosma.github.io/tags/azure-developer-cli/</link>
+      <pubDate>Mon, 23 Feb 2026 07:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-developer-cli/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bicep</title>
+      <link>https://ronaldbosma.github.io/tags/bicep/</link>
+      <pubDate>Mon, 23 Feb 2026 07:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Application Insights</title>
       <link>https://ronaldbosma.github.io/tags/application-insights/</link>
@@ -18,29 +54,11 @@
     </item>
     
     <item>
-      <title>Azure</title>
-      <link>https://ronaldbosma.github.io/tags/azure/</link>
-      <pubDate>Mon, 02 Feb 2026 17:45:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Azure Monitor</title>
       <link>https://ronaldbosma.github.io/tags/azure-monitor/</link>
       <pubDate>Mon, 02 Feb 2026 17:45:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure-monitor/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bicep</title>
-      <link>https://ronaldbosma.github.io/tags/bicep/</link>
-      <pubDate>Mon, 02 Feb 2026 17:45:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
       <description></description>
     </item>
     
@@ -158,15 +176,6 @@
       <pubDate>Tue, 16 Sep 2025 19:30:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/microsoft-graph/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>azd</title>
-      <link>https://ronaldbosma.github.io/tags/azd/</link>
-      <pubDate>Fri, 21 Feb 2025 11:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azd/</guid>
       <description></description>
     </item>
     
