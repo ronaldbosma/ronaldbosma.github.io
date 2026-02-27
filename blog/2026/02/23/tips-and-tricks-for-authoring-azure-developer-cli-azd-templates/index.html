@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/02/23/tips-and-tricks-for-authoring-azure-developer-cli-azd-templates/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/02/23/tips-and-tricks-for-authoring-azure-developer-cli-azd-templates/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-02-23T07:00:00+01:00" />
-<meta property="article:modified_time" content="2026-02-23T07:00:00+01:00" />
+<meta property="article:modified_time" content="2026-02-27T11:00:00+01:00" />
 
 
 
@@ -177,6 +177,7 @@
 </ul>
 </li>
 <li><a href="#add-a-pipeline">Add a Pipeline</a></li>
+<li><a href="#add-a-dev-container">Add a Dev Container</a></li>
 <li><a href="#environment-variables-and-local-development">Environment Variables and Local Development</a></li>
 <li><a href="#keep-dependencies-up-to-date">Keep Dependencies Up to Date</a></li>
 <li><a href="#version-your-template">Version Your Template</a></li>
@@ -186,7 +187,7 @@
 <h3 id="what-is-the-azure-developer-cli">What is the Azure Developer CLI?</h3>
 <p>The <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/">Azure Developer CLI</a> is an open-source tool that accelerates your path from a local development environment to Azure. It provides developer-friendly commands that map to key stages in your workflow, including code, build, deploy and monitor.</p>
 <p>It&rsquo;s different from the Azure CLI. While the Azure CLI (az) is used to manage Azure resources and focuses on infrastructure, the Azure Developer CLI (azd) can be used to deploy complete applications, including both infrastructure and application code.</p>
-<p>I discovered azd while working on a Bicep template for deploying Azure Integration Services. A colleague pointed me to azd because it makes deployment of Bicep and Terraform templates super easy. With just three simple commands, you can download a template, authenticate to Azure and deploy your infrastructure and application:</p>
+<p>I discovered azd while working on a Bicep template for deploying Azure Integration Services. My colleague <a href="https://www.linkedin.com/in/maarten-van-diemen">Maarten van Diemen</a> pointed me to azd because it makes deployment of Bicep and Terraform templates super easy. With just three simple commands, you can download a template, authenticate to Azure and deploy your infrastructure and application:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">azd init --template ronaldbosma/azure-integration-services-quickstart
 azd auth login
 azd up
@@ -305,6 +306,9 @@ var appInsightsName string = getResourceName('applicationInsights', environmentN
 <li><strong>Clean Up Resources</strong>: Removes all deployed Azure resources</li>
 </ul>
 <p>I&rsquo;ll share more details about this setup in my next blog post.</p>
+<h3 id="add-a-dev-container">Add a Dev Container</h3>
+<p>Add a <a href="https://containers.dev/">dev container</a> to your repository to make it easier for people to get started with your template. A dev container allows you to use a container as a full-featured development environment. It can be used to run an application, to separate tools, libraries or runtimes needed for working with a codebase, and to aid in continuous integration and testing.</p>
+<p>I wanted to deploy one of my templates from a laptop where I couldn&rsquo;t install any tools. I created a <a href="https://github.com/features/codespaces">GitHub Codespace</a> for the repository, but not all tools were installed. Adding a dev container configuration to your template makes it possible to preconfigure a GitHub Codespace with all the tools needed to deploy and work with your template.</p>
 <h3 id="environment-variables-and-local-development">Environment Variables and Local Development</h3>
 <p>If you&rsquo;ve deployed a template from your local machine and want to execute some code locally before deploying it to Azure, or if you have integration tests that verify your application and want to execute them locally, you probably need some of the environment variable values stored in <code>.azure/&lt;environment&gt;/.env</code>.</p>
 <p>I&rsquo;ve created a bit of code that locates the azd <code>.env</code> file and loads the variables into the <a href="https://learn.microsoft.com/en-us/dotnet/api/system.environment?view=net-10.0">Environment class</a> using the <a href="https://github.com/bolorundurowb/dotenv.net">dotenv.net</a> library. You can then use the <a href="https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.configurationbuilder?view=net-10.0-pp">ConfigurationBuilder</a> to load the configuration as you normally would.</p>
