@@ -255,7 +255,7 @@ output INCLUDE_SERVICE_BUS bool = includeServiceBus
 <p>Before I started using azd, I had created several Bicep templates. One thing that annoyed me was having to specify the names of different resources before deploying a template. They were stored in a script, but if I wanted to deploy multiple instances of a template, I had to change all these names.</p>
 <p>So, I created a set of Bicep user-defined functions that apply the naming convention described in the <a href="https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming">Cloud Adoption Framework</a>. Using the naming convention, I only have to specify a workload and environment, and the rest is taken care of.</p>
 <blockquote>
-<p>See <a href="https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/">Apply Azure naming convention using Bicep functions</a> if you&rsquo;re interested in how it works.</p>
+<p>See <a href="/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/">Apply Azure naming convention using Bicep functions</a> if you&rsquo;re interested in how it works.</p>
 </blockquote>
 <p>When you initialize and deploy an azd template, the minimum you need to specify is the environment name, Azure subscription and region. With that in mind, I made an azd-specific version of this naming convention where the workload and environment are merged into one. See the diagram below for an example of how this looks:</p>
 <p><img src="../../../../../images/tips-and-tricks-for-authoring-azd-templates/naming-convention-azd.png" alt="azd naming convention"></p>
@@ -305,7 +305,7 @@ var appInsightsName string = getResourceName('applicationInsights', environmentN
 <li><strong>Verify Deployment</strong>: Runs automated integration tests to verify the deployed resources and application. It can also verify monitoring and logging, for example by checking that availability tests succeed.</li>
 <li><strong>Clean Up Resources</strong>: Removes all deployed Azure resources</li>
 </ul>
-<p>I&rsquo;ll share more details about this setup in my next blog post.</p>
+<p>See my blog post <a href="/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/">GitHub Actions Workflow for Azure Developer CLI (azd) Templates</a> for more details about this setup.</p>
 <h3 id="add-a-dev-container">Add a Dev Container</h3>
 <p>Add a <a href="https://containers.dev/">dev container</a> to your repository to make it easier for people to get started with your template. A dev container allows you to use a container as a full-featured development environment. It can be used to run an application, to separate tools, libraries or runtimes needed for working with a codebase, and to aid in continuous integration and testing.</p>
 <p>I wanted to deploy one of my templates from a laptop where I couldn&rsquo;t install any tools. I created a <a href="https://github.com/features/codespaces">GitHub Codespace</a> for the repository, but not all tools were installed. Adding a dev container configuration to your template makes it possible to preconfigure a GitHub Codespace with all the tools needed to deploy and work with your template.</p>
@@ -378,7 +378,7 @@ func flattenTags(tags object) string[] =&gt; map(items(tags), tag =&gt; '${tag.k
 <p>Creating azd templates has made it significantly easier for me to share and deploy Azure solutions. With just three commands, anyone can initialize, authenticate and deploy a complete application with its infrastructure.</p>
 <p>The tips I&rsquo;ve shared in this post cover the lessons I&rsquo;ve learned from creating multiple azd templates. From basic parameter management to more advanced topics like handling Entra ID resources and eventual consistency, these practices have helped me create more robust and user-friendly templates.</p>
 <p>If you have Bicep or Terraform templates lying around, I encourage you to turn them into azd templates. The initial setup effort is minimal and it makes your work much more accessible to others. Plus, contributing to <a href="https://azure.github.io/awesome-azd/">Awesome azd</a> is a great way to give back to the community.</p>
-<p>In my next blog post, I&rsquo;ll dive deeper into the GitHub Actions workflow setup I use to automatically test my templates.</p>
+<p>In my <a href="/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/">next blog post</a>, I dive deeper into the GitHub Actions workflow setup I use to automatically test my templates.</p>
 
                     </div>
                     
@@ -408,6 +408,8 @@ func flattenTags(tags object) string[] =&gt; map(items(tags), tag =&gt; '${tag.k
                     
                     
                     <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                        <a class="d-block col-md-6" href="https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/"> &laquo; GitHub Actions Workflow for Azure Developer CLI (azd) Templates</a>
                     
                     
                         <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/02/02/alert-processing-rules-in-bicep-add-action-groups-or-suppress-notifications/">Alert Processing Rules in Bicep: Add Action Groups or Suppress Notifications &raquo;</a>

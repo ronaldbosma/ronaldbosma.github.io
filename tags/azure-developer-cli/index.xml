@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 23 Feb 2026 07:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-developer-cli/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 02 Mar 2026 06:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-developer-cli/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GitHub Actions Workflow for Azure Developer CLI (azd) Templates</title>
+      <link>https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/</link>
+      <pubDate>Mon, 02 Mar 2026 06:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/</guid>
+      <description>In this post, I&amp;rsquo;ll show how I structure a GitHub Actions workflow for Azure Developer CLI (azd) templates so I can automate the process of building, deploying, verifying and cleaning up. The workflow makes it easier to validate my own changes and review external contributions. I&amp;rsquo;ll walk through each job with practical snippets and explain why I split build, deployment and verification.</description>
+    </item>
+    
     <item>
       <title>Tips and Tricks for Authoring Azure Developer CLI (azd) Templates</title>
       <link>https://ronaldbosma.github.io/blog/2026/02/23/tips-and-tricks-for-authoring-azure-developer-cli-azd-templates/</link>

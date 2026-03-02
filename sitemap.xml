@@ -3,24 +3,30 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ronaldbosma.github.io/tags/azd/</loc>
-    <lastmod>2026-02-27T11:00:00+01:00</lastmod>
+    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure/</loc>
-    <lastmod>2026-02-27T11:00:00+01:00</lastmod>
+    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-developer-cli/</loc>
-    <lastmod>2026-02-27T11:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/bicep/</loc>
-    <lastmod>2026-02-27T11:00:00+01:00</lastmod>
+    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/</loc>
-    <lastmod>2026-02-27T11:00:00+01:00</lastmod>
+    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/github-actions/</loc>
+    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/</loc>
+    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2026-02-27T11:00:00+01:00</lastmod>
+    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/</loc>
+    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/bicep/</loc>
     <lastmod>2026-02-27T11:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/02/23/tips-and-tricks-for-authoring-azure-developer-cli-azd-templates/</loc>
@@ -99,9 +105,6 @@
     <lastmod>2025-11-21T12:15:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/</loc>
-    <lastmod>2025-11-03T20:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/github-actions/</loc>
     <lastmod>2025-11-03T20:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2025/10/20/call-oauth-protected-backends-from-api-management-using-send-request-policy-with-client-certificate/</loc>

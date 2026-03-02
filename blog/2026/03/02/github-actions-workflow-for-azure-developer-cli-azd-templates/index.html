@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>GitHub Actions Workflow for Azure Developer CLI (azd) Templates | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/cover.png"/>
+<meta name="twitter:title" content="GitHub Actions Workflow for Azure Developer CLI (azd) Templates"/>
+<meta name="twitter:description" content="In this post, I&rsquo;ll show how I structure a GitHub Actions workflow for Azure Developer CLI (azd) templates so I can automate the process of building, deploying, verifying and cleaning up. The workflow makes it easier to validate my own changes and review external contributions. I&rsquo;ll walk through each job with practical snippets and explain why I split build, deployment and verification."/>
+
+	<meta property="og:title" content="GitHub Actions Workflow for Azure Developer CLI (azd) Templates" />
+<meta property="og:description" content="In this post, I&rsquo;ll show how I structure a GitHub Actions workflow for Azure Developer CLI (azd) templates so I can automate the process of building, deploying, verifying and cleaning up. The workflow makes it easier to validate my own changes and review external contributions. I&rsquo;ll walk through each job with practical snippets and explain why I split build, deployment and verification." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-03-02T06:00:00+01:00" />
+<meta property="article:modified_time" content="2026-03-02T06:00:00+01:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=GitHub%20Actions%20Workflow%20for%20Azure%20Developer%20CLI%20%28azd%29%20Templates&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f03%2f02%2fgithub-actions-workflow-for-azure-developer-cli-azd-templates%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f03%2f02%2fgithub-actions-workflow-for-azure-developer-cli-azd-templates%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f03%2f02%2fgithub-actions-workflow-for-azure-developer-cli-azd-templates%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Mar 2, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    12 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">GitHub Actions Workflow for Azure Developer CLI (azd) Templates</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working with the <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/">Azure Developer CLI (azd)</a> for the past year, creating several templates to simplify the deployment of Azure solutions. Each change to a template can affect both infrastructure and application behavior. To make changes with more confidence, I include a GitHub Actions workflow in my repositories that automates build, deployment, verification and cleanup.</p>
+<p>This setup also helps when reviewing pull requests from other developers or automated tools. I can open a PR, let the workflow validate everything end to end and automatically remove all resources afterward.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#workflow-structure">Workflow Structure</a></li>
+<li><a href="#common-configuration">Common Configuration</a></li>
+<li><a href="#build-verify-and-package">Build, Verify and Package</a></li>
+<li><a href="#deploy-to-azure">Deploy to Azure</a></li>
+<li><a href="#verify-deployment">Verify Deployment</a></li>
+<li><a href="#clean-up-resources">Clean Up Resources</a></li>
+<li><a href="#add-cleanup-input-parameter">Add Cleanup Input Parameter</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="workflow-structure">Workflow Structure</h3>
+<p>My azd workflows usually consist of the following four jobs:</p>
+<ul>
+<li><strong>Build, Verify and Package</strong>: Sets up the build environment, validates the Bicep template, executes unit tests and packages the project&rsquo;s code and integration tests</li>
+<li><strong>Deploy to Azure</strong>: Provisions the Azure infrastructure and deploys the packaged applications to the created resources</li>
+<li><strong>Verify Deployment</strong>: Runs automated integration tests to verify the deployed resources and application. It can also verify monitoring and logging, for example by checking that availability tests succeed.</li>
+<li><strong>Clean Up Resources</strong>: Removes all deployed Azure resources</li>
+</ul>
+<p>See the following screenshot for a summary of a workflow run:</p>
+<p><img src="../../../../../images/github-actions-workflow-for-azd-templates/github-actions-workflow-summary.png" alt="GitHub Actions Workflow Summary"></p>
+<p>Splitting the workflow into different jobs makes it easier to understand and maintain. Each job has a clear purpose and a focused set of steps. If we can&rsquo;t build the code or validation of the template fails, we don&rsquo;t need to deploy anything. If deployment fails, we know the issue is in provisioning or deployment steps instead of application code. If verification fails, we know the issue is likely in application code or test code instead of infrastructure.</p>
+<p>Every template has its own needs when it comes to the workflow. So, I created <a href="https://gist.github.com/ronaldbosma/c033a33483f67cfe9eb4752d1f52a7fa#file-azure-dev-yml">a gist</a> with a full example of a workflow that has all jobs and steps mentioned above. You can use it as a starting point for your own templates and adjust it to your needs.</p>
+<p>If you want to use Azure DevOps Pipelines instead of GitHub Actions, the overall structure and steps are similar. You can check out <a href="https://github.com/ronaldbosma/call-apim-with-managed-identity/blob/main/.azdo/pipelines/azure-dev.yml">this pipeline example</a>. It doesn&rsquo;t have the exact same steps as the GitHub Actions workflow from the gist, but it follows the same general pattern of build, deploy, verify and clean up.</p>
+<blockquote>
+<p>I used <a href="https://devblogs.microsoft.com/devops/azure-developer-cli-from-dev-to-prod-with-azure-devops-pipelines/">Azure Developer CLI: From Dev to Prod with Azure DevOps Pipelines</a> for inspiration while creating my first azd workflow.</p>
+</blockquote>
+<h3 id="common-configuration">Common Configuration</h3>
+<p>If my template has hooks, they are usually written in PowerShell because I&rsquo;m more proficient in it. So I set PowerShell Core as the default shell at the workflow level:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">defaults</span>:
+  <span style="color:#f92672">run</span>:
+    <span style="color:#f92672">shell</span>: <span style="color:#ae81ff">pwsh</span> <span style="color:#75715e"># Use PowerShell Core for all scripts (the azd hooks are written in PowerShell)</span>
+</code></pre></div><p>I also define these <code>env</code> variables which are mandatory for azd:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">env</span>:
+  <span style="color:#75715e"># Add a unique suffix to the environment name for pull requests to avoid name conflicts</span>
+  <span style="color:#f92672">AZURE_ENV_NAME</span>: <span style="color:#ae81ff">${{ github.event.pull_request.number &amp;&amp; format(&#39;{0}-pr{1}&#39;, vars.AZURE_ENV_NAME, github.event.pull_request.number) || vars.AZURE_ENV_NAME }}</span>
+  <span style="color:#f92672">AZURE_LOCATION</span>: <span style="color:#ae81ff">${{ vars.AZURE_LOCATION }}</span>
+  <span style="color:#f92672">AZURE_SUBSCRIPTION_ID</span>: <span style="color:#ae81ff">${{ secrets.AZURE_SUBSCRIPTION_ID || vars.AZURE_SUBSCRIPTION_ID }}</span>
+  <span style="color:#75715e"># Set additional configuration settings</span>
+  <span style="color:#75715e"># SAMPLE_ENVIRONMENT_VARIABLE: ${{ vars.SAMPLE_ENVIRONMENT_VARIABLE }}</span>
+</code></pre></div><p>I add a pull request suffix to <code>AZURE_ENV_NAME</code> so parallel PRs in the same repository don&rsquo;t overwrite each other.</p>
+<p>Notice the pattern <code>${{ secrets.AZURE_SUBSCRIPTION_ID || vars.AZURE_SUBSCRIPTION_ID }}</code>. When you run <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference#azd-pipeline-config"><code>azd pipeline config</code></a> and choose OpenID Connect (OIDC) as the authentication mechanism, azd creates <code>AZURE_CLIENT_ID</code>, <code>AZURE_TENANT_ID</code> and <code>AZURE_SUBSCRIPTION_ID</code> as GitHub variables by default. However, <a href="https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect">Microsoft recommends using secrets for these values</a> to reduce the risk of exposing them in logs. Supporting both <code>secrets</code> and <code>vars</code> makes migration easy.</p>
+<blockquote>
+<p>I usually add a tip in the &lsquo;Setting Up the Pipeline&rsquo; section of the README of a template to replace the variables with secrets for better security.</p>
+</blockquote>
+<p>If a template has more parameters, I add those as environment variables too.</p>
+<p>Most jobs will sign into Azure and need the <code>id-token: write</code> permission to use OIDC authentication, so I set that at job level. The <code>contents: read</code> permission is also required to checkout code if needed. For example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">build-verify-package</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Build, Verify and Package</span>
+  <span style="color:#f92672">runs-on</span>: <span style="color:#ae81ff">ubuntu-latest</span>
+  <span style="color:#f92672">permissions</span>:
+    <span style="color:#f92672">id-token</span>: <span style="color:#ae81ff">write</span> <span style="color:#75715e"># Required to fetch an OIDC token for Azure authentication</span>
+    <span style="color:#f92672">contents</span>: <span style="color:#ae81ff">read </span> <span style="color:#75715e"># Required to checkout code if needed</span>
+</code></pre></div><p>Most jobs also require azd, which can be installed using the <a href="https://github.com/Azure/setup-azd">Azure/setup-azd</a> action:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Setup azd</span>
+  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">Azure/setup-azd@v2</span>
+</code></pre></div><p>And lastly, they need to authenticate with Azure. I use Azure CLI authentication with azd commands. That way, I can use the <a href="https://github.com/Azure/login">azure/login</a> to authenticate and the credentials are shared between azd commands and az (Azure CLI) commands used in hooks.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># Use Azure CLI authentication with azd commands so credentials are shared between azd commands and az (Azure CLI) commands used in hooks.</span>
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Configure azd to use Azure CLI Authentication</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">azd config set auth.useAzCliAuth &#34;true&#34;</span>
+
+<span style="color:#75715e"># Login to the Azure CLI with OpenID Connect (OIDC) using federated identity credentials.</span>
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Azure CLI Login</span>
+  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">azure/login@v2</span>
+  <span style="color:#f92672">with</span>:
+    <span style="color:#f92672">client-id</span>: <span style="color:#ae81ff">${{ secrets.AZURE_CLIENT_ID || vars.AZURE_CLIENT_ID }}</span>
+    <span style="color:#f92672">tenant-id</span>: <span style="color:#ae81ff">${{ secrets.AZURE_TENANT_ID || vars.AZURE_TENANT_ID }}</span>
+    <span style="color:#f92672">subscription-id</span>: <span style="color:#ae81ff">${{ secrets.AZURE_SUBSCRIPTION_ID || vars.AZURE_SUBSCRIPTION_ID }}</span>
+</code></pre></div><blockquote>
+<p>The page <a href="https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect">Use the Azure Login action with OpenID Connect</a> describes how to set up OIDC authentication for GitHub Actions and Azure manually, but I recommend using <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference#azd-pipeline-config"><code>azd pipeline config</code></a>, because it guides you through the process and automatically creates the necessary configuration in both Azure and GitHub.</p>
+</blockquote>
+<h3 id="build-verify-and-package">Build, Verify and Package</h3>
+<p>In this job, I set up the required tools, validate infrastructure and package everything needed for deployment and verification.</p>
+<p>See the screenshot below for an example of how this job looks in the workflow run:</p>
+<p><img src="../../../../../images/github-actions-workflow-for-azd-templates/build-job.png" alt="Build, Verify and Package job"></p>
+<p>If the template contains application code, this job usually installs additional tools besides azd such as .NET and Node.js.</p>
+<p>I also print the tool versions. I once used a new Bicep feature that failed in the workflow because the runner had an older tool version. This step made the mismatch obvious:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Print Tool Versions</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    az version
+</span><span style="color:#e6db74">    az bicep version
+</span><span style="color:#e6db74">    azd version
+</span><span style="color:#e6db74">    Write-Host &#34;.NET SDK Version: $(dotnet --version)&#34;
+</span><span style="color:#e6db74">    Write-Host &#34;Node.js Version: $(node --version)&#34;
+</span><span style="color:#e6db74">    Write-Host &#34;npm Version: $(npm --version)&#34;</span>    
+</code></pre></div><p>Then I run Bicep lint:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Bicep Lint</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">az bicep lint --file ./infra/main.bicep</span>
+</code></pre></div><p>My repositories include a <code>bicepconfig.json</code> where almost all rules are set to <code>error</code>, so the workflow fails quickly when the template doesn&rsquo;t comply. For details, see <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-config-linter">Add linter settings in the Bicep config file</a>.</p>
+<p>If you&rsquo;re using <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/layered-provisioning">layered provisioning</a> (currently in beta), make sure to lint every layer.</p>
+<p>Linting is useful, but I also validate the full deployment at subscription scope because it catches additional issues (note that this requires Azure login):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Validate Template</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    az deployment sub validate `
+</span><span style="color:#e6db74">      --template-file &#39;./infra/main.bicep&#39; `
+</span><span style="color:#e6db74">      --location $env:AZURE_LOCATION `
+</span><span style="color:#e6db74">      --parameters environmentName=$env:AZURE_ENV_NAME `
+</span><span style="color:#e6db74">                   location=$env:AZURE_LOCATION</span>    
+</code></pre></div><p>If your <code>main.bicep</code> file has more parameters, add those to the validate command as well.</p>
+<p>If the application code has unit tests, I run those too. The test results are stored in the <code>artifacts</code> folder and uploaded as workflow artifacts, which can be helpful for later inspection. Here&rsquo;s an example of running .NET tests, but you can adapt it to your test framework and language:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Run Unit Tests for Function App</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet run --report-trx --results-directory &#34;${{ github.workspace }}/artifacts/TestResults/functionApp&#34;</span>
+  <span style="color:#f92672">working-directory</span>: <span style="color:#ae81ff">./src/functionApp/FunctionApp.Tests</span>
+
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Run Unit Tests for Logic App Functions</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet run --report-trx --results-directory &#34;${{ github.workspace }}/artifacts/TestResults/logicApp&#34;</span>
+  <span style="color:#f92672">working-directory</span>: <span style="color:#ae81ff">./src/logicApp/Functions.Tests</span>
+
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Run Unit Tests for Logic App Workflows</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet run --report-trx --results-directory &#34;${{ github.workspace }}/artifacts/TestResults/logicApp&#34;</span>
+  <span style="color:#f92672">working-directory</span>: <span style="color:#ae81ff">./src/logicApp/Workflows.Tests</span>
+
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Upload Unit Test Results</span>
+  <span style="color:#f92672">if</span>: <span style="color:#ae81ff">always()</span>
+  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/upload-artifact@v7</span>
+  <span style="color:#f92672">with</span>:
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">unit-test-results</span>
+    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/TestResults/</span>
+    <span style="color:#f92672">retention-days</span>: <span style="color:#ae81ff">1</span>
+</code></pre></div><p>Note that the <code>if: always()</code> condition ensures that test results are uploaded even if some tests fail, which is important for diagnosing issues.</p>
+<blockquote>
+<p>I&rsquo;m using <a href="https://learn.microsoft.com/en-us/dotnet/core/testing/microsoft-testing-platform-intro?tabs=dotnetcli">Microsoft.Testing.Platform</a> in my test projects, so I can use <code>dotnet run</code> to execute tests. If you&rsquo;re using VSTest, you can use <code>dotnet test</code> instead. Just make sure to specify the correct logger and results directory to store the test results as artifacts.</p>
+</blockquote>
+<p>After validation, I package each app with <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference#azd-package"><code>azd package</code></a> and upload artifacts. Here&rsquo;s an example for a Function App:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Create artifacts folder</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">mkdir -p ./artifacts</span>
+
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Package Function App</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">azd package functionApp --output-path ./artifacts/functionapp-package.zip --no-prompt</span>
+
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Upload Function App Package</span>
+  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/upload-artifact@v7</span>
+  <span style="color:#f92672">with</span>:
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">functionapp-package</span>
+    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/functionapp-package.zip</span>
+    <span style="color:#f92672">retention-days</span>: <span style="color:#ae81ff">1</span>
+</code></pre></div><p>A retention period of one day is enough for my PR validation scenario, but you can increase it if you need to debug runs later.</p>
+<p>If the template includes integration tests, I build and publish those artifacts too:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Build Integration Tests</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet build ./tests/IntegrationTests/IntegrationTests.csproj --configuration Release --output ./artifacts/integration-tests</span>
+
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Upload Integration Tests Package</span>
+  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/upload-artifact@v7</span>
+  <span style="color:#f92672">with</span>:
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">integration-tests-package</span>
+    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/integration-tests/</span>
+    <span style="color:#f92672">retention-days</span>: <span style="color:#ae81ff">1</span>
+</code></pre></div><p>I build the integration tests in this job, because if they don&rsquo;t build, there&rsquo;s no point in deploying to Azure. By building them here, I can fail fast and save time and resources.</p>
+<h3 id="deploy-to-azure">Deploy to Azure</h3>
+<p>Because the applications are already packaged, infrastructure provisioning and application deployment are separated into different steps in the deploy job.</p>
+<p>See the screenshot below for an example of how this job looks in the workflow run:</p>
+<p><img src="../../../../../images/github-actions-workflow-for-azd-templates/deploy-job.png" alt="Deploy job"></p>
+<p>To provision the infrastructure, I run <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference#azd-provision"><code>azd provision</code></a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Provision Infrastructure</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">azd provision --no-prompt</span>
+</code></pre></div><p>If the template includes application code, the corresponding artifact is downloaded and deployed with <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference#azd-deploy"><code>azd deploy</code></a>. For example, to deploy a Function App from the package created in the previous job:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Download Function App Package</span>
+  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/download-artifact@v8</span>
+  <span style="color:#f92672">with</span>:
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">functionapp-package</span>
+    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts</span>
+
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Deploy Function App</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">azd deploy functionApp --from-package ./artifacts/functionapp-package.zip --no-prompt</span>
+</code></pre></div><p>During provisioning, azd creates a file with environment variables (<code>.azure/&lt;environment-name&gt;/.env</code>) with the outputs from <code>main.bicep</code>. Later jobs often need those values to connect to deployed resources. In my workflows, I use <a href="https://gist.github.com/ronaldbosma/c033a33483f67cfe9eb4752d1f52a7fa#file-export-azd-env-variables-ps1">this little helper script</a> to export selected azd environment values into job outputs:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Get Output Variables</span>
+  <span style="color:#f92672">id</span>: <span style="color:#ae81ff">get-outputs</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    $variableNames = @(
+</span><span style="color:#e6db74">      &#34;AZURE_RESOURCE_GROUP&#34;,
+</span><span style="color:#e6db74">      &#34;AZURE_ENV_ID&#34;,
+</span><span style="color:#e6db74">      &#34;AZURE_API_MANAGEMENT_GATEWAY_URL&#34;,
+</span><span style="color:#e6db74">      &#34;AZURE_APPLICATION_INSIGHTS_NAME&#34;,
+</span><span style="color:#e6db74">      &#34;AZURE_KEY_VAULT_URI&#34;
+</span><span style="color:#e6db74">    )
+</span><span style="color:#e6db74">    .\.github\workflows\scripts\export-azd-env-variables.ps1 -VariableNames $variableNames</span>    
+</code></pre></div><p>The script reads values with <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference#azd-env-get-value"><code>azd env get-value</code></a>, then writes them as <a href="https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/pass-job-outputs">job outputs in GitHub Actions</a> so they can be used in later jobs. Don&rsquo;t forget to add the output variables to the deploy job definition:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">deploy</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Deploy to Azure</span>
+
+  <span style="color:#75715e"># ... OTHER PROPERTIES ...</span>
+
+  <span style="color:#f92672">outputs</span>:
+    <span style="color:#f92672">AZURE_RESOURCE_GROUP</span>: <span style="color:#ae81ff">${{ steps.get-outputs.outputs.AZURE_RESOURCE_GROUP }}</span>
+    <span style="color:#f92672">AZURE_ENV_ID</span>: <span style="color:#ae81ff">${{ steps.get-outputs.outputs.AZURE_ENV_ID }}</span>
+    <span style="color:#f92672">AZURE_API_MANAGEMENT_GATEWAY_URL</span>: <span style="color:#ae81ff">${{ steps.get-outputs.outputs.AZURE_API_MANAGEMENT_GATEWAY_URL }}</span>
+    <span style="color:#f92672">AZURE_APPLICATION_INSIGHTS_NAME</span>: <span style="color:#ae81ff">${{ steps.get-outputs.outputs.AZURE_APPLICATION_INSIGHTS_NAME }}</span>
+    <span style="color:#f92672">AZURE_KEY_VAULT_URI</span>: <span style="color:#ae81ff">${{ steps.get-outputs.outputs.AZURE_KEY_VAULT_URI }}</span>
+</code></pre></div><h3 id="verify-deployment">Verify Deployment</h3>
+<p>The verification strategy depends on the template. See the screenshot below for an example of how this job could look in a workflow run:</p>
+<p><img src="../../../../../images/github-actions-workflow-for-azd-templates/verify-deployment-job.png" alt="Verify Deployment job"></p>
+<p>For templates with end-to-end tests, I set up .NET, download the integration test artifact and run tests against deployed resources:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Setup .NET 10</span>
+  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/setup-dotnet@v5</span>
+  <span style="color:#f92672">with</span>:
+    <span style="color:#f92672">dotnet-version</span>: <span style="color:#e6db74">&#39;10.0.x&#39;</span>
+
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Download Integration Tests Package</span>
+  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/download-artifact@v8</span>
+  <span style="color:#f92672">with</span>:
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">integration-tests-package</span>
+    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/integration-tests</span>
+
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Run Integration Tests</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet ./artifacts/integration-tests/IntegrationTests.dll --report-trx --results-directory ./artifacts/integration-tests/TestResults</span>
+  <span style="color:#f92672">working-directory</span>: <span style="color:#ae81ff">./</span>
+  <span style="color:#f92672">env</span>:
+    <span style="color:#75715e"># Pass the necessary deployed resource properties as environment variables so the integration tests can access them.</span>
+    <span style="color:#f92672">AZURE_TENANT_ID</span>: <span style="color:#ae81ff">${{ secrets.AZURE_TENANT_ID || vars.AZURE_TENANT_ID }}</span>
+    <span style="color:#f92672">AZURE_RESOURCE_GROUP</span>: <span style="color:#ae81ff">${{ needs.deploy.outputs.AZURE_RESOURCE_GROUP }}</span>
+    <span style="color:#f92672">AZURE_API_MANAGEMENT_GATEWAY_URL</span>: <span style="color:#ae81ff">${{ needs.deploy.outputs.AZURE_API_MANAGEMENT_GATEWAY_URL }}</span>
+    <span style="color:#f92672">AZURE_KEY_VAULT_URI</span>: <span style="color:#ae81ff">${{ needs.deploy.outputs.AZURE_KEY_VAULT_URI }}</span>
+
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Upload Test Results</span>
+  <span style="color:#f92672">if</span>: <span style="color:#ae81ff">always()</span>
+  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/upload-artifact@v7</span>
+  <span style="color:#f92672">with</span>:
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">integration-test-results</span>
+    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/integration-tests/TestResults/</span>
+    <span style="color:#f92672">retention-days</span>: <span style="color:#ae81ff">1</span>
+</code></pre></div><p>Note the environment variables passed to the test job. They are taken from the outputs of the deploy job, which in turn are retrieved from the azd environment file created during provisioning. This way, the tests can connect to the correct deployed resources without hardcoding any values.</p>
+<blockquote>
+<p>If you need secrets in your tests, for example an API key, you can store those in Key Vault and give the pipeline access to the vault. That way, you can keep secrets out of GitHub and still use them in your tests.</p>
+<p>And if you need to call APIs protected by OAuth, you can use the same OIDC credentials from the workflow to get an access token in your tests. I explain how to do that in detail in my blog post <a href="/blog/2025/11/03/call-oauth-protected-apis-from-github-actions-using-federated-credentials/">Call OAuth-Protected APIs from GitHub Actions Using Federated Credentials</a>.</p>
+</blockquote>
+<p>Templates can also perform other types of verification. For example, check logging in Azure Monitor using a custom script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Verify Monitoring</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    .\.github\workflows\scripts\verify-monitoring.ps1 `
+</span><span style="color:#e6db74">      -ResourceGroupName &#34;${{ needs.deploy.outputs.AZURE_RESOURCE_GROUP }}&#34; `
+</span><span style="color:#e6db74">      -AppInsightsName &#34;${{ needs.deploy.outputs.AZURE_APPLICATION_INSIGHTS_NAME }}&#34;</span>    
+</code></pre></div><p>If a script needs environment-specific values, use outputs from the deploy job.</p>
+<h3 id="clean-up-resources">Clean Up Resources</h3>
+<p>The cleanup job runs after deployment and verification to remove all deployed resources. See the screenshot below for an example of how this job looks in the workflow run:</p>
+<p><img src="../../../../../images/github-actions-workflow-for-azd-templates/cleanup-job.png" alt="Cleanup job"></p>
+<p>It runs the <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference#azd-down"><code>azd down</code></a> command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Cleanup Resources</span>
+  <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">azd down --purge --force --no-prompt</span>
+  <span style="color:#f92672">env</span>:
+    <span style="color:#75715e"># Pass the deployed resource identifiers as environment variables so azd hooks can access them</span>
+    <span style="color:#75715e"># during cleanup operations (e.g., for custom resource deletion or additional cleanup tasks).</span>
+    <span style="color:#f92672">AZURE_ENV_ID</span>: <span style="color:#ae81ff">${{ needs.deploy.outputs.AZURE_ENV_ID }}</span>
+</code></pre></div><p>I use the <code>--purge</code> flag to make sure no resources are left behind in a soft-deleted state.</p>
+<p>If your <code>predown</code> or <code>postdown</code> hooks need values from the deployed environment, pass them from deploy job outputs just like in verification.</p>
+<p>For pull request validation, automatic cleanup keeps subscription hygiene under control and prevents unnecessary cost.</p>
+<h3 id="add-cleanup-input-parameter">Add Cleanup Input Parameter</h3>
+<p>Besides PR verification, the workflow can also be used to spin up a temporary environment. That&rsquo;s useful when you don&rsquo;t have azd installed locally or when you want to demo a branch quickly.</p>
+<p>By default, I clean up all resources at the end of the workflow, but I include a <code>cleanup-resources</code> input so I can keep resources when manually running the workflow:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">workflow_dispatch</span>:
+  <span style="color:#f92672">inputs</span>:
+    <span style="color:#f92672">cleanup-resources</span>:
+      <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#39;Clean up resources after deployment&#39;</span>
+      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">false</span>
+      <span style="color:#f92672">default</span>: <span style="color:#66d9ef">true</span>
+      <span style="color:#f92672">type</span>: <span style="color:#ae81ff">boolean</span>
+</code></pre></div><p>When the workflow is triggered manually, this input appears in the UI:</p>
+<p><img src="../../../../../images/github-actions-workflow-for-azd-templates/github-actions-workflow-manual-trigger.png" alt="GitHub Actions Workflow Manual Trigger"></p>
+<p>When I uncheck this input in a manual run, the cleanup job is skipped. Later, I can trigger another run with cleanup enabled to remove the environment.</p>
+<p>The condition on the cleanup job looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">cleanup</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Clean Up Resources</span>
+  <span style="color:#f92672">needs</span>: [ <span style="color:#ae81ff">deploy, verify-deployment ]</span>
+  <span style="color:#f92672">if</span>: <span style="color:#ae81ff">${{ success() &amp;&amp; (github.event_name != &#39;workflow_dispatch&#39; || github.event.inputs.cleanup-resources == &#39;true&#39;) }}</span>
+</code></pre></div><h3 id="conclusion">Conclusion</h3>
+<p>Using this workflow setup gives me confidence when changing azd templates. It validates infrastructure and application behavior and removes resources automatically after it&rsquo;s done. It also makes it easier to verify external contributions from other developers or automated tools like Renovate or Dependabot.</p>
+<p>The key is to keep jobs focused: build and package once, deploy predictably, verify behavior and clean up. With this setup, each pull request gets a repeatable end-to-end check that mirrors real usage.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-developer-cli">Azure Developer CLI</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azd">azd</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/github-actions">GitHub Actions</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/02/23/tips-and-tricks-for-authoring-azure-developer-cli-azd-templates/">Tips and Tricks for Authoring Azure Developer CLI (azd) Templates &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-developer-cli">azure-developer-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
