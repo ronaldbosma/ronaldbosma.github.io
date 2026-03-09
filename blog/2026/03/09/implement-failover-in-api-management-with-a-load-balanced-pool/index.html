@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Implement Failover in API Management with a Load-balanced Pool | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/03/09/implement-failover-in-api-management-with-a-load-balanced-pool/cover.png"/>
+<meta name="twitter:title" content="Implement Failover in API Management with a Load-balanced Pool"/>
+<meta name="twitter:description" content="In this post, I&rsquo;ll show you how to implement (regional) failover in Azure API Management using priority-based load-balanced pools, backend circuit breakers and retry policies. The setup sends traffic to the local backend by default and automatically fails over to the secondary backend when the primary backend becomes unavailable."/>
+
+	<meta property="og:title" content="Implement Failover in API Management with a Load-balanced Pool" />
+<meta property="og:description" content="In this post, I&rsquo;ll show you how to implement (regional) failover in Azure API Management using priority-based load-balanced pools, backend circuit breakers and retry policies. The setup sends traffic to the local backend by default and automatically fails over to the secondary backend when the primary backend becomes unavailable." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/03/09/implement-failover-in-api-management-with-a-load-balanced-pool/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/03/09/implement-failover-in-api-management-with-a-load-balanced-pool/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-03-09T06:00:00+01:00" />
+<meta property="article:modified_time" content="2026-03-09T06:00:00+01:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Implement%20Failover%20in%20API%20Management%20with%20a%20Load-balanced%20Pool&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f03%2f09%2fimplement-failover-in-api-management-with-a-load-balanced-pool%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f03%2f09%2fimplement-failover-in-api-management-with-a-load-balanced-pool%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f03%2f09%2fimplement-failover-in-api-management-with-a-load-balanced-pool%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Mar 9, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    7 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Implement Failover in API Management with a Load-balanced Pool</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/03/09/implement-failover-in-api-management-with-a-load-balanced-pool/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working with Azure API Management on integrations where high availability across regions is a requirement. A colleague recently asked if there was a clean failover approach for a setup with API Management in two regions and a Function App backend in each region.</p>
+<p>The requirement was simple:</p>
+<ul>
+<li>Requests should go to the Function App in the same region as the API Management instance</li>
+<li>If that Function App is down, traffic should automatically fail over to the Function App in the other region</li>
+</ul>
+<p>In this post, I&rsquo;ll show you how to implement that scenario using <a href="https://learn.microsoft.com/en-us/azure/api-management/backends?tabs=portal#load-balanced-pool">load-balanced pools in API Management</a>, <a href="https://learn.microsoft.com/en-us/azure/api-management/backends?tabs=portal#circuit-breaker">backend circuit breakers</a> and the <a href="https://learn.microsoft.com/en-us/azure/api-management/retry-policy">retry policy</a>.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#scenario-overview">Scenario Overview</a></li>
+<li><a href="#why-load-balanced-pools-are-a-good-fit">Why Load-balanced Pools Are a Good Fit</a></li>
+<li><a href="#create-backends-with-circuit-breakers">Create Backends with Circuit Breakers</a></li>
+<li><a href="#create-a-priority-based-load-balanced-pool">Create a Priority-based Load-balanced Pool</a></li>
+<li><a href="#configure-the-api-to-use-the-pool">Configure the API to Use the Pool</a></li>
+<li><a href="#add-retry-to-trigger-fast-failover">Add Retry to Trigger Fast Failover</a></li>
+<li><a href="#try-it-out">Try It Out</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="scenario-overview">Scenario Overview</h3>
+<p>The following diagram shows the target architecture:</p>
+<p><img src="../../../../../../images/failover-in-apim-with-load-balanced-pool/apim-failover-overview.png" alt="APIM failover overview"></p>
+<p>API Management is deployed in two regions. Each region has its own Function App backend.</p>
+<p>When a request arrives at API Management in the primary region, it should call the Function App in the same region. But if that backend is unavailable, API Management should fail over to the backend in the secondary region.</p>
+<p>One possible approach is custom policy logic that checks responses and manually calls the secondary backend using <code>send-request</code>. That works, but it can add a lot of policy complexity.</p>
+<p>Load-balanced pools are a cleaner solution for this scenario.</p>
+<h3 id="why-load-balanced-pools-are-a-good-fit">Why Load-balanced Pools Are a Good Fit</h3>
+<p>API Management supports three balancing modes in a load-balanced pool:</p>
+<ul>
+<li><strong>Round-robin</strong>: Distributes requests evenly across backends</li>
+<li><strong>Weighted</strong>: Distributes requests based on backend weights</li>
+<li><strong>Priority-based</strong>: Uses higher-priority backend groups first, then lower-priority groups when higher groups are unavailable</li>
+</ul>
+<p>For failover, the priority-based option is exactly what we need. Note that lower-priority backends are used only when higher-priority backends are considered unavailable because their circuit breaker rules are tripped.</p>
+<p>So the core idea is:</p>
+<ul>
+<li>Define two backends (one for each function app)</li>
+<li>Add circuit breaker rules to each backend</li>
+<li>Put both in a load-balanced pool with regional priority order</li>
+</ul>
+<h3 id="create-backends-with-circuit-breakers">Create Backends with Circuit Breakers</h3>
+<p>Let&rsquo;s start by creating an API Management backend for a Function App, including a circuit breaker. This uses the <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.apimanagement/service/backends?pivots=deployment-language-bicep">Microsoft.ApiManagement/service/backends</a> resource:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource apiManagementService 'Microsoft.ApiManagement/service@2025-03-01-preview' existing = {
+  name: apiManagementServiceName
+}
+
+resource functionApp 'Microsoft.Web/sites@2025-03-01' existing = {
+  name: functionAppName
+}
+
+resource functionAppBackend 'Microsoft.ApiManagement/service/backends@2025-03-01-preview' = {
+    parent: apiManagementService
+    name: functionAppName
+    properties: {
+        description: 'The backend for Function App ${functionAppName}'
+        url: 'https://${functionApp.properties.defaultHostName}'
+        protocol: 'http'
+        credentials: {
+            header: {
+                'x-functions-key': [
+                    listKeys('${functionApp.id}/host/default', functionApp.apiVersion).functionKeys.default
+                ]
+            }
+        }
+        circuitBreaker: {
+            rules: [
+                {
+                    name: 'rule'
+                    tripDuration: 'PT30S'
+                    acceptRetryAfter: true
+                    failureCondition: {
+                        count: 3
+                        errorReasons: [
+                            'BackendConnectionFailure'
+                        ]
+                        interval: 'PT15S'
+                        statusCodeRanges: [
+                            {
+                                min: 502 // Bad Gateway
+                                max: 504 // Gateway Timeout
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}
+</code></pre><p>This backend configuration does the following:</p>
+<ol>
+<li>Registers the Function App URL as an API Management backend</li>
+<li>Adds the Function host key in the <code>x-functions-key</code> header</li>
+<li>Configures a circuit breaker to detect backend issues</li>
+</ol>
+<p>The circuit breaker rule means that if API Management sees three failures within 15 seconds (either <code>BackendConnectionFailure</code> or response codes in the 502-504 range), it opens the circuit for 30 seconds. While the circuit is open, API Management treats this backend as unavailable for pool routing decisions.</p>
+<p>Note that the configured <code>tripDuration</code> and <code>failureCondition</code> values are chosen to demonstrate the scenario in this post. When implementing this in a real solution, review and tune these values based on your traffic patterns, backend behavior and recovery expectations.</p>
+<h3 id="create-a-priority-based-load-balanced-pool">Create a Priority-based Load-balanced Pool</h3>
+<p>Next, create a load-balanced pool that references both regional backends:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource loadBalancedPool 'Microsoft.ApiManagement/service/backends@2025-03-01-preview' = {
+    name: 'load-balanced-pool'
+    parent: apiManagementService
+    properties: {
+        description: 'Load balancer for multiple regions'
+        type: 'Pool'
+        pool: {
+            services: [
+                {
+                    id: currentRegionBackendId
+                    priority: 1
+                }
+                {
+                    id: otherRegionBackendId
+                    priority: 2
+                }
+            ]
+        }
+    }
+}
+</code></pre><p>It uses the same <code>service/backends</code> resource type as a normal backend, but with <code>type: 'Pool'</code>.</p>
+<p>In the primary region:</p>
+<ul>
+<li>The backend for Function App in the primary region gets priority <code>1</code></li>
+<li>The backend for Function App in the secondary region gets priority <code>2</code></li>
+</ul>
+<p>In the secondary region, you reverse that setup.</p>
+<p>With that in place, API Management uses the local backend first. If the local backend circuit breaker is open, the next request goes to the next priority group, which is the backend in the other region.</p>
+<h3 id="configure-the-api-to-use-the-pool">Configure the API to Use the Pool</h3>
+<p>You can configure the pool in the <code>inbound</code> section with <a href="https://learn.microsoft.com/en-us/azure/api-management/set-backend-service-policy"><code>set-backend-service</code></a>, just like a regular backend:</p>
+<pre tabindex="0"><code>&lt;inbound&gt;
+    &lt;base /&gt;
+    &lt;set-backend-service backend-id=&quot;load-balanced-pool&quot; /&gt;
+    &lt;rewrite-uri template=&quot;api/ProcessRequestFunction&quot; /&gt;
+&lt;/inbound&gt;
+</code></pre><p>This policy does three things:</p>
+<ol>
+<li>Inherits base policies with <code>&lt;base /&gt;</code></li>
+<li>Routes the operation to the <code>load-balanced-pool</code> backend</li>
+<li>Rewrites the incoming URI to the Function route path</li>
+</ol>
+<p>From this point on, backend selection is handled by the pool configuration and circuit breaker state.</p>
+<h3 id="add-retry-to-trigger-fast-failover">Add Retry to Trigger Fast Failover</h3>
+<p>It&rsquo;s important to note that a load-balanced pool does not retry within the same client request by itself. For example, if the selected backend returns a <code>503</code>, that <code>503</code> is returned to the client unless you add retry logic.</p>
+<p>Without retry, you would need multiple client calls to trip the circuit breaker and after three failing calls within 15 seconds, the fourth client call would reach the secondary region. To make failover happen within one request, add the <code>retry</code> policy in the <code>backend</code> section:</p>
+<pre tabindex="0"><code>&lt;backend&gt;
+    &lt;retry condition=&quot;@(context.Response.StatusCode &gt;= 500)&quot;
+           count=&quot;3&quot; interval=&quot;1&quot; first-fast-retry=&quot;true&quot;&gt;
+        &lt;forward-request buffer-request-body=&quot;true&quot; /&gt;
+    &lt;/retry&gt;
+&lt;/backend&gt;
+</code></pre><p>Here&rsquo;s how this works:</p>
+<ol>
+<li><code>forward-request</code> sends the request to the pool backend</li>
+<li>If the response status code is 500 or higher, API Management retries</li>
+<li>After repeated failures, the primary backend circuit breaker opens if the failure conditions are met</li>
+<li>A subsequent retry attempt in the same flow is routed to the secondary backend</li>
+</ol>
+<p>Set <code>buffer-request-body=&quot;true&quot;</code> when retrying <code>forward-request</code>. Without request buffering, retries of requests with a body can fail with a content length mismatch. See this <a href="https://stackoverflow.com/questions/54648853/retry-request-ends-with-content-length-mismatch">Stack Overflow explanation</a> for details.</p>
+<h3 id="try-it-out">Try It Out</h3>
+<p>I&rsquo;ve created a working sample here: <a href="https://github.com/ronaldbosma/azure-apim-samples/tree/main/failover-with-load-balanced-pool">Failover with Load-Balanced Pool</a>. See the README for deployment instructions and details.</p>
+<p>These files are useful to inspect:</p>
+<ul>
+<li><a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/failover-with-load-balanced-pool/infra/resilient-api/api.bicep">api.bicep</a>: Deploys the API with the load-balanced pool and backend wiring</li>
+<li><a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/failover-with-load-balanced-pool/infra/resilient-api/backend.bicep">backend.bicep</a>: Deploys a backend with circuit breaker rules</li>
+<li><a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/failover-with-load-balanced-pool/infra/resilient-api/process-request.policy.xml">process-request.policy.xml</a>: Shows the use of the load-balanced pool and retry policy that triggers failover within a single request</li>
+<li><a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/failover-with-load-balanced-pool/src/ProcessRequestFunction.cs">ProcessRequestFunction.cs</a>: Backend Function that returns status codes based on input</li>
+<li><a href="https://github.com/ronaldbosma/azure-apim-samples/blob/main/failover-with-load-balanced-pool/tests.http">tests.http</a>: Ready-to-run HTTP test requests</li>
+</ul>
+<p>Use this request against one API Management instance (<em>change the hostname and function app names as needed</em>):</p>
+<pre tabindex="0"><code>POST https://apim-primary-sdc-orfff.azure-api.net/resilient-api/
+Content-Type: application/json
+
+[
+    {
+        &quot;functionApp&quot;: &quot;func-primary-sdc-orfff&quot;,
+        &quot;respondsWithResultCode&quot;: 503
+    },
+    {
+        &quot;functionApp&quot;: &quot;func-secondary-nwe-g5bv4&quot;,
+        &quot;respondsWithResultCode&quot;: 200
+    }
+]
+</code></pre><p>This payload tells each Function App how to respond. In this example:</p>
+<ul>
+<li>The primary Function App returns <code>503 Service Unavailable</code></li>
+<li>The secondary Function App returns <code>200 OK</code></li>
+</ul>
+<p>With retry enabled, API Management will retry, trip the primary backend circuit breaker and then route to the secondary backend. The response would look like this:</p>
+<pre tabindex="0"><code>HTTP/1.1 200 OK
+Content-Type: application/json
+X-Attempt-Count: 4
+
+{
+    &quot;functionAppName&quot;: &quot;func-secondary-nwe-g5bv4&quot;,
+    &quot;region&quot;: &quot;Norway East&quot;
+}
+</code></pre><p>The body shows that the request was processed by the secondary backend, while the <code>X-Attempt-Count</code> header shows that API Management made multiple attempts to get a successful response:</p>
+<ul>
+<li><code>1</code> when the local backend succeeds immediately</li>
+<li><code>4</code> when the first backend fails three times, then the fourth attempt is sent to the secondary backend</li>
+<li><code>1</code> for repeated requests made within 30 seconds, because the primary circuit is still open and API Management directly selects the secondary backend</li>
+</ul>
+<p>The sequence below shows both cases: failover after circuit-breaker trip and direct routing while the circuit remains open.</p>
+<p><img src="../../../../../../images/failover-in-apim-with-load-balanced-pool/apim-failover-sequence-diagram.png" alt="APIM failover sequence diagram"></p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Priority-based load-balanced pools are a clean way to implement regional failover in API Management. You can keep policy logic simple while still getting robust failover behavior.</p>
+<p>The combination used in this post is:</p>
+<ul>
+<li>Backend circuit breakers to detect unhealthy backends</li>
+<li>Priority-based pools to prefer local region and fail over to secondary region</li>
+<li>Retry policy to make failover happen within a single client request</li>
+</ul>
+<p>That setup gives clients a much smoother experience during regional backend failures, while still keeping the configuration easy to reason about.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-functions">Azure Functions</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/resilience">Resilience</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/">GitHub Actions Workflow for Azure Developer CLI (azd) Templates &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-developer-cli">azure-developer-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/resilience">resilience</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

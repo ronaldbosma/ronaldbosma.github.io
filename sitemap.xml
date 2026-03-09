@@ -2,16 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://ronaldbosma.github.io/tags/api-management/</loc>
+    <lastmod>2026-03-09T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/azure/</loc>
+    <lastmod>2026-03-09T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/azure-functions/</loc>
+    <lastmod>2026-03-09T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/bicep/</loc>
+    <lastmod>2026-03-09T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/</loc>
+    <lastmod>2026-03-09T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/2026/03/09/implement-failover-in-api-management-with-a-load-balanced-pool/</loc>
+    <lastmod>2026-03-09T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/resilience/</loc>
+    <lastmod>2026-03-09T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/</loc>
+    <lastmod>2026-03-09T06:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/</loc>
+    <lastmod>2026-03-09T06:00:00+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/azd/</loc>
     <lastmod>2026-03-02T06:00:00+01:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/tags/azure/</loc>
-    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
-  </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-developer-cli/</loc>
-    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/blog/</loc>
     <lastmod>2026-03-02T06:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/github-actions/</loc>
@@ -19,15 +40,6 @@
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/</loc>
     <lastmod>2026-03-02T06:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/</loc>
-    <lastmod>2026-03-02T06:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/bicep/</loc>
-    <lastmod>2026-02-27T11:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/02/23/tips-and-tricks-for-authoring-azure-developer-cli-azd-templates/</loc>
     <lastmod>2026-02-27T11:00:00+01:00</lastmod>
@@ -59,17 +71,11 @@
     <loc>https://ronaldbosma.github.io/tags/.net/</loc>
     <lastmod>2026-02-21T13:00:00+01:00</lastmod>
   </url><url>
-    <loc>https://ronaldbosma.github.io/tags/azure-functions/</loc>
-    <lastmod>2026-02-21T13:00:00+01:00</lastmod>
-  </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/</loc>
     <lastmod>2026-02-21T13:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/</loc>
     <lastmod>2026-01-12T08:45:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/api-management/</loc>
-    <lastmod>2026-01-06T16:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/01/06/rate-limiting-in-azure-api-management/</loc>
     <lastmod>2026-01-06T16:00:00+01:00</lastmod>
