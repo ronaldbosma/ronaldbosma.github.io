@@ -27,20 +27,20 @@
     </item>
     
     <item>
+      <title>Azure Integration Services</title>
+      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
+      <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Bicep</title>
       <link>https://ronaldbosma.github.io/tags/bicep/</link>
       <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Infra as Code</title>
-      <link>https://ronaldbosma.github.io/tags/infra-as-code/</link>
-      <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/infra-as-code/</guid>
       <description></description>
     </item>
     
@@ -104,15 +104,6 @@
       <pubDate>Mon, 02 Feb 2026 17:45:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure-monitor/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Azure Integration Services</title>
-      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
-      <pubDate>Mon, 26 Jan 2026 17:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
       <description></description>
     </item>
     
@@ -203,6 +194,15 @@
       <pubDate>Fri, 21 Feb 2025 11:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/event-hub/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Infra as Code</title>
+      <link>https://ronaldbosma.github.io/tags/infra-as-code/</link>
+      <pubDate>Fri, 21 Feb 2025 11:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/infra-as-code/</guid>
       <description></description>
     </item>
     

@@ -8,6 +8,9 @@
     <loc>https://ronaldbosma.github.io/tags/azure/</loc>
     <lastmod>2026-03-23T07:00:00+01:00</lastmod>
   </url><url>
+    <loc>https://ronaldbosma.github.io/tags/azure-integration-services/</loc>
+    <lastmod>2026-03-23T07:00:00+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/tags/bicep/</loc>
     <lastmod>2026-03-23T07:00:00+01:00</lastmod>
   </url><url>
@@ -15,9 +18,6 @@
     <lastmod>2026-03-23T07:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/03/23/grouping-apis-in-azure-api-management-using-tags/</loc>
-    <lastmod>2026-03-23T07:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/infra-as-code/</loc>
     <lastmod>2026-03-23T07:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/</loc>
@@ -57,9 +57,6 @@
     <lastmod>2026-02-21T13:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-monitor/</loc>
-    <lastmod>2026-02-21T13:00:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/azure-integration-services/</loc>
     <lastmod>2026-02-21T13:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/logic-apps/</loc>
@@ -154,6 +151,9 @@
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/event-hub/</loc>
     <lastmod>2025-02-21T11:00:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/infra-as-code/</loc>
+    <lastmod>2025-12-05T10:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/service-bus/</loc>
     <lastmod>2025-02-21T11:00:00+01:00</lastmod>
