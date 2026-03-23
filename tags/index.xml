@@ -7,11 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 09 Mar 2026 06:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 23 Mar 2026 07:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>API Management</title>
       <link>https://ronaldbosma.github.io/tags/api-management/</link>
-      <pubDate>Mon, 09 Mar 2026 06:00:00 +0100</pubDate>
+      <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/api-management/</guid>
       <description></description>
@@ -20,9 +20,27 @@
     <item>
       <title>Azure</title>
       <link>https://ronaldbosma.github.io/tags/azure/</link>
-      <pubDate>Mon, 09 Mar 2026 06:00:00 +0100</pubDate>
+      <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bicep</title>
+      <link>https://ronaldbosma.github.io/tags/bicep/</link>
+      <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Infra as Code</title>
+      <link>https://ronaldbosma.github.io/tags/infra-as-code/</link>
+      <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/infra-as-code/</guid>
       <description></description>
     </item>
     
@@ -32,15 +50,6 @@
       <pubDate>Mon, 09 Mar 2026 06:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure-functions/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bicep</title>
-      <link>https://ronaldbosma.github.io/tags/bicep/</link>
-      <pubDate>Mon, 09 Mar 2026 06:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
       <description></description>
     </item>
     
@@ -194,15 +203,6 @@
       <pubDate>Fri, 21 Feb 2025 11:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/event-hub/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Infra as Code</title>
-      <link>https://ronaldbosma.github.io/tags/infra-as-code/</link>
-      <pubDate>Fri, 21 Feb 2025 11:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/infra-as-code/</guid>
       <description></description>
     </item>
     

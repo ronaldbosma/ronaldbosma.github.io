@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Grouping APIs in Azure API Management Using Tags | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/03/23/grouping-apis-in-azure-api-management-using-tags/cover.png"/>
+<meta name="twitter:title" content="Grouping APIs in Azure API Management Using Tags"/>
+<meta name="twitter:description" content="When you have a lot of APIs in Azure API Management, the view can become unwieldy. By applying tags to your APIs you can group and filter them in both the Azure Portal and the Developer Portal. In this post I&rsquo;ll show you how to assign tags to APIs using Bicep and how to automatically bubble up operation-level tags from an OpenAPI spec to the API level."/>
+
+	<meta property="og:title" content="Grouping APIs in Azure API Management Using Tags" />
+<meta property="og:description" content="When you have a lot of APIs in Azure API Management, the view can become unwieldy. By applying tags to your APIs you can group and filter them in both the Azure Portal and the Developer Portal. In this post I&rsquo;ll show you how to assign tags to APIs using Bicep and how to automatically bubble up operation-level tags from an OpenAPI spec to the API level." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/03/23/grouping-apis-in-azure-api-management-using-tags/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/03/23/grouping-apis-in-azure-api-management-using-tags/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-03-23T07:00:00+01:00" />
+<meta property="article:modified_time" content="2026-03-23T07:00:00+01:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Grouping%20APIs%20in%20Azure%20API%20Management%20Using%20Tags&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f03%2f23%2fgrouping-apis-in-azure-api-management-using-tags%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f03%2f23%2fgrouping-apis-in-azure-api-management-using-tags%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f03%2f23%2fgrouping-apis-in-azure-api-management-using-tags%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect<br>
+                                    <i class="far fa-star"></i>
+                                    Mar 23, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    7 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Grouping APIs in Azure API Management Using Tags</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/03/23/grouping-apis-in-azure-api-management-using-tags/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working with Azure API Management on a project where we have a growing number of APIs. After a while, the list of APIs in the portal becomes hard to navigate. Fortunately, API Management supports tags that let you group and filter APIs in both the Azure Portal and the Developer Portal.</p>
+<p>In this post I&rsquo;ll show you how to assign tags to APIs using Bicep. I&rsquo;ll also explore how to automatically extract operation-level tags from an OpenAPI specification and apply them to the API level, so you don&rsquo;t have to maintain that list manually.</p>
+<p>The examples are based on <a href="https://github.com/ronaldbosma/azure-apim-samples/tree/main/api-tagging">a sample</a> I&rsquo;ve created that includes three APIs: Bike Rental API, Transit Status API and Trip Planning API. Each API has a set of tags assigned at the API level, and the OpenAPI specifications can have additional tags defined at the operation level. The list below gives an overview:</p>
+<ul>
+<li>Bike Rental API
+<ul>
+<li>API tags: <code>mobility</code></li>
+<li>Operation-level tags: <code>public</code></li>
+</ul>
+</li>
+<li>Transit Status API
+<ul>
+<li>API tags: <code>mobility</code></li>
+<li>No operation-level tags</li>
+</ul>
+</li>
+<li>Trip Planning API
+<ul>
+<li>API tags: <code>mobility</code>, <code>planning</code></li>
+<li>Operation-level tags: <code>planning</code>, <code>pricing</code>, <code>public</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#the-problem-apis-without-tags">The Problem: APIs Without Tags</a></li>
+<li><a href="#registering-and-assigning-tags-in-bicep">Registering and Assigning Tags in Bicep</a></li>
+<li><a href="#bubbling-up-operation-tags-using-jsonpath">Bubbling Up Operation Tags Using JSONPath</a></li>
+<li><a href="#a-more-robust-approach-using-user-defined-functions">A More Robust Approach Using User-Defined Functions</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="the-problem-apis-without-tags">The Problem: APIs Without Tags</h3>
+<p>When you deploy an API using an OpenAPI specification, any tags defined on individual operations are not automatically applied to the API itself. If you navigate to the APIs in the Azure Portal and choose &ldquo;Group by tag&rdquo;, you&rsquo;ll see that no tags have been assigned at the API level:</p>
+<p><img src="../../../../../images/grouping-apis-in-apim-using-tags/apis-without-tags.png" alt="APIs without tags in the Azure Portal"></p>
+<p>To get grouping and filtering to work, you need to explicitly assign tags at the API level.</p>
+<h3 id="registering-and-assigning-tags-in-bicep">Registering and Assigning Tags in Bicep</h3>
+<p>To add a tag to an API, you first need to register the tag in API Management and then assign it to the API. Here&rsquo;s an example that registers the <code>mobility</code> tag and assigns it to the Bike Rental API:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource mobilityTag 'Microsoft.ApiManagement/service/tags@2025-03-01-preview' = {
+  parent: apiManagementService
+  name: 'mobility'
+  properties: {
+    displayName: 'mobility'
+  }
+}
+
+resource bikeRentalApiMobilityTag 'Microsoft.ApiManagement/service/apis/tags@2025-03-01-preview' = {
+  parent: bikeRentalApi
+  name: 'mobility'
+  dependsOn: [
+    mobilityTag
+  ]
+}
+</code></pre><p>The <code>dependsOn</code> on the API tag resource ensures that the tag is registered in API Management before it&rsquo;s assigned to the API. Without it, the deployment might fail if both resources are deployed in parallel and the tag doesn&rsquo;t exist yet.</p>
+<p>Once all API tags for our sample are deployed and assigned, choosing &ldquo;Group by tag&rdquo; in the portal gives you the following view:</p>
+<p><img src="../../../../../images/grouping-apis-in-apim-using-tags/apis-with-api-tags.png" alt="APIs grouped by tag in the Azure Portal"></p>
+<p>If we filter on e.g. the <code>planning</code> tag, we see only the Trip Planning API.</p>
+<p>You can see the list with available tags in the Azure Portal by navigating to <code>APIs &gt; API Tags</code>. You might see more than just the <code>mobility</code> and <code>planning</code> tags, because API Management automatically registers any tags it finds in the OpenAPI specifications when you deploy an API.</p>
+<p>In our sample, the Trip Planning API has <code>pricing</code> and <code>public</code> tags on some of its operations, so those tags are also registered in API Management even though we haven&rsquo;t explicitly defined them using the <code>Microsoft.ApiManagement/service/tags</code> resource.</p>
+<h3 id="bubbling-up-operation-tags-using-jsonpath">Bubbling Up Operation Tags Using JSONPath</h3>
+<p>Looking at the Trip Planning API, the OpenAPI spec has <code>pricing</code> and <code>public</code> tags on individual operations. I wanted those tags to automatically appear at the API level without listing them explicitly.</p>
+<p><img src="../../../../../images/grouping-apis-in-apim-using-tags/trip-planning-openapi-spec.png" alt="Trip Planning API OpenAPI spec with operation tags"></p>
+<p>My first approach was to load the OpenAPI spec using the <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-files#loadyamlcontent"><code>loadYamlContent</code></a> or <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-files#loadjsoncontent"><code>loadJsonContent</code></a> function and use the JSONPath expression <code>$.paths.*.*.tags</code> to select the tags from all operations:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">var bikeRentalApiOperationTags = flatten(loadYamlContent('apis/bike-rental-api.openapi.yaml', '$.paths.*.*.tags'))
+var bikeRentalApiTags = union(['mobility'], bikeRentalApiOperationTags)
+
+resource addBikeRentalApiTags 'Microsoft.ApiManagement/service/apis/tags@2025-03-01-preview' = [
+  for tagName in bikeRentalApiTags: {
+    parent: bikeRentalApi
+    name: tagName
+  }
+]
+</code></pre><p>The <code>loadYamlContent</code> call uses the JSONPath expression <code>$.paths.*.*.tags</code> to extract the tags arrays from each operation in the spec. Since each operation can have multiple tags and this results in an array of arrays, <code>flatten</code> converts it into a single flat array. The <code>union</code> call merges those operation tags with the explicitly defined API-level tags (<code>mobility</code>) and deduplicates the result, which is needed because <code>Microsoft.ApiManagement/service/apis/tags</code> can only be defined once per API and tag combination. Finally, we loop over the combined tag list to create an API tag resource for each one.</p>
+<p>But this approach has a downside. If the OpenAPI spec has no tags at all, the JSONPath expression returns nothing and the Bicep compilation fails:</p>
+<p><img src="../../../../../images/grouping-apis-in-apim-using-tags/bicep-jsonpath-error.png" alt="Bicep compilation error when no tags are present"></p>
+<p>This means you have to remember to add or remove the additional Bicep code whenever tags are added to or removed from an OpenAPI spec. That&rsquo;s error-prone and tedious.</p>
+<blockquote>
+<p>Note that <code>loadYamlContent</code> and <code>loadJsonContent</code> don&rsquo;t allow you to use a parameter or variable for the file path, so you can&rsquo;t wrap this logic in a reusable user-defined function.</p>
+</blockquote>
+<h3 id="a-more-robust-approach-using-user-defined-functions">A More Robust Approach Using User-Defined Functions</h3>
+<p>As an alternative, we can load the entire OpenAPI spec into a variable and write our own logic to extract the tags. The following two user-defined functions handle this:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">@description('Extract tags from an operation object, returning empty array if no tags exist')
+func getOperationTags(operation object) array =&gt; operation.?tags ?? []
+
+@description('Extract all operation-level tags from an OpenAPI specification')
+func extractOperationTags(openApiContent object) array =&gt;
+  flatten(map(
+    items(openApiContent.?paths ?? {}),
+    pathItem =&gt; flatten(map(items(pathItem.value), operation =&gt; getOperationTags(operation.value)))
+  ))
+</code></pre><p>The <code>getOperationTags</code> function takes an individual operation object and returns its <code>tags</code> array. It uses the null-conditional operator (<code>?tags</code>) to avoid errors when the <code>tags</code> property is absent, falling back to an empty array via <code>?? []</code>.</p>
+<p>The <code>extractOperationTags</code> function works through the entire spec. It uses <code>items</code> to iterate over the <code>paths</code> object (falling back to an empty object if <code>paths</code> is missing), and for each path it iterates over the operations. For each operation it calls <code>getOperationTags</code>. The nested <code>map</code> and <code>flatten</code> calls collect all tags into a single flat array.</p>
+<p>You can use these functions like this:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">var tripPlanningApiOpenApiContent = loadYamlContent('apis/trip-planning-api.openapi.yaml')
+var tripPlanningApiOperationTags = extractOperationTags(tripPlanningApiOpenApiContent)
+var tripPlanningApiTags = union(['mobility', 'planning'], tripPlanningApiOperationTags)
+</code></pre><p>The <code>loadYamlContent</code> call without a JSONPath expression loads the entire OpenAPI spec as an object, which avoids the compile-time failure we saw earlier. Calling <code>union</code> on the combination of API-level tags and operation tags ensures we get a deduplicated list.</p>
+<p>Once deployed, the &ldquo;Group by tag&rdquo; view includes the tags that came from the operations:</p>
+<p><img src="../../../../../images/grouping-apis-in-apim-using-tags/apis-with-api-and-operation-tags.png" alt="APIs grouped by tag including operation-level tags"></p>
+<p>One nice side effect of loading the full OpenAPI content into a variable is that you can reuse it when deploying the API itself:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource tripPlanningApi 'Microsoft.ApiManagement/service/apis@2025-03-01-preview' = {
+  name: 'trip-planning'
+  parent: apiManagementService
+  properties: {
+    ...
+    format: 'openapi'
+    value: string(tripPlanningApiOpenApiContent)
+  }
+}
+</code></pre><p>Instead of reading the file twice, you can pass the already-loaded content directly by converting it to a string. This keeps things tidy and avoids any inconsistency between the spec used for deployment and the one used for tag extraction.</p>
+<blockquote>
+<p>Even if you don&rsquo;t need the tag extraction, using <code>loadYamlContent</code> or <code>loadJsonContent</code> instead of <code>loadTextContent</code> has a practical advantage. The <code>loadTextContent</code> function is limited to a file size of 131,072 characters, while <code>loadYamlContent</code> and <code>loadJsonContent</code> support files up to 1,048,576 characters.</p>
+</blockquote>
+<h3 id="considerations">Considerations</h3>
+<p>There are a couple of things worth keeping in mind when working with API tags in API Management.</p>
+<p>When an OpenAPI spec contains tags and you deploy it, API Management automatically creates those tags. If you also deploy a Bicep resource for the same tag in parallel and the tag doesn&rsquo;t exist yet, you may run into a conflict because two sources are trying to create the same tag at the same time. The same issue can happen when deploying two APIs whose OpenAPI specs share the same tags. This only occurs the first time (when the tag doesn&rsquo;t yet exist in API Management), but it can be an unexpected failure. You can work around it by adding explicit <code>dependsOn</code> references between the resources that would otherwise create the same tag in parallel.</p>
+<p>Be careful when using <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deployment-stacks">deployment stacks</a>. If you create a tag in one deployment stack and assign it to an API in a second stack, then remove the tag from the first stack and redeploy with <code>actionOnUnmanage</code> set to <code>deleteAll</code>, API Management deletes that tag. A subsequent redeployment of the second stack fails because the tag no longer exists.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Applying tags to APIs in Azure API Management is a straightforward way to keep a large API list manageable. Registering and assigning tags in Bicep is simple, but maintaining them manually can become tedious as your API surface grows.</p>
+<p>Using user-defined Bicep functions to extract operation-level tags from OpenAPI specs is a clean way to keep tags in sync without adding maintenance overhead. The approach handles missing tags gracefully and avoids the compile-time failures you&rsquo;d get with the JSONPath-based approach.</p>
+<p>The full working sample is available <a href="https://github.com/ronaldbosma/azure-apim-samples/tree/main/api-tagging">here</a>.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/infra-as-code">Infra as Code</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/03/09/implement-failover-in-api-management-with-a-load-balanced-pool/">Implement Failover in API Management with a Load-balanced Pool &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-developer-cli">azure-developer-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/resilience">resilience</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
