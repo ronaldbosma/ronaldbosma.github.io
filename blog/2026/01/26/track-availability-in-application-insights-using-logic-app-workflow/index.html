@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/01/26/track-availability-in-application-insights-using-logic-app-workflow/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/01/26/track-availability-in-application-insights-using-logic-app-workflow/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-01-26T17:00:00+01:00" />
-<meta property="article:modified_time" content="2026-02-20T16:45:00+01:00" />
+<meta property="article:modified_time" content="2026-03-27T11:45:00+01:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/" />
 
 
@@ -135,7 +135,7 @@
                                     <i class="far fa-star"></i>
                                     Jan 26, 2026
                                     <i class="far fa-clock clock"></i>
-                                    12 min read
+                                    13 min read
                                 </span>					
                             </div>
                         </div>			
@@ -202,6 +202,7 @@
 </ul>
 <p>This workflow demonstrates an advantage of using Logic Apps: most of the logic is visual and doesn&rsquo;t require coding. You can easily modify the HTTP request, add authentication or include additional steps using the workflow designer.</p>
 <p>The logic to track availability in Application Insights is implemented in C# using a <a href="https://learn.microsoft.com/en-us/azure/logic-apps/create-run-custom-code-functions">Logic App with custom code project</a>, which lets you deploy .NET code directly to the Logic App without additional resources like a Function App. I&rsquo;ve created functions similar to what I showed in the previous post, but packaged as Logic App custom functions.</p>
+<p><strong>IMPORTANT:</strong> You need to add a package reference to <code>Microsoft.ApplicationInsights</code> in your custom code project to use the <code>TelemetryClient</code> for tracking availability. Use the latest 2.x version of this package. Do not use version 3.x of the Application Insights SDK because it depends on <code>Microsoft.Extensions.Logging(.Abstractions)</code> version 8.0.0, which is currently not supported in a Logic App custom code project.</p>
 <blockquote>
 <p>I started on a <a href="https://github.com/ronaldbosma/LogicApps.ServiceProviders.ApplicationInsights.TrackAvailability">custom connector</a>, but the deploy size went from several KBs to hundreds of MBs. So I decided to use a custom code project instead because the size then increases to only ~600KB.</p>
 </blockquote>
