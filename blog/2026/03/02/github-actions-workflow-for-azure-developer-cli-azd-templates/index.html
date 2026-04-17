@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-03-02T06:00:00+01:00" />
-<meta property="article:modified_time" content="2026-03-02T06:00:00+01:00" />
+<meta property="article:modified_time" content="2026-04-17T12:00:00+02:00" />
 
 
 
@@ -134,7 +134,7 @@
                                     <i class="far fa-star"></i>
                                     Mar 2, 2026
                                     <i class="far fa-clock clock"></i>
-                                    12 min read
+                                    13 min read
                                 </span>					
                             </div>
                         </div>			
@@ -188,7 +188,16 @@
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">defaults</span>:
   <span style="color:#f92672">run</span>:
     <span style="color:#f92672">shell</span>: <span style="color:#ae81ff">pwsh</span> <span style="color:#75715e"># Use PowerShell Core for all scripts (the azd hooks are written in PowerShell)</span>
-</code></pre></div><p>I also define these <code>env</code> variables which are mandatory for azd:</p>
+</code></pre></div><p>I configure the <code>pull_request</code> trigger to include the <code>ready_for_review</code> type:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">pull_request</span>:
+  <span style="color:#f92672">types</span>: [<span style="color:#ae81ff">opened, synchronize, reopened, ready_for_review]</span>
+</code></pre></div><p>In my workflow, I don&rsquo;t want draft pull requests to deploy to Azure until the PR is ready for review. This gives me time to process feedback from code review, including Copilot review, and prevents unnecessary deployments to Azure.</p>
+<p>Including <code>ready_for_review</code> is necessary because changing a PR from draft to ready is a separate pull request event. Without this trigger type, that transition would not start a new workflow run and deployment would not start automatically after the PR is marked ready.</p>
+<blockquote>
+<p>Tip: If you use GitHub Copilot for pull request reviews, you can configure it to also review draft pull requests by enabling <strong>Review draft pull requests</strong> in your repository settings. Follow the instructions in <a href="https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/configure-automatic-review">Configure automatic review</a>.</p>
+<p><img src="../../../../../images/github-actions-workflow-for-azd-templates/github-copilot-review-draft-pull-requests.png" alt="Configure Copilot to review draft pull requests"></p>
+</blockquote>
+<p>I also define these <code>env</code> variables which are mandatory for azd:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">env</span>:
   <span style="color:#75715e"># Add a unique suffix to the environment name for pull requests to avoid name conflicts</span>
   <span style="color:#f92672">AZURE_ENV_NAME</span>: <span style="color:#ae81ff">${{ github.event.pull_request.number &amp;&amp; format(&#39;{0}-pr{1}&#39;, vars.AZURE_ENV_NAME, github.event.pull_request.number) || vars.AZURE_ENV_NAME }}</span>
@@ -316,6 +325,11 @@
 <p>Because the applications are already packaged, infrastructure provisioning and application deployment are separated into different steps in the deploy job.</p>
 <p>See the screenshot below for an example of how this job looks in the workflow run:</p>
 <p><img src="../../../../../images/github-actions-workflow-for-azd-templates/deploy-job.png" alt="Deploy job"></p>
+<p>For this job, I add a condition to skip deployment for draft pull requests:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">deploy</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Deploy to Azure</span>
+  <span style="color:#f92672">if</span>: <span style="color:#ae81ff">github.event_name != &#39;pull_request&#39; || github.event.pull_request.draft == false</span>
+</code></pre></div><p>With this condition, draft pull requests still execute Build, Verify and Package, but the Deploy to Azure job starts only after the PR is ready for review.</p>
 <p>To provision the infrastructure, I run <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference#azd-provision"><code>azd provision</code></a>:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Provision Infrastructure</span>
   <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
