@@ -193,12 +193,12 @@ azd auth login
 azd up
 </code></pre></div><p>I tried it out, loved it and never looked back.</p>
 <h3 id="use-existing-templates">Use Existing Templates</h3>
-<p>Before creating your own template, check <a href="https://azure.github.io/awesome-azd/">Awesome azd</a>. It has a great collection of ready-to-use templates and there might be one that fits your needs.</p>
+<p>Before creating your own template, check <a href="https://azure.github.io/awesome-azd/templates/">Awesome azd</a>. It has a great collection of ready-to-use templates and there might be one that fits your needs.</p>
 <h3 id="create-your-own-template">Create Your Own Template</h3>
 <p>If you have an interesting repository with Bicep or Terraform infrastructure scripts and optionally application code that might be useful to others, consider turning it into an azd template. This makes it super easy for other people to use and deploy.</p>
 <p>The guide on <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/make-azd-compatible">Create Azure Developer CLI templates overview</a> provides a great overview for getting started with your own azd templates.</p>
 <h3 id="publish-your-template">Publish Your Template</h3>
-<p>Once you&rsquo;ve created your template, you can publish it on <a href="https://azure.github.io/awesome-azd/">Awesome azd</a> so other users can find it. The <a href="https://azure.github.io/awesome-azd/docs/contribute/">contribution guide</a> explains the process.</p>
+<p>Once you&rsquo;ve created your template, you can publish it on <a href="https://azure.github.io/awesome-azd/templates/">Awesome azd</a> so other users can find it. The <a href="https://azure.github.io/awesome-azd/docs/contribute/">contribution guide</a> explains the process.</p>
 <p>If your template can be used in Microsoft training courses (like AZ-104 or AZ-204), check if you can also publish it on <a href="https://microsoftlearning.github.io/trainer-demo-deploy/">Trainer Demo Deploy</a>. This site contains a subset of templates specifically created for trainers. The <a href="https://microsoftlearning.github.io/trainer-demo-deploy/docs/contribute">contribution guide</a> provides details on how to submit your template.</p>
 <h3 id="create-a-comprehensive-readme">Create a Comprehensive README</h3>
 <p>To make it easy for people to use your template, create a README that explains what your template deploys and how to get started. Include any additional tools users need to install aside from azd and what permissions they need in Azure to deploy it. I always include the three steps to initialize the template, authenticate to Azure and deploy. For example:</p>
@@ -377,7 +377,7 @@ func flattenTags(tags object) string[] =&gt; map(items(tags), tag =&gt; '${tag.k
 <h3 id="conclusion">Conclusion</h3>
 <p>Creating azd templates has made it significantly easier for me to share and deploy Azure solutions. With just three commands, anyone can initialize, authenticate and deploy a complete application with its infrastructure.</p>
 <p>The tips I&rsquo;ve shared in this post cover the lessons I&rsquo;ve learned from creating multiple azd templates. From basic parameter management to more advanced topics like handling Entra ID resources and eventual consistency, these practices have helped me create more robust and user-friendly templates.</p>
-<p>If you have Bicep or Terraform templates lying around, I encourage you to turn them into azd templates. The initial setup effort is minimal and it makes your work much more accessible to others. Plus, contributing to <a href="https://azure.github.io/awesome-azd/">Awesome azd</a> is a great way to give back to the community.</p>
+<p>If you have Bicep or Terraform templates lying around, I encourage you to turn them into azd templates. The initial setup effort is minimal and it makes your work much more accessible to others. Plus, contributing to <a href="https://azure.github.io/awesome-azd/templates/">Awesome azd</a> is a great way to give back to the community.</p>
 <p>In my <a href="/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/">next blog post</a>, I dive deeper into the GitHub Actions workflow setup I use to automatically test my templates.</p>
 
                     </div>
