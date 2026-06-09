@@ -14,7 +14,7 @@
       <pubDate>Mon, 19 Feb 2024 19:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/</guid>
-      <description>In this second post, we expand on the solution from the previous post. We&amp;rsquo;ll deploy API Management inside a virtual network, positioning it behind an application gateway. We&amp;rsquo;ll configure the application gateway with an mTLS listener to validate client certificates and forward them to API Management for further processing. This approach can also be used with other types of backends, such as an ASP.NET Web API.</description>
+      <description>It&amp;rsquo;s not uncommon for Azure API Management to be deployed in a Virtual Network, only allowing external access via an Azure Application Gateway. In this second post on working with client certificates in API Management, we&amp;rsquo;ll explore how to configure an Application Gateway for mTLS and forward the client certificate to API Management for further validation. We&amp;rsquo;ll also look at the difference between strict and passthrough modes.</description>
     </item>
     
   </channel>
