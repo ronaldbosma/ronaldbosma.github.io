@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Deep Object Comparison in MSTest with Assert.AreEquivalent | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/07/09/deep-object-comparison-in-mstest-with-assert.areequivalent/cover.png"/>
+<meta name="twitter:title" content="Deep Object Comparison in MSTest with Assert.AreEquivalent"/>
+<meta name="twitter:description" content="MSTest v4.3.0 introduces the Assert.AreEquivalent method that performs a deep equality comparison of two objects, checking that all properties have the same value. In this post, I&rsquo;ll show you what it can do and how it compares to AwesomeAssertions and Shouldly."/>
+
+	<meta property="og:title" content="Deep Object Comparison in MSTest with Assert.AreEquivalent" />
+<meta property="og:description" content="MSTest v4.3.0 introduces the Assert.AreEquivalent method that performs a deep equality comparison of two objects, checking that all properties have the same value. In this post, I&rsquo;ll show you what it can do and how it compares to AwesomeAssertions and Shouldly." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/07/09/deep-object-comparison-in-mstest-with-assert.areequivalent/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/07/09/deep-object-comparison-in-mstest-with-assert.areequivalent/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-07-09T20:00:00+02:00" />
+<meta property="article:modified_time" content="2026-07-09T20:00:00+02:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Deep%20Object%20Comparison%20in%20MSTest%20with%20Assert.AreEquivalent&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f07%2f09%2fdeep-object-comparison-in-mstest-with-assert.areequivalent%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f07%2f09%2fdeep-object-comparison-in-mstest-with-assert.areequivalent%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f07%2f09%2fdeep-object-comparison-in-mstest-with-assert.areequivalent%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect | Microsoft MVP<br>
+                                    <i class="far fa-star"></i>
+                                    Jul 9, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    7 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Deep Object Comparison in MSTest with Assert.AreEquivalent</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/07/09/deep-object-comparison-in-mstest-with-assert.areequivalent/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve used <a href="https://fluentassertions.com/">FluentAssertions</a> in many test projects over the years. The fluent API is great, but the feature I relied on most was the <code>Should().BeEquivalentTo</code> extension method. It performs a deep equality comparison of two objects by checking that all properties have the same value. Using it means you don&rsquo;t have to write code to check each property yourself, keeping tests clean and easy to write.</p>
+<p>When FluentAssertions changed its license, I looked at alternatives. <a href="https://awesomeassertions.org/">AwesomeAssertions</a> is a fork of FluentAssertions before the license change and has the same interface. <a href="https://docs.shouldly.org/">Shouldly</a> is a popular alternative that has gained traction as well.</p>
+<p>I also noticed that <a href="https://xunit.net/releases/v2/2.4.2.html">xUnit introduced its own implementation</a> back in August 2022. Because I regularly use MSTest, I thought it would be a nice addition as well. So, I registered <a href="https://github.com/microsoft/testfx/issues/4776">this issue</a> a while back.</p>
+<p>Fast forward to July 2026 and MSTest v4.3.0 is released, which introduces the <code>Assert.AreEquivalent&lt;T&gt;</code> method. In this post, I&rsquo;ll walk you through what it can do and how it compares to AwesomeAssertions and Shouldly. I&rsquo;ve created a small <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/MSTest.AreEquivalent">sample solution</a> that shows the three frameworks side by side.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#test-setup">Test Setup</a></li>
+<li><a href="#assertareequal-vs-assertareequivalent">Assert.AreEqual vs Assert.AreEquivalent</a></li>
+<li><a href="#cross-type-comparison">Cross-Type Comparison</a></li>
+<li><a href="#nested-objects">Nested Objects</a></li>
+<li><a href="#collection-comparison">Collection Comparison</a></li>
+<li><a href="#types-with-extra-properties">Types with Extra Properties</a></li>
+<li><a href="#no-support-for-ignoring-properties">No Support for Ignoring Properties</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="test-setup">Test Setup</h3>
+<p>I&rsquo;m using an <code>AddressInternal</code> class as test data throughout the examples:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AddressInternal</span>
+{
+    <span style="color:#66d9ef">public</span> AddressInternal(<span style="color:#66d9ef">string</span> street, <span style="color:#66d9ef">string</span> city, <span style="color:#66d9ef">string</span> state, <span style="color:#66d9ef">string</span> zipCode)
+    {
+        Street = street;
+        City = city;
+        State = state;
+        ZipCode = zipCode;
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> Street { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> City { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> State { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> ZipCode { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+}
+</code></pre></div><h3 id="assertareequal-vs-assertareequivalent">Assert.AreEqual vs Assert.AreEquivalent</h3>
+<p>Before MSTest v4.3.0, <code>Assert.AreEqual</code> was the method you could use for comparison. It relies on the <code>Equals</code> method of the objects being compared. This works great for structs and records, but for other classes it compares object references rather than property values.</p>
+<p>Here are three tests that demonstrate the behaviour:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEqual_ExpectedAndActualAreSameObject_Success()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+    <span style="color:#66d9ef">var</span> actual = expected;
+
+    Assert.AreEqual(expected, actual);
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEqual_ExpectedAndActualAreDifferentObjectsWithDifferentValues_AssertionFails()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;456 Elm St&#34;</span>, <span style="color:#e6db74">&#34;Othertown&#34;</span>, <span style="color:#e6db74">&#34;NY&#34;</span>, <span style="color:#e6db74">&#34;67890&#34;</span>);
+
+    <span style="color:#66d9ef">var</span> act = () =&gt; Assert.AreEqual(expected, actual);
+
+    Assert.ThrowsExactly&lt;AssertFailedException&gt;(act);
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEqual_ExpectedAndActualAreDifferentObjectsWithSameValues_TestFailsAlthoughObjectsAreEquivalent()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+
+    Assert.AreEqual(expected, actual);
+}
+</code></pre></div><p>The first test passes because <code>expected</code> and <code>actual</code> point to the same object. The second test shows the expected failure when property values differ. The third test is the interesting one: even though both objects have identical properties and values, the assertion fails because <code>AreEqual</code> uses <code>Equals</code>, which compares object references for classes that don&rsquo;t have a custom equality implementation.</p>
+<p>The new <code>Assert.AreEquivalent&lt;T&gt;</code> method solves this by comparing properties by value:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_ExpectedAndActualAreSameObject_Success()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+    <span style="color:#66d9ef">var</span> actual = expected;
+
+    Assert.AreEquivalent(expected, actual);
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_ExpectedAndActualAreDifferentObjectsWithDifferentValues_AssertionFails()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;456 Elm St&#34;</span>, <span style="color:#e6db74">&#34;Othertown&#34;</span>, <span style="color:#e6db74">&#34;NY&#34;</span>, <span style="color:#e6db74">&#34;67890&#34;</span>);
+
+    <span style="color:#66d9ef">var</span> act = () =&gt; Assert.AreEquivalent(expected, actual);
+
+    Assert.ThrowsExactly&lt;AssertFailedException&gt;(act);
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_ExpectedAndActualAreDifferentObjectsWithSameValues_Success()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+
+    Assert.AreEquivalent(expected, actual);
+}
+</code></pre></div><p>The third test now passes as well because <code>AreEquivalent</code> checks the properties of both objects and compares their values rather than relying on <code>Equals</code>.</p>
+<h3 id="cross-type-comparison">Cross-Type Comparison</h3>
+<p>The <code>AreEquivalent</code> method can also compare objects of different types as long as they share the same properties. For example, comparing an <code>AddressInternal</code> object with an <code>AddressExternal</code> object that has the exact same properties works:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_ExpectedAndActualAreDifferentTypesWithSameValues_Success()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> AddressExternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+
+    Assert.AreEquivalent&lt;<span style="color:#66d9ef">object</span>&gt;(expected, actual);
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_ExpectedAndActualAreDifferentTypesWithDifferentValues_AssertionFails()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+    <span style="color:#75715e">// actual has different street
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> AddressExternal(<span style="color:#e6db74">&#34;456 Elm St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+
+    <span style="color:#66d9ef">var</span> act = () =&gt; Assert.AreEquivalent&lt;<span style="color:#66d9ef">object</span>&gt;(expected, actual);
+
+    <span style="color:#66d9ef">var</span> ex = Assert.ThrowsExactly&lt;AssertFailedException&gt;(act);
+    StringAssert.Contains(ex.Message, <span style="color:#e6db74">&#34;Street&#34;</span>);
+}
+</code></pre></div><p>The first test shows that the assertion succeeds as long as the property values are the same, and the second test shows it fails when a property value differs. In this case the street.</p>
+<p>Note that there is only a generic implementation of <code>AreEquivalent</code>. So, we need to specify <code>&lt;object&gt;</code> to compare different objects.</p>
+<p>AwesomeAssertions handles this the same way. Shouldly, however, doesn&rsquo;t support comparing different types, so that&rsquo;s something to keep in mind if you&rsquo;re considering it as an alternative.</p>
+<h3 id="nested-objects">Nested Objects</h3>
+<p>Complex child objects are also supported. For example, a <code>PersonInternal</code> object with an <code>AddressInternal</code> property is compared correctly:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_NestedObjectsOfDifferentTypesWithSameValues_Success()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> PersonInternal(<span style="color:#e6db74">&#34;John&#34;</span>, <span style="color:#e6db74">&#34;Doe&#34;</span>, <span style="color:#ae81ff">30</span>,
+        <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>));
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> PersonExternal(<span style="color:#e6db74">&#34;John&#34;</span>, <span style="color:#e6db74">&#34;Doe&#34;</span>, <span style="color:#ae81ff">30</span>,
+        <span style="color:#66d9ef">new</span> AddressExternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>));
+
+    Assert.AreEquivalent&lt;<span style="color:#66d9ef">object</span>&gt;(expected, actual);
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_NestedObjectsOfDifferentTypesWithDifferentValues_AssertionFails()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> PersonInternal(<span style="color:#e6db74">&#34;John&#34;</span>, <span style="color:#e6db74">&#34;Doe&#34;</span>, <span style="color:#ae81ff">30</span>,
+        <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>));
+    <span style="color:#75715e">// actual has different street
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> PersonExternal(<span style="color:#e6db74">&#34;John&#34;</span>, <span style="color:#e6db74">&#34;Doe&#34;</span>, <span style="color:#ae81ff">30</span>,
+        <span style="color:#66d9ef">new</span> AddressExternal(<span style="color:#e6db74">&#34;456 Elm St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>));
+
+    <span style="color:#66d9ef">var</span> act = () =&gt; Assert.AreEquivalent&lt;<span style="color:#66d9ef">object</span>&gt;(expected, actual);
+
+    <span style="color:#66d9ef">var</span> ex = Assert.ThrowsExactly&lt;AssertFailedException&gt;(act);
+    StringAssert.Contains(ex.Message, <span style="color:#e6db74">&#34;Street&#34;</span>);
+}
+</code></pre></div><h3 id="collection-comparison">Collection Comparison</h3>
+<p>Comparing collections also works with <code>AreEquivalent</code>. Here&rsquo;s an example using a list of addresses:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_CollectionsOfObjectsWithSameValues_Success()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> List&lt;AddressInternal&gt;
+    {
+        <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>),
+        <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;456 Elm St&#34;</span>, <span style="color:#e6db74">&#34;Othertown&#34;</span>, <span style="color:#e6db74">&#34;NY&#34;</span>, <span style="color:#e6db74">&#34;67890&#34;</span>)
+    };
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> List&lt;AddressInternal&gt;
+    {
+        <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>),
+        <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;456 Elm St&#34;</span>, <span style="color:#e6db74">&#34;Othertown&#34;</span>, <span style="color:#e6db74">&#34;NY&#34;</span>, <span style="color:#e6db74">&#34;67890&#34;</span>)
+    };
+
+    Assert.AreEquivalent(expected, actual);
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_CollectionsOfObjectsWithDifferentValues_AssertionFails()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> List&lt;AddressInternal&gt;
+    {
+        <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>),
+        <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;456 Elm St&#34;</span>, <span style="color:#e6db74">&#34;Othertown&#34;</span>, <span style="color:#e6db74">&#34;NY&#34;</span>, <span style="color:#e6db74">&#34;67890&#34;</span>)
+    };
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> List&lt;AddressInternal&gt;
+    {
+        <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>),
+        <span style="color:#75715e">// actual has different street
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;789 Oak St&#34;</span>, <span style="color:#e6db74">&#34;Othertown&#34;</span>, <span style="color:#e6db74">&#34;NY&#34;</span>, <span style="color:#e6db74">&#34;67890&#34;</span>)
+    };
+
+    <span style="color:#66d9ef">var</span> act = () =&gt; Assert.AreEquivalent(expected, actual);
+
+    <span style="color:#66d9ef">var</span> ex = Assert.ThrowsExactly&lt;AssertFailedException&gt;(act);
+    StringAssert.Contains(ex.Message, <span style="color:#e6db74">&#34;Street&#34;</span>);
+}
+</code></pre></div><h3 id="types-with-extra-properties">Types with Extra Properties</h3>
+<p>Sometimes you might need to compare two similar types where one of them has additional properties. Consider an <code>AddressWithExtraProperty</code> type that has an extra <code>Country</code> property. Here&rsquo;s an example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_ActualHasExtraProperty_Success()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> AddressWithExtraProperty(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>, <span style="color:#e6db74">&#34;The Country&#34;</span>);
+
+    Assert.AreEquivalent&lt;<span style="color:#66d9ef">object</span>&gt;(expected, actual);
+}
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> AreEquivalent_ExpectedHasExtraProperty_AssertionFails()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressWithExtraProperty(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>, <span style="color:#e6db74">&#34;The Country&#34;</span>);
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+
+    <span style="color:#66d9ef">var</span> act = () =&gt; Assert.AreEquivalent&lt;<span style="color:#66d9ef">object</span>&gt;(expected, actual);
+
+    <span style="color:#66d9ef">var</span> ex = Assert.ThrowsExactly&lt;AssertFailedException&gt;(act);
+    StringAssert.Contains(ex.Message, <span style="color:#e6db74">&#34;Country&#34;</span>);
+}
+</code></pre></div><p>Similar to AwesomeAssertions, the objects are considered equivalent when the actual object has the extra property and different when expected has the extra property.</p>
+<h3 id="no-support-for-ignoring-properties">No Support for Ignoring Properties</h3>
+<p>The current implementation is a solid first step, but it&rsquo;s not feature-complete yet. One noticeable gap is the lack of support for ignoring specific properties during comparison. AwesomeAssertions supports this through its options parameter:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[TestMethod]</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ShouldBeEquivalentTo_ExpectedAndActualHaveDifferentValueButPropertyIsIgnored_Success()
+{
+    <span style="color:#66d9ef">var</span> expected = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;123 Main St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+    <span style="color:#66d9ef">var</span> actual = <span style="color:#66d9ef">new</span> AddressInternal(<span style="color:#e6db74">&#34;456 Elm St&#34;</span>, <span style="color:#e6db74">&#34;Anytown&#34;</span>, <span style="color:#e6db74">&#34;CA&#34;</span>, <span style="color:#e6db74">&#34;12345&#34;</span>);
+
+    actual.Should().BeEquivalentTo(expected, options =&gt; options.Excluding(x =&gt; x.Street));
+}
+</code></pre></div><p>This test passes with AwesomeAssertions even though <code>Street</code> differs between the two objects because we&rsquo;re explicitly excluding it from the comparison. MSTest doesn&rsquo;t support this yet, and neither does Shouldly, so it&rsquo;s a known limitation to be aware of for now.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>The new <code>Assert.AreEquivalent&lt;T&gt;</code> method in MSTest v4.3.0 fills a gap that previously required a third-party library. It handles deep property comparison, works across different types with the same shape and supports collections. If you&rsquo;re already using MSTest and want to reduce dependencies, this is a welcome addition.</p>
+<p>The implementation isn&rsquo;t complete yet. Ignoring properties during comparison is a common need that isn&rsquo;t supported at the time of writing.</p>
+<p>If you want to try it yourself, the <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/MSTest.AreEquivalent">sample solution</a> on GitHub contains all the examples from this post for AwesomeAssertions, Shouldly and MSTest side by side, along with additional scenarios.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/mstest">MSTest</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/test-automation">Test Automation</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/.net">.NET</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/testing">Testing</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/03/23/grouping-apis-in-azure-api-management-using-tags/">Grouping APIs in Azure API Management Using Tags &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/.net">.net</a>
+			
+			<a class="mt-1 mb-1" href="/tags/.net-core">.net-core</a>
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-developer-cli">azure-developer-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mstest">mstest</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/resilience">resilience</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/testing">testing</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

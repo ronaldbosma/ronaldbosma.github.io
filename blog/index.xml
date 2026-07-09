@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 23 Mar 2026 07:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 09 Jul 2026 20:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deep Object Comparison in MSTest with Assert.AreEquivalent</title>
+      <link>https://ronaldbosma.github.io/blog/2026/07/09/deep-object-comparison-in-mstest-with-assert.areequivalent/</link>
+      <pubDate>Thu, 09 Jul 2026 20:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2026/07/09/deep-object-comparison-in-mstest-with-assert.areequivalent/</guid>
+      <description>MSTest v4.3.0 introduces the Assert.AreEquivalent&lt;!-- raw HTML omitted --&gt; method that performs a deep equality comparison of two objects, checking that all properties have the same value. In this post, I&amp;rsquo;ll show you what it can do and how it compares to AwesomeAssertions and Shouldly.</description>
+    </item>
+    
     <item>
       <title>Grouping APIs in Azure API Management Using Tags</title>
       <link>https://ronaldbosma.github.io/blog/2026/03/23/grouping-apis-in-azure-api-management-using-tags/</link>

@@ -7,7 +7,43 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 23 Mar 2026 07:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 09 Jul 2026 20:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>.NET</title>
+      <link>https://ronaldbosma.github.io/tags/.net/</link>
+      <pubDate>Thu, 09 Jul 2026 20:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/.net/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MSTest</title>
+      <link>https://ronaldbosma.github.io/tags/mstest/</link>
+      <pubDate>Thu, 09 Jul 2026 20:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/mstest/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Test Automation</title>
+      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
+      <pubDate>Thu, 09 Jul 2026 20:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Testing</title>
+      <link>https://ronaldbosma.github.io/tags/testing/</link>
+      <pubDate>Thu, 09 Jul 2026 20:00:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/testing/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>API Management</title>
       <link>https://ronaldbosma.github.io/tags/api-management/</link>
@@ -117,15 +153,6 @@
     </item>
     
     <item>
-      <title>.NET</title>
-      <link>https://ronaldbosma.github.io/tags/.net/</link>
-      <pubDate>Mon, 19 Jan 2026 09:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/.net/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Security</title>
       <link>https://ronaldbosma.github.io/tags/security/</link>
       <pubDate>Tue, 06 Jan 2026 14:00:00 +0100</pubDate>
@@ -230,15 +257,6 @@
       <pubDate>Thu, 26 Sep 2024 16:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/psrule/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Test Automation</title>
-      <link>https://ronaldbosma.github.io/tags/test-automation/</link>
-      <pubDate>Thu, 26 Sep 2024 16:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
       <description></description>
     </item>
     
