@@ -9,15 +9,6 @@
     <copyright>Ronald Bosma - All rights reserved</copyright>
     <lastBuildDate>Thu, 09 Jul 2026 20:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>.NET</title>
-      <link>https://ronaldbosma.github.io/tags/.net/</link>
-      <pubDate>Thu, 09 Jul 2026 20:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/.net/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>MSTest</title>
       <link>https://ronaldbosma.github.io/tags/mstest/</link>
       <pubDate>Thu, 09 Jul 2026 20:00:00 +0200</pubDate>
@@ -32,15 +23,6 @@
       <pubDate>Thu, 09 Jul 2026 20:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Testing</title>
-      <link>https://ronaldbosma.github.io/tags/testing/</link>
-      <pubDate>Thu, 09 Jul 2026 20:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/testing/</guid>
       <description></description>
     </item>
     
@@ -401,15 +383,6 @@
       <pubDate>Tue, 16 Mar 2021 00:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/yaml/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>.NET Core</title>
-      <link>https://ronaldbosma.github.io/tags/.net-core/</link>
-      <pubDate>Thu, 07 May 2020 00:00:00 +0200</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/.net-core/</guid>
       <description></description>
     </item>
     
