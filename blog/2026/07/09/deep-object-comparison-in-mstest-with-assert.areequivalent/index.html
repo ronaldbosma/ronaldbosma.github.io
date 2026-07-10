@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/07/09/deep-object-comparison-in-mstest-with-assert.areequivalent/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/07/09/deep-object-comparison-in-mstest-with-assert.areequivalent/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-07-09T20:00:00+02:00" />
-<meta property="article:modified_time" content="2026-07-10T09:00:00+02:00" />
+<meta property="article:modified_time" content="2026-07-10T10:30:00+02:00" />
 
 
 
@@ -248,7 +248,8 @@
     Assert.AreEquivalent(expected, actual);
 }
 </code></pre></div><p>The third test now passes as well because <code>AreEquivalent</code> checks the properties of both objects and compares their values rather than relying on <code>Equals</code>.</p>
-<p>Note that MSTest also provides <code>Assert.AreNotEquivalent&lt;T&gt;</code> to assert when two objects are not equivalent.</p>
+<p>One thing to note is how each framework reports failures when multiple properties differ. In the second test, <code>expected</code> and <code>actual</code> have four different property values. AwesomeAssertions includes all differing properties in the exception message, which makes it easy to see every difference at once. MSTest and Shouldly only report the first property that differs.</p>
+<p>MSTest also provides <code>Assert.AreNotEquivalent&lt;T&gt;</code> to assert when two objects are not equivalent.</p>
 <h3 id="cross-type-comparison">Cross-Type Comparison</h3>
 <p>The <code>AreEquivalent</code> method can also compare objects of different types as long as they share the same properties. For example, comparing an <code>AddressInternal</code> object with an <code>AddressExternal</code> object that has the exact same properties works:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#a6e22e">[TestMethod]</span>
@@ -378,7 +379,7 @@
 </code></pre></div><p>This test passes with AwesomeAssertions even though <code>Street</code> differs between the two objects because we&rsquo;re explicitly excluding it from the comparison. MSTest doesn&rsquo;t support this yet, and neither does Shouldly, so it&rsquo;s a known limitation to be aware of for now.</p>
 <h3 id="conclusion">Conclusion</h3>
 <p>The new <code>Assert.AreEquivalent&lt;T&gt;</code> and <code>Assert.AreNotEquivalent&lt;T&gt;</code> methods in MSTest v4.3.0 fill a gap that previously required a third-party library. They handle deep property comparison, work across different types with the same shape and support collections. If you&rsquo;re already using MSTest and want to reduce dependencies, this is a welcome addition.</p>
-<p>The implementation isn&rsquo;t complete yet. Ignoring properties during comparison is a common need that isn&rsquo;t supported at the time of writing.</p>
+<p>The implementation isn&rsquo;t complete yet. Ignoring properties during comparison is a common need that isn&rsquo;t supported at the time of writing. And when multiple properties differ, MSTest only reports the first one, whereas AwesomeAssertions includes all differing properties in the failure message.</p>
 <p>If you want to try it yourself, the <a href="https://github.com/ronaldbosma/blog-code-examples/tree/master/MSTest.AreEquivalent">sample solution</a> on GitHub contains all the examples from this post for AwesomeAssertions, Shouldly and MSTest side by side, along with additional scenarios.</p>
 
                     </div>
