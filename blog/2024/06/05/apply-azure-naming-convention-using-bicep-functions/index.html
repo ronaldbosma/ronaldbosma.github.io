@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/06/05/apply-azure-naming-convention-using-bicep-functions/cover.jpg"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2024-06-05T08:00:00+02:00" />
-<meta property="article:modified_time" content="2025-06-08T10:45:00+02:00" />
+<meta property="article:modified_time" content="2026-07-31T10:15:00+02:00" />
 
 
 
@@ -231,7 +231,7 @@ var vnetName = vnetNameBuilder.outputs.resourceName
 <p>Below is a snippet of the functions to retrieve the prefix.</p>
 <pre tabindex="0"><code class="language-bicep" data-lang="bicep">func getPrefix(resourceType string) string =&gt; getPrefixMap()[resourceType]
 
-func getPrefixMap() object =&gt; {
+func getPrefixMap() { *: string } =&gt; {
   apiManagement: 'apim'
   keyVault: 'kv'
   resourceGroup: 'rg'
@@ -245,7 +245,7 @@ func getPrefixMap() object =&gt; {
 <p>Similar to the resource type prefix, I&rsquo;ve created a map of environment names to abbreviations. This map is used by the <code>abbreviateEnvironment</code> function to return the abbreviation of the specified environment. See the snippet below.</p>
 <pre tabindex="0"><code class="language-bicep" data-lang="bicep">func abbreviateEnvironment(environment string) string =&gt; getEnvironmentMap()[toLower(environment)]
 
-func getEnvironmentMap() object =&gt; {
+func getEnvironmentMap() { *: string } =&gt; {
   dev: 'dev'
   development: 'dev'
   tst: 'tst'
@@ -260,7 +260,7 @@ func getEnvironmentMap() object =&gt; {
 <p>Likewise, for the Azure region, I&rsquo;m using another map to abbreviate it. Below is a snippet of the functions:</p>
 <pre tabindex="0"><code class="language-bicep" data-lang="bicep">func abbreviateRegion(region string) string =&gt; getRegionMap()[region]
 
-func getRegionMap() object =&gt; {
+func getRegionMap() { *: string } =&gt; {
   northeurope: 'ne'
   norwayeast: 'nwe'
   westcentralus: 'wcus'
@@ -288,10 +288,10 @@ func removeWhiteSpaces(value string) string =&gt; replace(value, ' ', '')
   sanitizeResourceName('${getPrefix(resourceType)}-${workload}-${abbreviateEnvironment(environment)}-${abbreviateRegion(region)}-${instance}')
 </code></pre><h4 id="shorten-resource-name">Shorten Resource Name</h4>
 <p>For most resources, this approach will suffice. However, a few resources have stricter requirements on name length, and some disallow hyphens. For instance, a Key Vault and Storage Account are limited to a maximum of 24 characters, while a Windows virtual machine’s name can only be up to 15 characters.</p>
-<p>To comply with these constraints, we need to shorten the name for these specific resources. First, we&rsquo;ll need a function to determine if a resource type needs to be shortened. We&rsquo;ll use an array of resource types that should be shortened and then check if the specified resource type is included in the list. Here are the functions:</p>
+<p>To comply with these constraints, we need to shorten the name for these specific resources. First, we&rsquo;ll need a function to determine if a resource type needs to be shortened. We&rsquo;ll use a string array of resource types that should be shortened and then check if the specified resource type is included in the list. Here are the functions:</p>
 <pre tabindex="0"><code class="language-bicep" data-lang="bicep">func shouldBeShortened(resourceType string) bool =&gt; contains(getResourcesTypesToShorten(), resourceType)
 
-func getResourcesTypesToShorten() array =&gt; [
+func getResourcesTypesToShorten() string[] =&gt; [
   'keyVault'
   'storageAccount'
   'virtualMachine'
