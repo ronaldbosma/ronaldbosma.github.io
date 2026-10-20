@@ -3,7 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ronaldbosma.github.io/blog/</loc>
-    <lastmod>2026-07-31T10:15:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/07/09/deep-object-comparison-in-mstest-with-assert.areequivalent/</loc>
     <lastmod>2026-07-10T10:30:00+02:00</lastmod>
@@ -12,10 +12,10 @@
     <lastmod>2026-07-10T10:30:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2026-07-31T10:15:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/</loc>
-    <lastmod>2026-07-31T10:15:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/test-automation/</loc>
     <lastmod>2026-07-31T10:15:00+02:00</lastmod>
@@ -24,13 +24,13 @@
     <lastmod>2026-06-09T17:00:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure/</loc>
-    <lastmod>2026-07-31T10:15:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-integration-services/</loc>
     <lastmod>2026-06-09T17:00:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/bicep/</loc>
-    <lastmod>2026-07-31T10:15:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/03/23/grouping-apis-in-azure-api-management-using-tags/</loc>
     <lastmod>2026-03-23T07:00:00+01:00</lastmod>
@@ -63,10 +63,10 @@
     <lastmod>2026-02-02T17:45:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/application-insights/</loc>
-    <lastmod>2026-05-08T11:15:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-monitor/</loc>
-    <lastmod>2026-05-08T11:15:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/logic-apps/</loc>
     <lastmod>2026-03-27T11:45:00+01:00</lastmod>
@@ -159,7 +159,7 @@
     <lastmod>2025-02-21T11:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/infra-as-code/</loc>
-    <lastmod>2026-07-31T10:15:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/service-bus/</loc>
     <lastmod>2025-02-21T11:00:00+01:00</lastmod>
@@ -228,25 +228,25 @@
     <lastmod>2023-05-11T20:45:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-cli/</loc>
-    <lastmod>2024-05-03T09:25:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-workbook/</loc>
-    <lastmod>2024-05-03T09:25:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/continuous-integration/</loc>
-    <lastmod>2024-05-03T09:25:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/</loc>
-    <lastmod>2024-05-03T09:25:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/powershell/</loc>
-    <lastmod>2024-05-03T09:25:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/</loc>
-    <lastmod>2024-05-03T09:25:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/kusto/</loc>
-    <lastmod>2024-05-03T09:25:00+02:00</lastmod>
+    <lastmod>2026-10-20T12:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/cleaner-code/</loc>
     <lastmod>2024-04-05T00:00:00+02:00</lastmod>

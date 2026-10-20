@@ -23,7 +23,7 @@
       <pubDate>Tue, 28 Feb 2023 19:30:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/</guid>
-      <description>If you use Azure, you most likely use Application Insights for logging. You can use a dashboard to visualize your logging and gain better insights, but dashboards come with some limitations. For more flexibility Azure has worbooks. In this blog post I&amp;rsquo;ll share some tips &amp;amp; tricks that I&amp;rsquo;ve gathered over the years. As a sample, we&amp;rsquo;ll create a workbook that shows information about requests sent to an API Management instance.</description>
+      <description>If you use Azure, you most likely use Application Insights for logging. You can use a dashboard to visualize your logging and gain better insights, but dashboards come with some limitations. For more flexibility Azure has workbooks. In this blog post I&amp;rsquo;ll share some tips &amp;amp; tricks that I&amp;rsquo;ve gathered over the years. As a sample, we&amp;rsquo;ll create a workbook that shows information about requests sent to an API Management instance.</description>
     </item>
     
   </channel>

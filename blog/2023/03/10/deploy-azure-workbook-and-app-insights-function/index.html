@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2023-03-10T15:00:00+01:00" />
-<meta property="article:modified_time" content="2024-05-03T09:25:00+02:00" />
+<meta property="article:modified_time" content="2026-10-20T12:15:00+02:00" />
 
 
 
@@ -170,18 +170,18 @@
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az bicep decompile -<span style="color:#f92672">-file</span> .\sample-arm-template.json
 </code></pre></div><p>The result will be a Bicep file like the snippet below. See <a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/DeployAzureWorkbookAndAppInsightsFunction/arm-template/sample-after-decompile.bicep">sample-after-decompile.bicep</a> for the full script.</p>
 <pre tabindex="0"><code class="language-bicep" data-lang="bicep">@description('The friendly name for the workbook that is used in the Gallery or Saved List.  This name must be unique within a resource group.')
-param workbookDisplayName string = 'API Management Requests'
+param workbookDisplayName string = 'Sample Workbook'
 
 @description('The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is \'workbook\'')
 param workbookType string = 'workbook'
 
 @description('The id of resource instance to which the workbook will be associated')
-param workbookSourceId string = '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-test/providers/microsoft.insights/components/appin-robo-test'
+param workbookSourceId string = '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-monitorais-frc-u7eei/providers/microsoft.insights/components/appi-monitorais-frc-u7eei'
 
 @description('The unique guid for this workbook instance')
 param workbookId string = newGuid()
 
-resource workbookId_resource 'microsoft.insights/workbooks@2021-03-08' = {
+resource workbookId_resource 'microsoft.insights/workbooks@2022-04-01' = {
   name: workbookId
   location: resourceGroup().location
   kind: 'shared'
@@ -228,7 +228,7 @@ az deployment group create `
 <pre tabindex="0"><code class="language-bicep" data-lang="bicep">var definition = loadTextContent('./sample.workbook')
 var serializedData = replace(definition, '##applicationInsightsId##', workbookSourceId)
 
-resource workbookId_resource 'microsoft.insights/workbooks@2021-03-08' = {
+resource workbookId_resource 'microsoft.insights/workbooks@2022-04-01' = {
   ...
   properties: {
     serializedData: serializedData
@@ -264,7 +264,6 @@ az deployment group create `
 | where customDimensions[&quot;Service ID&quot;] == &quot;##apimName##&quot;
 | extend subscription = tostring(customDimensions[&quot;Subscription Name&quot;])
     , api = tostring(customDimensions[&quot;API Name&quot;])
-    , sessionCorrelationId = tostring(customDimensions[&quot;Request-Session-Correlation-Id&quot;])
 </code></pre><p>I thought I could use a similar approach as with the workbook and use the <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/components/analyticsitems?pivots=deployment-language-bicep">analyticsItems</a> Bicep resource, but unfortunately this doesn&rsquo;t work at all. The problem has been reported on GitHub in <a href="https://github.com/Azure/bicep/issues/5518">this issue</a>.</p>
 <p>The Azure CLI doesn&rsquo;t provide any specific commands either. The only option seems to be to use the REST API. There is no page about creating an Application Insights function in <a href="https://learn.microsoft.com/en-us/rest/api/application-insights/">the REST API documentation</a>, but luckily I found <a href="https://blog.peterschen.de/create-functions-in-application-insights-through-rest-api/">this blog post</a> that describes the various operations.</p>
 <p>The following <code>PUT</code> can be used to create a function.</p>
