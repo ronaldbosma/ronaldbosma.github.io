@@ -7,7 +7,97 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Thu, 09 Jul 2026 20:00:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 20 Oct 2026 13:15:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>API Management</title>
+      <link>https://ronaldbosma.github.io/tags/api-management/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/api-management/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Application Insights</title>
+      <link>https://ronaldbosma.github.io/tags/application-insights/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/application-insights/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure</title>
+      <link>https://ronaldbosma.github.io/tags/azure/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Functions</title>
+      <link>https://ronaldbosma.github.io/tags/azure-functions/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-functions/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Integration Services</title>
+      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Monitor</title>
+      <link>https://ronaldbosma.github.io/tags/azure-monitor/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-monitor/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Service Bus</title>
+      <link>https://ronaldbosma.github.io/tags/azure-service-bus/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-service-bus/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bicep</title>
+      <link>https://ronaldbosma.github.io/tags/bicep/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kusto</title>
+      <link>https://ronaldbosma.github.io/tags/kusto/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/kusto/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Logic Apps</title>
+      <link>https://ronaldbosma.github.io/tags/logic-apps/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/logic-apps/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>MSTest</title>
       <link>https://ronaldbosma.github.io/tags/mstest/</link>
@@ -23,51 +113,6 @@
       <pubDate>Thu, 09 Jul 2026 20:00:00 +0200</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/test-automation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>API Management</title>
-      <link>https://ronaldbosma.github.io/tags/api-management/</link>
-      <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/api-management/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Azure</title>
-      <link>https://ronaldbosma.github.io/tags/azure/</link>
-      <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Azure Integration Services</title>
-      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
-      <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bicep</title>
-      <link>https://ronaldbosma.github.io/tags/bicep/</link>
-      <pubDate>Mon, 23 Mar 2026 07:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/bicep/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Azure Functions</title>
-      <link>https://ronaldbosma.github.io/tags/azure-functions/</link>
-      <pubDate>Mon, 09 Mar 2026 06:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure-functions/</guid>
       <description></description>
     </item>
     
@@ -104,33 +149,6 @@
       <pubDate>Mon, 02 Mar 2026 06:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/github-actions/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Application Insights</title>
-      <link>https://ronaldbosma.github.io/tags/application-insights/</link>
-      <pubDate>Mon, 02 Feb 2026 17:45:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/application-insights/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Azure Monitor</title>
-      <link>https://ronaldbosma.github.io/tags/azure-monitor/</link>
-      <pubDate>Mon, 02 Feb 2026 17:45:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure-monitor/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Logic Apps</title>
-      <link>https://ronaldbosma.github.io/tags/logic-apps/</link>
-      <pubDate>Mon, 26 Jan 2026 17:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/logic-apps/</guid>
       <description></description>
     </item>
     
@@ -356,15 +374,6 @@
       <pubDate>Fri, 10 Mar 2023 15:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/powershell/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>kusto</title>
-      <link>https://ronaldbosma.github.io/tags/kusto/</link>
-      <pubDate>Tue, 28 Feb 2023 19:30:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/kusto/</guid>
       <description></description>
     </item>
     

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Monitoring Azure Integrations with a Dashboard | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/cover.png"/>
+<meta name="twitter:title" content="Monitoring Azure Integrations with a Dashboard"/>
+<meta name="twitter:description" content="Integrations built with Azure Integration Services can include components from several services, each with its own monitoring experience. In this post, I show how I bring API Management requests, Azure Functions, Logic App workflows and Service Bus signals together in an Azure dashboard, then turn that dashboard into a reusable Bicep deployment."/>
+
+	<meta property="og:title" content="Monitoring Azure Integrations with a Dashboard" />
+<meta property="og:description" content="Integrations built with Azure Integration Services can include components from several services, each with its own monitoring experience. In this post, I show how I bring API Management requests, Azure Functions, Logic App workflows and Service Bus signals together in an Azure dashboard, then turn that dashboard into a reusable Bicep deployment." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-10-20T13:15:00+02:00" />
+<meta property="article:modified_time" content="2026-10-20T13:15:00+02:00" />
+
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Monitoring%20Azure%20Integrations%20with%20a%20Dashboard&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f10%2f20%2fmonitoring-azure-integrations-with-a-dashboard%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f10%2f20%2fmonitoring-azure-integrations-with-a-dashboard%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f10%2f20%2fmonitoring-azure-integrations-with-a-dashboard%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect | Microsoft MVP<br>
+                                    <i class="far fa-star"></i>
+                                    Oct 20, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    9 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Monitoring Azure Integrations with a Dashboard</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>When I start working on a new Azure Integration Services project, one of the first things I do is make sure I can monitor it. The integrations I&rsquo;ve worked on often include API Management, Azure Functions, Logic App workflows and Azure Service Bus. Looking across those services individually makes it harder to get a quick sense of the health of the integrations.</p>
+<p>I usually start with an <a href="https://learn.microsoft.com/en-us/azure/azure-portal/azure-portal-dashboards">Azure dashboard</a> that brings the signals I care about into one view. In this post, I&rsquo;ll walk through a sample dashboard, the queries behind some of its tiles and how I prepare the dashboard for deployment to multiple environments.</p>
+<p>This is the first post in my <a href="/series/monitoring-azure-integration-services/">Monitoring Azure Integration Services</a> series.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#sample-template">Sample Template</a></li>
+<li><a href="#environment-overview-dashboard">Environment Overview Dashboard</a></li>
+<li><a href="#queries-behind-the-dashboard">Queries Behind the Dashboard</a>
+<ul>
+<li><a href="#api-management-requests">API Management Requests</a></li>
+<li><a href="#azure-functions">Azure Functions</a></li>
+<li><a href="#logic-app-workflows">Logic App Workflows</a></li>
+<li><a href="#request-duration">Request Duration</a></li>
+</ul>
+</li>
+<li><a href="#editing-the-dashboard">Editing the Dashboard</a></li>
+<li><a href="#deploying-the-dashboard-with-bicep">Deploying the Dashboard with Bicep</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="sample-template">Sample Template</h3>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/monitor-azure-integration-services">Monitor Azure Integration Services</a> to demonstrate different monitoring approaches for Azure Integration Services, including dashboards, workbooks, health checks, alerts and health models. The dashboard featured in this post is included in the template. It has a sample application that lets users manage movies and submit or update ratings. It uses API Management, Azure Functions, Logic App workflows and Azure Service Bus. If you&rsquo;d like to deploy and try the solution, follow the template&rsquo;s <a href="https://github.com/ronaldbosma/monitor-azure-integration-services#getting-started">getting started instructions</a>.</p>
+<h3 id="environment-overview-dashboard">Environment Overview Dashboard</h3>
+<p>The dashboard is intended to give me a quick overview of the integration health in an environment, not to replace the detailed monitoring views in each service. I include a mixture of availability and health information, request activity, workflow status, function results, alerts and messaging metrics.</p>
+<p>The sample dashboard looks like this:</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/monitoring-azure-integrations-with-a-dashboard/environment-overview-dashboard.png" alt="Environment Overview Dashboard"></p>
+<p>The dashboard in the sample template includes:</p>
+<ul>
+<li>Availability test results and health check status for the Function App and Logic App.</li>
+<li>API Management requests, grouped by API and response code.</li>
+<li>Request counts, failed requests and request duration percentiles from Application Insights.</li>
+<li>Azure Functions success and failure counts, with the latest success and failure times.</li>
+<li>Logic App workflow run counts and their latest success or failure times.</li>
+<li>Open alerts in the resource group.</li>
+<li>Active and dead-letter message counts for the Service Bus entities.</li>
+</ul>
+<p>I usually adjust the dashboard for each project. If the environment has an Application Gateway with a web application firewall, I might add a tile showing blocked requests. If it uses storage queues instead of Service Bus, I show the relevant queue metrics instead.</p>
+<blockquote>
+<p>In the sample template, I use an availability test to check the uptime of API Management. For more on those, see my <a href="/series/track-availability-in-app-insights/">Track Availability in App Insights</a> series.</p>
+</blockquote>
+<h3 id="queries-behind-the-dashboard">Queries Behind the Dashboard</h3>
+<p>Some tiles use metrics directly, while others use queries over Application Insights data. These examples show the queries I use for API Management requests, Azure Functions, Logic App workflows and request duration.</p>
+<h4 id="api-management-requests">API Management Requests</h4>
+<p>The dashboard shows request counts by API and response code, alongside the latest success and failure times.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/monitoring-azure-integrations-with-a-dashboard/apim-requests.png" alt="API Management Requests"></p>
+<p>This query groups requests by API and response code. I separate client failures from other failures because client failures don&rsquo;t usually require the same response from my team. Sorting by the latest server failure helps me spot APIs with recent server-side errors.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let requestSummary = requests
+| where customDimensions[&quot;Service Type&quot;] == &quot;API Management&quot;
+| extend api = tostring(customDimensions[&quot;API Name&quot;])
+| extend isClientFailure = success == false and toint(resultCode) between (400 .. 499)
+| extend isServerFailure = success == false and isClientFailure == false
+| summarize
+    lastClientFailure = maxif(timestamp, isClientFailure),
+    lastServerFailure = maxif(timestamp, isServerFailure),
+    lastSuccess = maxif(timestamp, success == true)
+  by api;
+
+requests
+| where customDimensions[&quot;Service Type&quot;] == &quot;API Management&quot;
+| extend api = tostring(customDimensions[&quot;API Name&quot;])
+| evaluate pivot(resultCode, count(), api)
+| join kind=leftouter requestSummary on api
+| project-away api1
+| project-reorder api, lastServerFailure, * desc, lastSuccess, lastClientFailure
+| sort by lastServerFailure desc, api asc
+</code></pre><p>The <code>evaluate pivot(resultCode, count(), api)</code> step turns distinct response codes into columns, with request counts per API. The <code>leftouter</code> join brings in the summary timestamps while keeping every API from the pivot result. The join introduces a duplicate API key column called <code>api1</code>, which <code>project-away api1</code> removes.</p>
+<p>The <code>project-reorder</code> step puts <code>api</code> and <code>lastServerFailure</code> first, orders the response-code count columns by column name in descending order and places <code>lastSuccess</code> and <code>lastClientFailure</code> at the end. This makes the table easier to scan, with the latest server failure next to each API and higher response codes before lower ones, because I care most about errors.</p>
+<h4 id="azure-functions">Azure Functions</h4>
+<p>The dashboard shows success and failure counts for each function, along with the latest success and failure times.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/monitoring-azure-integrations-with-a-dashboard/azure-functions.png" alt="Azure Functions"></p>
+<p>This query summarizes successes and failures per function and function app.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">requests
+| where customDimensions[&quot;faas.name&quot;] != &quot;&quot;
+| extend function = tostring(customDimensions[&quot;faas.name&quot;])
+| summarize
+    success = countif(success == true),
+    lastSuccess = maxif(timestamp, success == true),
+    failed = countif(success == false),
+    lastFailure = maxif(timestamp, success == false)
+  by function, cloud_RoleName
+| project
+    function,
+    lastFailure,
+    failed,
+    lastSuccess,
+    success,
+    functionApp = cloud_RoleName
+| sort by lastFailure desc, function asc
+</code></pre><p>The query is based on OpenTelemetry logging. My <a href="https://gist.github.com/ronaldbosma/ac21e32e2d7f8ad1512760bca8b0609b#kusto-queries">Migrate Azure Functions project from Application Insights to OpenTelemetry</a> gist includes an example query for the older Application Insights logging and another that combines both.</p>
+<h4 id="logic-app-workflows">Logic App Workflows</h4>
+<p>The dashboard shows workflow run counts by status and the latest success, failure and cancellation times.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/monitoring-azure-integrations-with-a-dashboard/logic-app-workflows.png" alt="Logic App Workflows"></p>
+<p>The workflow query joins workflow start and end events to determine the run status, using both <code>operation_Id</code> and <code>runId</code> to match events for a workflow run.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let runEvents = traces
+| extend category = tostring(customDimensions[&quot;Category&quot;])
+| where category == &quot;Workflow.Operations.Runs&quot;
+| extend eventName = tostring(customDimensions[&quot;EventName&quot;])
+| extend runId = tostring(parse_json(tostring(customDimensions[&quot;resource&quot;]))[&quot;runId&quot;]);
+
+runEvents
+| where eventName == &quot;WorkflowRunStart&quot;
+| join kind=leftouter (
+    runEvents
+    | where eventName == &quot;WorkflowRunEnd&quot;
+  ) on operation_Id, runId
+| extend status = iif(
+    isempty(customDimensions1[&quot;status&quot;]),
+    &quot;Running&quot;,
+    replace_string(tostring(customDimensions1[&quot;status&quot;]), @'&quot;', '')
+  )
+| summarize
+    succeeded = countif(status == &quot;Succeeded&quot;),
+    lastSucceeded = maxif(timestamp1, status == &quot;Succeeded&quot;),
+    failed = countif(status == &quot;Failed&quot;),
+    lastFailure = maxif(timestamp1, status == &quot;Failed&quot;),
+    cancelled = countif(status == &quot;Cancelled&quot;),
+    lastCancelled = maxif(timestamp1, status == &quot;Cancelled&quot;),
+    running = countif(status == &quot;Running&quot;)
+  by operation_Name, cloud_RoleName
+| sort by lastFailure desc, operation_Name asc
+| project
+    workflow = operation_Name,
+    lastFailure,
+    failed,
+    cancelled,
+    succeeded,
+    running,
+    lastSucceeded,
+    lastCancelled,
+    logicApp = cloud_RoleName
+</code></pre><p>The query first selects all workflow run events, and extracts the event name and run ID from custom dimensions. It takes the start events and uses a left outer join to match each one to an end event. A start event without a matching end event has no end status, so the query treats it as <code>Running</code>. It then groups runs by workflow and Logic App, counts each status and finds the latest success, failure and cancellation times from the end-event timestamps.</p>
+<p>The query requires enhanced telemetry to be enabled for the Logic App. To enable it, set <code>Runtime.ApplicationInsightTelemetryVersion</code> to <code>v2</code> in your Logic App&rsquo;s <code>host.json</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+   <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;2.0&#34;</span>,
+   <span style="color:#f92672">&#34;extensionBundle&#34;</span>: {
+      <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;Microsoft.Azure.Functions.ExtensionBundle.Workflows&#34;</span>,
+      <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;[1, 2.00]&#34;</span>
+   },
+   <span style="color:#f92672">&#34;extensions&#34;</span>: {
+      <span style="color:#f92672">&#34;workflow&#34;</span>: {
+         <span style="color:#f92672">&#34;Settings&#34;</span>: {
+            <span style="color:#f92672">&#34;Runtime.ApplicationInsightTelemetryVersion&#34;</span>: <span style="color:#e6db74">&#34;v2&#34;</span>,
+            <span style="color:#f92672">&#34;Runtime.ApplicationInsights.PreserveIncomingOperationId&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>
+         }
+      }
+   }
+}
+</code></pre></div><p>Setting <code>Runtime.ApplicationInsights.PreserveIncomingOperationId</code> to <code>true</code> preserves the incoming operation ID so workflow telemetry can be correlated with related telemetry. But because of this configuration, <code>operation_Id</code> alone doesn&rsquo;t always identify a specific workflow run, so the query extracts <code>runId</code> from the <code>resource</code> custom dimension and joins on both <code>operation_Id</code> and <code>runId</code>.</p>
+<h4 id="request-duration">Request Duration</h4>
+<p>The dashboard plots average, median and 80th, 95th and 99th percentile request durations in five-minute intervals.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/monitoring-azure-integrations-with-a-dashboard/request-duration.png" alt="Request Duration"></p>
+<p>This query calculates average, median and percentile durations in five-minute intervals. I use percentiles to see how slower requests compare with the typical request.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">requests
+| summarize
+    average = avg(duration),
+    median = percentile(duration, 50),
+    p80 = percentile(duration, 80),
+    p95 = percentile(duration, 95),
+    p99 = percentile(duration, 99)
+  by bin(timestamp, 5m)
+| render timechart
+</code></pre><h3 id="editing-the-dashboard">Editing the Dashboard</h3>
+<p>I usually build up a dashboard by pinning useful charts and queries from the Azure portal to a dashboard. For example, you can configure a metric on a service&rsquo;s Metrics page of a resource and pin it, or create a query in Application Insights or Log Analytics and pin its results. You can also add tiles directly from the dashboard.</p>
+<p>Some tiles use the time range selected on the dashboard, while others retain the time range from their source when they&rsquo;re pinned. To make a tile follow the dashboard&rsquo;s time range, open its <code>...</code> menu, select <strong>Configure tile settings</strong> and clear <strong>Override the dashboard time settings at the tile level</strong>. This is also where you can set a tile title and subtitle.</p>
+<p>For an <a href="https://learn.microsoft.com/en-us/azure/governance/resource-graph/first-query-portal">Azure Resource Graph</a> tile (used to display alerts in the sample), the <strong>Pin to dashboard</strong> or <strong>Update pinned part on dashboard</strong> action is above the Results table. It took me a while to find it because it&rsquo;s in a different place from the pinning controls on other screens. This tile also doesn&rsquo;t have a <strong>Customize</strong> button like some other dashboard tiles. To edit the query later, you click on the tile itself.</p>
+<p>Some metrics can be split by resource or entity. For example, an availability test metric can show a separate line for each test. The App Service health check status metric doesn&rsquo;t support splitting on resource, so you need to add each Function App and Logic App to the tile separately.</p>
+<h3 id="deploying-the-dashboard-with-bicep">Deploying the Dashboard with Bicep</h3>
+<p>Once you&rsquo;re happy with the dashboard and it&rsquo;s ready to deploy, select <strong>Export</strong> and download its definition. Then copy the JSON definition into the Bicep file you use to deploy the dashboard. The <a href="https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep">Bicep extension for Visual Studio Code</a> automatically converts the JSON into Bicep.</p>
+<p>Before deploying to multiple environments, the environment-specific values in the dashboard definition need to be replaced. The sample template repository includes a <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/scripts/replace-dashboard-hardcoded-values.ps1">PowerShell script</a> that replaces hard-coded values. If the sample template has been deployed, you can run it with <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference#azd-exec"><code>azd exec</code></a>, which supplies values from the current <code>azd</code> environment:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">azd exec ./scripts/replace-dashboard-hardcoded-values.ps1
+</code></pre></div><p>Alternatively, you can run the script directly and provide the required parameters. To adapt it for another dashboard, you update the <code>$replacements</code> variable with the resource values that need replacing. The <code>$dashboardReplacements</code> variable contains values specific to the sample dashboard, such as its title.</p>
+<p>The Bicep module used by the sample is <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/infra/03-monitoring/modules/environment-overview-dashboard.bicep">environment-overview-dashboard.bicep</a>.</p>
+<h3 id="considerations">Considerations</h3>
+<p>Queries over Application Insights data can show incomplete results when telemetry is sampled. You can check the retained percentage with this query:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">union requests, dependencies, pageViews, browserTimings, exceptions, traces
+| where timestamp &gt; ago(1d)
+| summarize RetainedPercentage = 100 / avg(itemCount)
+    by bin(timestamp, 1h), itemType
+</code></pre><p>If sampling affects the results you need, you can use metrics instead or review the sampling configuration.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>An Azure dashboard gives me a quick overview of an integration environment without having to open each service separately. By combining service metrics with Application Insights queries, you can see request activity, failures, health and other signals in one place. Exporting the dashboard and replacing environment-specific values lets you deploy the same overview across environments.</p>
+<p>Dashboards are useful for a quick overview, but someone needs to be looking at them to notice issues. Alerts can notify the right people when something needs attention without requiring them to keep the dashboard open. I&rsquo;ll cover alerts in a future post in this series.</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-overview">Azure Workbooks</a> provide more control over interactive reports than dashboards. I cover workbook techniques in <a href="/blog/2023/02/28/azure-workbook-tips-tricks/">Azure Workbook Tips &amp; Tricks</a>. In future posts in this series, I&rsquo;ll explore some workbooks I&rsquo;ve created for Azure Integration Services.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-monitor">Azure Monitor</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/application-insights">Application Insights</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-functions">Azure Functions</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/logic-apps">Logic Apps</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-service-bus">Azure Service Bus</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/kusto">Kusto</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/07/09/deep-object-comparison-in-mstest-with-assert.areequivalent/">Deep Object Comparison in MSTest with Assert.AreEquivalent &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-developer-cli">azure-developer-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-service-bus">azure-service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mstest">mstest</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/resilience">resilience</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

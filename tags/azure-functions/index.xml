@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Mon, 09 Mar 2026 06:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-functions/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 20 Oct 2026 13:15:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-functions/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Monitoring Azure Integrations with a Dashboard</title>
+      <link>https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/</link>
+      <pubDate>Tue, 20 Oct 2026 13:15:00 +0200</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/</guid>
+      <description>Integrations built with Azure Integration Services can include components from several services, each with its own monitoring experience. In this post, I show how I bring API Management requests, Azure Functions, Logic App workflows and Service Bus signals together in an Azure dashboard, then turn that dashboard into a reusable Bicep deployment.</description>
+    </item>
+    
     <item>
       <title>Implement Failover in API Management with a Load-balanced Pool</title>
       <link>https://ronaldbosma.github.io/blog/2026/03/09/implement-failover-in-api-management-with-a-load-balanced-pool/</link>
