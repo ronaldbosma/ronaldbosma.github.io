@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2023/02/28/azure-workbook-tips-tricks/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2023-02-28T19:30:00+01:00" />
-<meta property="article:modified_time" content="2026-10-20T12:15:00+02:00" />
+<meta property="article:modified_time" content="2026-10-22T16:30:00+02:00" />
 
 
 
@@ -178,7 +178,11 @@
 <li><a href="#column-labels">Column Labels</a></li>
 </ul>
 </li>
-<li><a href="#totals-tiles">Totals (tiles)</a></li>
+<li><a href="#number-of-requests-graph">Number of Requests Graph</a>
+<ul>
+<li><a href="#time-brushing">Time Brushing</a></li>
+</ul>
+</li>
 <li><a href="#master-detail-table">Master-detail Table</a>
 <ul>
 <li><a href="#export-selection-from-master-table">Export Selection from Master Table</a></li>
@@ -212,7 +216,7 @@
 <p>The <code>timestamp</code> property is a property we can directly use in our queries because it&rsquo;s a column of the requests table. The <code>Service ID</code> and <code>API Name</code> are not default columns in the requests table because they are specific to API Management. These are stored in the <code>customDimensions</code> property and can be accessed with the syntax <code>customDimensions[&quot;Service ID&quot;]</code> and <code>customDimensions[&quot;API Name&quot;]</code>.</p>
 <p>When you specify your own custom properties to log from your application, you&rsquo;ll find them in this <code>customDimensions</code> property.</p>
 <h3 id="create-reusable-query">Create reusable query</h3>
-<p>We&rsquo;ll be reusing the same query in different parts of our workbook, so we&rsquo;re going to make a function. First, we&rsquo;ll cleanup the previously generated query to look like this:</p>
+<p>We&rsquo;ll be reusing the same query in different parts of our workbook, so we&rsquo;re going to make a function. First, we&rsquo;ll clean up the previously generated query to look like this:</p>
 <pre tabindex="0"><code class="language-kusto" data-lang="kusto">requests
 | where customDimensions[&quot;Service ID&quot;] == &quot;apim-monitorais-frc-u7eei&quot;
 | extend subscription = tostring(customDimensions[&quot;Subscription Name&quot;])
@@ -322,7 +326,7 @@ ApimRequests
     , operation_Id
 | order by timestamp desc
 </code></pre><p>The subscription and api filters are like the one in the query of the Api parameter.</p>
-<p>The Success parameter was not multiselect, so <code>let successFilter = '{Success}';</code> will be empty if nothing is selected, <code>true</code> if yes is selected and <code>false</code> if no is selected. With the filter <code>| where isempty(successFilter) or success == tobool(successFilter)</code> we either show all request or the requests that were (un)successful.</p>
+<p>The Success parameter was not multiselect, so <code>let successFilter = '{Success}';</code> will be empty if nothing is selected, <code>true</code> if yes is selected and <code>false</code> if no is selected. With the filter <code>| where isempty(successFilter) or success == tobool(successFilter)</code> we either show all requests or the requests that were (un)successful.</p>
 <p>With the <code>project</code> keyword we specify a list of columns to display in the table. The <code>status</code> column uses <a href="https://learn.microsoft.com/en-us/kusto/query/iff-function?view=microsoft-fabric"><code>iif</code></a> to display <code>success</code> when the request succeeded and <code>error</code> otherwise. We&rsquo;ll use this to display an icon further on. The <code>itemId</code> is displayed twice in both the <code>details</code> and <code>transaction</code> column. We&rsquo;ll use these to create links to the request details.</p>
 <p>The query is executed when you click the Run Query button. You can filter the data by changing the values of the parameters. For example, select &lsquo;no&rsquo; in the Success parameter to show all failed requests.</p>
 <p>You can configure more settings in the Advanced Settings tab. I&rsquo;ve set the chart title to &lsquo;Requests&rsquo;. I also like to check the following options:</p>
@@ -409,27 +413,55 @@ ApimRequests
 </ul>
 <p><img src="../../../../../images/azure-workbook-tips-and-tricks/column-labels.png" alt="Column Labels"></p>
 <p>Choose &lsquo;Save and Close&rsquo; to see the results.</p>
-<h3 id="totals-tiles">Totals (Tiles)</h3>
-<p>Besides tables you can also use other visualizations to display your query results. One I like to use is tiles. You can use it to for instance show the total number of requests, failures and errors per API. See the example below.</p>
-<p><img src="../../../../../images/azure-workbook-tips-and-tricks/tiles-totals.png" alt="Total Tiles"></p>
-<p>Start by adding another query to the workbook. Select Time as the Time Range, Tiles as the Visualization and Tiny as the Size.</p>
-<p>Add the following query.</p>
-<pre tabindex="0"><code class="language-kusto" data-lang="kusto">ApimRequests
-| summarize 
-        requests=strcat('Total # of requests: ', count()), 
-        failures=strcat('Total # of failures: ', countif(success==false)),
-        errors=countif(toint(resultCode)&gt;=500)
-    by api
-</code></pre><p>This query groups the results by api and counts all requests, all failed requests and all requests with result code &gt;= 500. To clarify what the different numbers are, I&rsquo;ve included a bit of text in the results.</p>
-<p>If you run the query, you&rsquo;ll notice that it doesn&rsquo;t quite look the same as the example above. We need to customize the tile.</p>
-<p>Choose Tile Settings. The api is already the title and the errors are displayed as the big number on the left.</p>
-<p>To add the total number of requests. Select the Subtitle field and select requests as the column to use. To add the total number of failures. Select the Bottom field and select failures as the column to use.</p>
-<p>You can also configure on what property to order the results. Select api as the Sort Criteria under Sort Settings and Ascending as the Sort Order.</p>
-<p>The Tile Settings screen should look like this.</p>
-<p><img src="../../../../../images/azure-workbook-tips-and-tricks/tiles-settings.png" alt="Tiles Settings"></p>
-<p>Choose &lsquo;Save and Close&rsquo;.</p>
-<p>We can add a title to the chart to clarify what is displayed. Go to Advanced Settings and set the chart title to <code>Total # of errors per API (status code &gt;=500)</code>. I also like to check &lsquo;Show open external query button when not editing&rsquo;, &lsquo;Show refresh icon when not editing&rsquo; and &lsquo;Show Export to CSV button when not editing&rsquo;.</p>
-<p>I usually display the totals above a table. You can move the Tiles section above the table by choosing &lsquo;Move &gt; Move up&rsquo;.</p>
+<h3 id="number-of-requests-graph">Number of Requests Graph</h3>
+<p>Besides tables you can also use other visualizations to display your query results. A graph that shows the number of requests over time gives a quick impression of the traffic and when errors occur. See the example below.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/number-of-requests-chart.png" alt="Number of Requests Chart"></p>
+<p>Start by adding another query to the workbook with &lsquo;Add &gt; Add query&rsquo;. Select Time as the Time Range and Bar chart as the Visualization.</p>
+<p>Add the following query:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let subscriptionFilter = dynamic([{Subscription}]);
+let apiFilter = dynamic([{Api}]);
+let successFilter = '{Success}';
+
+ApimRequests
+| where array_length(subscriptionFilter) == 0 or subscription in (subscriptionFilter)
+| where array_length(apiFilter) == 0 or api in (apiFilter)
+| where isempty(successFilter) or success == tobool(successFilter)
+| make-series numberOfRequests=count() default=0 on timestamp from todatetime(&quot;{Time:startISO}&quot;) to todatetime(&quot;{Time:endISO}&quot;) step {Time:grain} by success
+</code></pre><p>The filters are the same as in the table query. The query then uses <a href="https://learn.microsoft.com/en-us/kusto/query/make-series-operator"><code>make-series</code></a> instead of <code>summarize</code> with <code>bin</code>, because a <code>summarize</code> only returns time slots that have data. With <code>make-series</code>, the graph always shows the entire selected time period, even if there are no requests at the start or end of the period.</p>
+<p>The <code>make-series</code> operator is configured as follows:</p>
+<ul>
+<li><code>from</code> and <code>to</code> use the <code>{Time:startISO}</code> and <code>{Time:endISO}</code> properties of the Time parameter, so the series covers the selected time range.</li>
+<li><code>step</code> uses <code>{Time:grain}</code>. This way, the granularity is automatically adjusted depending on the time range you&rsquo;ve selected in the Time parameter.</li>
+<li><code>default=0</code> makes sure time slots without requests get the value 0 instead of null.</li>
+<li><code>by success</code> splits the results, so you get a separate series for successful and failed requests.</li>
+</ul>
+<p>To configure the color and labels, follow these steps:</p>
+<ul>
+<li>Click on the &lsquo;Chart Settings&rsquo; button in the &lsquo;Settings&rsquo; tab</li>
+<li>Open the &lsquo;Series Settings&rsquo; tab</li>
+<li>Specify a display label and color for each series</li>
+</ul>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/number-of-requests-chart-settings.png" alt="Number of Requests Chart Settings"></p>
+<p>Choose &lsquo;Save and Close&rsquo; to see the results.</p>
+<p>I usually display a graph like this above a table. You can move it up by choosing &lsquo;Move &gt; Move up&rsquo;.</p>
+<h4 id="time-brushing">Time Brushing</h4>
+<p>The graph supports time brushing, which means you can select a time period in the graph and all data in the workbook will be filtered accordingly.</p>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/time-brushing.png" alt="Time Brushing"></p>
+<p>To configure time brushing, you first enable it on the graph:</p>
+<ol>
+<li>Open the &lsquo;Advanced Settings&rsquo; of the graph.</li>
+<li>Check &lsquo;Enable time range brushing&rsquo;.</li>
+<li>Use <code>Time</code> as the parameter name. This is the same name as the time range parameter at the top of the workbook, which all queries use to filter on time.</li>
+<li>Check &lsquo;Only export the parameter when a range is brushed&rsquo;.</li>
+</ol>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/enable-time-brushing.png" alt="Enable Time Brushing"></p>
+<p>Next, edit the <code>Time</code> parameter:</p>
+<ol>
+<li>Go to &lsquo;Advanced Settings&rsquo;.</li>
+<li>Check &lsquo;Treat this parameter as a global&rsquo;.</li>
+</ol>
+<p><img src="../../../../../images/azure-workbook-tips-and-tricks/time-global-parameter.png" alt="Time Global Parameter"></p>
+<p>With this configuration, the time range selected in the drop-down is used by default. When you select a different time range in the graph, the <code>Time</code> parameter is updated and all data is filtered using the brushed range instead.</p>
 <h3 id="master-detail-table">Master-detail Table</h3>
 <p>Tables and other items provide the option to select data. We can use that selection as a filter in other items.</p>
 <p>As an example, we&rsquo;ll create a master-detail table. When a request in the master table is selected, all dependencies that have the same operation id will be displayed in the details table. See the example below.</p>
@@ -488,8 +520,8 @@ ApimRequests
 </ul>
 <p>Here are links to the exported workbook and shared function:</p>
 <ul>
-<li><a href="https://raw.githubusercontent.com/ronaldbosma/blog-code-examples/master/AzureWorkbookTipsAndTricks/API%20Management%20Requests.workbook">API Management Requests.workbook</a></li>
-<li><a href="https://github.com/ronaldbosma/blog-code-examples/blob/master/AzureWorkbookTipsAndTricks/ApimRequests.kql">ApimRequests.kql</a></li>
+<li><a href="https://github.com/ronaldbosma/azure-monitoring/blob/main/other/azure-workbook-tips-and-tricks/API%20Management%20Requests.workbook">API Management Requests.workbook</a></li>
+<li><a href="https://github.com/ronaldbosma/azure-monitoring/blob/main/other/azure-workbook-tips-and-tricks/ApimRequests.kql">ApimRequests.kql</a></li>
 </ul>
 <p>In my blog post <a href="/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/">Deploy Azure Workbook and App Insights Function</a> I show you how to deploy this workbook using Bicep and the Azure CLI.</p>
 
