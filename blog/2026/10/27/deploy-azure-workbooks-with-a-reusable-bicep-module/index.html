@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Deploy Azure Workbooks with a Reusable Bicep Module | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module/cover.png"/>
+<meta name="twitter:title" content="Deploy Azure Workbooks with a Reusable Bicep Module"/>
+<meta name="twitter:description" content="When deploying Azure Workbooks with Bicep, I use a module that constructs a stable resource name and an environment-specific display name, replaces placeholders in the workbook content and fails the deployment if any placeholders are left. In this post I explain how the module works and how to use it."/>
+
+	<meta property="og:title" content="Deploy Azure Workbooks with a Reusable Bicep Module" />
+<meta property="og:description" content="When deploying Azure Workbooks with Bicep, I use a module that constructs a stable resource name and an environment-specific display name, replaces placeholders in the workbook content and fails the deployment if any placeholders are left. In this post I explain how the module works and how to use it." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-10-27T09:30:00+01:00" />
+<meta property="article:modified_time" content="2026-10-27T09:30:00+01:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Deploy%20Azure%20Workbooks%20with%20a%20Reusable%20Bicep%20Module&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f10%2f27%2fdeploy-azure-workbooks-with-a-reusable-bicep-module%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f10%2f27%2fdeploy-azure-workbooks-with-a-reusable-bicep-module%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f10%2f27%2fdeploy-azure-workbooks-with-a-reusable-bicep-module%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect | Microsoft MVP<br>
+                                    <i class="far fa-star"></i>
+                                    Oct 27, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    6 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Deploy Azure Workbooks with a Reusable Bicep Module</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been deploying <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-overview">Azure Workbooks</a> with Bicep to multiple environments and kept repeating the same boilerplate in every project: constructing a stable name, adding the environment to the display name and replacing environment-specific values in the workbook JSON. To avoid that, I created a reusable Bicep module.</p>
+<p>In this post I&rsquo;ll show how to use the module and walk through its logic. I&rsquo;ve written about deploying workbooks before in <a href="/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/">Deploy Azure Workbook and App Insights Function</a>. That post explains how to deploy a workbook using Bicep. This post builds on that and wraps the logic in a reusable module.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#why-a-module">Why a Module?</a></li>
+<li><a href="#sample-usage">Sample Usage</a></li>
+<li><a href="#the-workbook-module">The Workbook Module</a>
+<ul>
+<li><a href="#resource-name-and-display-name">Resource Name and Display Name</a></li>
+<li><a href="#replacing-placeholders">Replacing Placeholders</a></li>
+<li><a href="#failing-on-unresolved-placeholders">Failing on Unresolved Placeholders</a></li>
+</ul>
+</li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="why-a-module">Why a Module?</h3>
+<p>A workbook is deployed with the <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/workbooks?pivots=deployment-language-bicep">Microsoft.Insights/workbooks</a> resource. The resource itself is simple, but a few details need extra attention:</p>
+<ul>
+<li>The resource name of a workbook is a GUID and not something readable. What you see in the Azure portal is the display name. You want the GUID to be stable, so a redeployment updates the existing workbook instead of creating a duplicate.</li>
+<li>When you deploy the same workbook to multiple environments in the same subscription, you want to be able to tell them apart. Adding the environment name to the display name solves that.</li>
+<li>The workbook JSON contains resource IDs, such as the ID of an Application Insights instance or an API Management service. These are different for each environment, so they have to be replaced before deployment.</li>
+</ul>
+<p>The module handles all of these. You can find it <a href="https://github.com/ronaldbosma/bicep-samples/tree/main/modules/workbook">here</a>.</p>
+<h3 id="sample-usage">Sample Usage</h3>
+<p>Let&rsquo;s start with how to use the module. The following Bicep template deploys a workbook with the content loaded from a file:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">param environmentName string = 'dev'
+param location string = resourceGroup().location
+
+param tags { *: string } = {
+  environment: environmentName
+}
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+  name: 'appi-aisquick-sdc-taqld'
+}
+
+resource apiManagementService 'Microsoft.ApiManagement/service@2025-09-01-preview' existing = {
+  name: 'apim-aisquick-sdc-taqld'
+}
+
+module workbook 'workbook.bicep' = {
+  params: {
+    environmentName: environmentName
+    location: location
+    tags: tags
+    displayName: 'Sample Workbook'
+    serializedData: string(loadJsonContent('./sample.workbook'))
+    placeholders: {
+      AzureSubscriptionId: subscription().subscriptionId
+      ApplicationInsightsId: appInsights.id
+      ApiManagementId: apiManagementService.id
+    }
+    sourceId: appInsights.id
+  }
+}
+</code></pre><p>The workbook content is loaded with <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-files#loadjsoncontent">loadJsonContent</a> and converted to a string. The existing Application Insights and API Management resources are used to supply their resource IDs. The Application Insights instance is also the <code>sourceId</code> of the workbook.</p>
+<blockquote>
+<p><a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-files#loadtextcontent">loadTextContent</a> can also be used, but <code>loadJsonContent</code> supports larger file sizes.</p>
+</blockquote>
+<p>The module has a couple more parameters, such as <code>category</code> and <code>version</code>, which have default values. See the <a href="https://github.com/ronaldbosma/bicep-samples/tree/main/modules/workbook">README</a> of the module for a full list and explanation of the parameters.</p>
+<p>The <code>sample.workbook</code> file is the workbook JSON that you can export from the Advanced Editor in the portal, as described in <a href="/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/#load-workbook-from-file">my earlier post</a>. In that file, you replace the hard-coded values with placeholders. A simplified example looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;Notebook/1.0&#34;</span>,
+  <span style="color:#f92672">&#34;items&#34;</span>: [
+    {
+      <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#ae81ff">3</span>,
+      <span style="color:#f92672">&#34;content&#34;</span>: {
+        <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;KqlItem/1.0&#34;</span>,
+        <span style="color:#f92672">&#34;query&#34;</span>: <span style="color:#e6db74">&#34;requests | summarize count() by name&#34;</span>,
+        <span style="color:#f92672">&#34;queryType&#34;</span>: <span style="color:#ae81ff">0</span>,
+        <span style="color:#f92672">&#34;resourceType&#34;</span>: <span style="color:#e6db74">&#34;microsoft.insights/components&#34;</span>,
+        <span style="color:#f92672">&#34;crossComponentResources&#34;</span>: [ <span style="color:#e6db74">&#34;##ApplicationInsightsId##&#34;</span> ]
+      },
+      <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;RequestsPerOperation&#34;</span>
+    }
+  ]
+}
+</code></pre></div><p>When the module is deployed, <code>##ApplicationInsightsId##</code> is replaced with the resource ID of the Application Insights instance. The same goes for <code>##AzureSubscriptionId##</code> and <code>##ApiManagementId##</code> if you use them in your workbook. Because the environment name is <code>dev</code>, the workbook shows up as <code>Sample Workbook (dev)</code>.</p>
+<h3 id="the-workbook-module">The Workbook Module</h3>
+<p>Now let&rsquo;s look at the logic in <a href="https://github.com/ronaldbosma/bicep-samples/blob/main/modules/workbook/workbook.bicep">workbook.bicep</a> that makes this work.</p>
+<h4 id="resource-name-and-display-name">Resource Name and Display Name</h4>
+<p>The module constructs the resource and display name using the specified environment and display name:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">var workbookName = guid(resourceGroup().id, displayName, environmentName)
+var workbookDisplayName = environmentName == '' ? displayName : '${displayName} (${environmentName})'
+
+resource workbook 'Microsoft.Insights/workbooks@2023-06-01' = {
+  name: workbookName
+  location: location
+  tags: tags
+  kind: 'shared' // Only valid value for kind is 'shared'
+  properties: {
+    displayName: workbookDisplayName
+    category: category
+    serializedData: ...
+    sourceId: sourceId
+    version: version
+  }
+}
+</code></pre><p>The resource name must be a guid. I use the <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-string#guid">guid</a> function with the resource group ID, display name and environment name as input. This creates a deterministic GUID. The same input always results in the same name, so redeploying the workbook updates it. Because the environment name is part of the input, workbooks for different environments in the same resource group also get different names.</p>
+<p>The display name is what users see in the portal. If you specify <code>Sample Workbook</code> as display name and <code>dev</code> as environment name, the workbook is shown as <code>Sample Workbook (dev)</code>. Without an environment name, the display name is used as-is.</p>
+<p>The <code>kind</code> is set to <code>shared</code>, because that&rsquo;s the only valid value for this property.</p>
+<h4 id="replacing-placeholders">Replacing Placeholders</h4>
+<p>The workbook content is a JSON string. To replace placeholders in that string, the module uses the approach I described in <a href="/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function/">Replace placeholders in string with user-defined Bicep function</a>. Please read that post for the full explanation of how the <code>reduce</code> function is used to replace multiple placeholders in a string. Here&rsquo;s the part of the module that does this:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">func replacePlaceholders(originalString string, placeholders array) string =&gt;
+  reduce(
+    placeholders,
+    originalString, // this is the first 'current'
+    (current, next) =&gt; replacePlaceholder(current, next.key, next.value)
+  )
+
+func replacePlaceholder(originalString string, placeholder string, value string) string =&gt;
+  replace(originalString, '##${placeholder}##', value)
+
+var workbookContent = placeholders == null
+  ? serializedData
+  : replacePlaceholders(serializedData, items(placeholders!))
+</code></pre><p>The <code>workbookContent</code> variable is set as follows:</p>
+<ul>
+<li>If no placeholders are specified, <code>serializedData</code> is used unchanged.</li>
+<li>If placeholders are specified, the <code>placeholders</code> object is converted to an array of key/value pairs with the <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-object#items">items</a> function. The <code>!</code> operator tells Bicep the value isn&rsquo;t null at that point.</li>
+<li>The <code>replacePlaceholders</code> function loops over that array with <code>reduce</code> and calls <code>replacePlaceholder</code> for each item.</li>
+<li>The <code>replacePlaceholder</code> function replaces a single placeholder with its value. For example, a placeholder named <code>ApplicationInsightsId</code> is replaced where the content contains <code>##ApplicationInsightsId##</code>.</li>
+</ul>
+<p>Because the values are inserted as-is, they need to be valid inside a JSON string. That&rsquo;s no problem for resource IDs and subscription IDs, but keep it in mind if you use other values.</p>
+<h4 id="failing-on-unresolved-placeholders">Failing on Unresolved Placeholders</h4>
+<p>The last piece of logic is setting the <code>serializedData</code> property of the workbook, which I left out of the previous snippet. This is the complete line:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">serializedData: !like(workbookContent, '*##*##*')
+  ? workbookContent
+  : fail('Workbook &quot;${workbookDisplayName}&quot; still contains unresolved placeholders.')
+</code></pre><p>The <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-string#like">like</a> function checks if the content contains two <code>##</code> markers with something optional around them. If it doesn&rsquo;t, the content is used as-is. If it does, a placeholder is left and the <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-logical#fail">fail</a> function stops the deployment with a message like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Workbook &#34;Sample Workbook (dev)&#34; still contains unresolved placeholders.
+</code></pre></div><p>That gives you an early and clear error instead of a workbook with empty or broken queries.</p>
+<p>There&rsquo;s a limitation to this check. It matches any two occurrences of <code>##</code> in the content, not only the format of a placeholder. If your workbook has text items with Markdown headings, such as <code>## Heading</code>, two of them in one workbook would trigger the error. That&rsquo;s a trade-off for a simple check. If you run into this, you can change the placeholder format or make the check more specific.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>With this module, I no longer have to think about the details of deploying a workbook. It creates a stable resource name, makes the display name environment-specific, replaces placeholders in the workbook content and stops the deployment if a placeholder is left behind.</p>
+<p>You can find the module and its README on <a href="https://github.com/ronaldbosma/bicep-samples/tree/main/modules/workbook">GitHub</a>. For more details on the workbook resource itself, see the <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/workbooks?pivots=deployment-language-bicep">Microsoft.Insights/workbooks Bicep resource</a> reference.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-monitor">Azure Monitor</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-workbook">Azure Workbook</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/infra-as-code">Infra as Code</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/">Monitoring Azure Integrations with a Dashboard &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-developer-cli">azure-developer-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-service-bus">azure-service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mstest">mstest</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/resilience">resilience</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

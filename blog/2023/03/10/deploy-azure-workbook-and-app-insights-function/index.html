@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2023/03/10/deploy-azure-workbook-and-app-insights-function/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2023-03-10T15:00:00+01:00" />
-<meta property="article:modified_time" content="2026-10-20T12:15:00+02:00" />
+<meta property="article:modified_time" content="2026-10-21T12:10:00+02:00" />
 
 
 
@@ -237,7 +237,7 @@ resource workbookId_resource 'microsoft.insights/workbooks@2022-04-01' = {
 }
 </code></pre><p>As you can see, the definition is loaded from the file using the <code>loadTextContent</code> function. We then use the <code>replace</code> function to replace the placeholder. The last step is to set the <code>serializedData</code> property. See <a href="https://github.com/ronaldbosma/azure-monitoring/blob/master/other/deploy-azure-workbook-and-appinsights-function/load-workbook-from-file/sample.bicep">sample.bicep</a> for the full sample.</p>
 <blockquote>
-<p>If you want to know more about how to replace multiple placeholders in a string, see <a href="/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function">Replace placeholders in string with user-defined Bicep function</a>.</p>
+<p>For a reusable Bicep module that implements this approach, see <a href="/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module">Deploy Azure Workbooks with a Reusable Bicep Module</a>. If you want to know more about how to replace multiple placeholders in a string, see <a href="/blog/2024/06/21/replace-placeholders-in-string-with-user-defined-bicep-function">Replace placeholders in string with user-defined Bicep function</a>.</p>
 </blockquote>
 <p>Using the same Azure CLI command as before, we can deploy the workbook using Bicep.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">$resourceGroupName = <span style="color:#e6db74">&#39;&lt;resource group&gt;&#39;</span>

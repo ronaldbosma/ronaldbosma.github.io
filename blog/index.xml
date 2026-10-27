@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 20 Oct 2026 13:15:00 +0200</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 27 Oct 2026 09:30:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deploy Azure Workbooks with a Reusable Bicep Module</title>
+      <link>https://ronaldbosma.github.io/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module/</link>
+      <pubDate>Tue, 27 Oct 2026 09:30:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module/</guid>
+      <description>When deploying Azure Workbooks with Bicep, I use a module that constructs a stable resource name and an environment-specific display name, replaces placeholders in the workbook content and fails the deployment if any placeholders are left. In this post I explain how the module works and how to use it.</description>
+    </item>
+    
     <item>
       <title>Monitoring Azure Integrations with a Dashboard</title>
       <link>https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/</link>
