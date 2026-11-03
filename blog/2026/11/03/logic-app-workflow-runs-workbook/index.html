@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Logic App Workflow Runs Workbook | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/cover.png"/>
+<meta name="twitter:title" content="Logic App Workflow Runs Workbook"/>
+<meta name="twitter:description" content="The Insights screen of a Logic App shows workflow runs, but only for a single Logic App and with some limitations. In this post, I walk through an Azure Workbook that shows the runs of multiple Logic Apps in one place, including cancelled runs, a graph over time, trace links and the option to view or resubmit a run."/>
+
+	<meta property="og:title" content="Logic App Workflow Runs Workbook" />
+<meta property="og:description" content="The Insights screen of a Logic App shows workflow runs, but only for a single Logic App and with some limitations. In this post, I walk through an Azure Workbook that shows the runs of multiple Logic Apps in one place, including cancelled runs, a graph over time, trace links and the option to view or resubmit a run." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-11-03T10:00:00+01:00" />
+<meta property="article:modified_time" content="2026-11-03T10:00:00+01:00" />
+<meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Logic%20App%20Workflow%20Runs%20Workbook&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f03%2flogic-app-workflow-runs-workbook%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f03%2flogic-app-workflow-runs-workbook%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f03%2flogic-app-workflow-runs-workbook%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect | Microsoft MVP<br>
+                                    <i class="far fa-star"></i>
+                                    Nov 3, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    15 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Logic App Workflow Runs Workbook</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>When I work with Logic Apps Standard, I regularly need to find out which workflow runs failed, were cancelled or are still running. The Insights screen of a Logic App and a few community workbooks help with that, but they only show a single Logic App and I ran into some limitations. Most notably, they don&rsquo;t work well when the incoming operation ID is preserved during logging, which I enable to get end-to-end traces.</p>
+<p>In this post, I&rsquo;ll walk through an Azure Workbook that shows workflow runs for one or more Logic Apps that log to the same Application Insights instance. I&rsquo;ll explain the queries behind it and how to configure the graph, the View and Resubmit links and the master-detail tables.</p>
+<p>This is the second post in my <a href="/series/monitoring-azure-integration-services/">Monitoring Azure Integration Services</a> series.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#sample-template">Sample Template</a></li>
+<li><a href="#workbook-overview">Workbook Overview</a></li>
+<li><a href="#enabling-enhanced-telemetry">Enabling Enhanced Telemetry</a></li>
+<li><a href="#parameters">Parameters</a></li>
+<li><a href="#workflow-runs-graph">Workflow Runs Graph</a></li>
+<li><a href="#workflow-runs-table">Workflow Runs Table</a>
+<ul>
+<li><a href="#preserving-incoming-operation-id">Preserving Incoming Operation ID</a></li>
+<li><a href="#configuring-the-view-link">Configuring the View Link</a></li>
+<li><a href="#configuring-the-resubmit-link">Configuring the Resubmit Link</a></li>
+<li><a href="#getting-the-logic-app-id">Getting the Logic App ID</a></li>
+</ul>
+</li>
+<li><a href="#triggers-and-actions-table">Triggers and Actions Table</a></li>
+<li><a href="#action-dependencies-and-exceptions">Action Dependencies and Exceptions</a></li>
+<li><a href="#deploying-the-workbook">Deploying the Workbook</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="sample-template">Sample Template</h3>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/monitor-azure-integration-services">Monitor Azure Integration Services</a> to demonstrate different monitoring approaches for Azure Integration Services, including dashboards, workbooks, health checks, alerts and health models. The workbook featured in this post is included in the template. The template has a sample application that lets users manage movies and submit or update ratings. It uses API Management, Azure Functions, Logic App workflows and Azure Service Bus. If you&rsquo;d like to deploy and try the solution, follow the template&rsquo;s <a href="https://github.com/ronaldbosma/monitor-azure-integration-services#getting-started">getting started instructions</a>. The template also includes a <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/demos/demo-logic-app-workflow-runs-workbook.md">demo guide</a> for this workbook.</p>
+<h3 id="workbook-overview">Workbook Overview</h3>
+<p>The workbook shows a graph with the number of workflow runs over time, a table with the runs themselves and, for the selected run, a table with its triggers and actions. For a selected action, you can see its dependencies and exceptions.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/logic-app-workflow-runs-workbook/logic-app-workflow-runs-workbook.png" alt="Logic App Workflow Runs workbook"></p>
+<p>The definition file is <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/infra/03-monitoring/modules/workbooks/Logic%20App%20Workflow%20Runs.workbook">Logic App Workflow Runs.workbook</a>.</p>
+<p>The workbook is inspired by the blog post <a href="https://techcommunity.microsoft.com/blog/integrationsonazureblog/extending-logic-apps-app-insight-integration-with-azure-workbooks/3784062">Extending Logic Apps App Insight integration with Azure Workbooks</a> and by the Run tab of the Insights screen of a Logic App. My workbook adds some features and fixes some issues:</p>
+<ul>
+<li>It can show data for multiple Logic Apps when they all log to the same Application Insights instance, so you don&rsquo;t have to navigate to each Logic App individually.</li>
+<li>It shows cancelled workflow runs.</li>
+<li>It has a graph that displays the number of workflow runs per status over time.</li>
+<li>It has a Trace link that opens the end-to-end transaction details.</li>
+<li>It includes the trigger in the triggers and actions table.</li>
+<li>It still works as intended when preservation of incoming operation IDs is enabled. See <a href="#preserving-incoming-operation-id">Preserving Incoming Operation ID</a> for more information.</li>
+</ul>
+<p>I&rsquo;m assuming you know a bit about editing Azure Workbooks. If not, have a look at my <a href="/blog/2023/02/28/azure-workbook-tips-tricks/">Azure Workbook Tips &amp; Tricks</a> post first.</p>
+<h3 id="enabling-enhanced-telemetry">Enabling Enhanced Telemetry</h3>
+<p>For the workbook to work, you need to enable enhanced telemetry for your Logic App. You do this by setting <code>Runtime.ApplicationInsightTelemetryVersion</code> to <code>v2</code> in your <code>host.json</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+   <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;2.0&#34;</span>,
+   <span style="color:#f92672">&#34;extensionBundle&#34;</span>: {
+      <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;Microsoft.Azure.Functions.ExtensionBundle.Workflows&#34;</span>,
+      <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;[1, 2.00]&#34;</span>
+   },
+   <span style="color:#f92672">&#34;extensions&#34;</span>: {
+      <span style="color:#f92672">&#34;workflow&#34;</span>: {
+         <span style="color:#f92672">&#34;Settings&#34;</span>: {
+            <span style="color:#f92672">&#34;Runtime.ApplicationInsightTelemetryVersion&#34;</span>: <span style="color:#e6db74">&#34;v2&#34;</span>
+         }
+      }
+   }
+}
+</code></pre></div><h3 id="parameters">Parameters</h3>
+<p>The workbook has the following parameters at the top:</p>
+<ul>
+<li>Subscription and Application Insights: these let me deploy the workbook once and try it on different environments.</li>
+<li>Time: the time range used by all queries.</li>
+<li>Status: a hardcoded list of statuses (Cancelled, Failed, Running and Succeeded).</li>
+<li>Logic App: a drop-down with the Logic Apps that logged to the Application Insights instance in the selected time range, filtered on the selected statuses.</li>
+<li>Workflow: a drop-down with the workflows that ran in the selected time range, filtered on the selected statuses and Logic Apps.</li>
+<li>Client Tracking ID: a text field in which you can enter a specific client tracking ID.</li>
+</ul>
+<p>For a more detailed explanation on how to configure parameters in a workbook, see <a href="/blog/2023/02/28/azure-workbook-tips-tricks/#parameters">Azure Workbook Tips &amp; Tricks - Parameters</a>.</p>
+<h3 id="workflow-runs-graph">Workflow Runs Graph</h3>
+<p>The graph displays the number of workflow runs per status over time. This is the query:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let statusFilter = dynamic([{Status}]);
+let logicAppFilter = dynamic([{LogicApp}]);
+let workflowFilter = dynamic([{Workflow}]);
+let clientTrackingIdFilter = '{ClientTrackingId}';
+
+let runEvents = traces
+| extend category = tostring(customDimensions[&quot;Category&quot;])
+| where category == &quot;Workflow.Operations.Runs&quot;
+| extend eventName = tostring(customDimensions[&quot;EventName&quot;])
+| extend runId = tostring(parse_json(tostring(customDimensions[&quot;resource&quot;]))[&quot;runId&quot;]);
+
+runEvents
+| where eventName == &quot;WorkflowRunStart&quot;
+| where array_length(logicAppFilter) == 0 or cloud_RoleName in (logicAppFilter)
+| where array_length(workflowFilter) == 0 or operation_Name in (workflowFilter)
+| extend clientTrackingId = tostring(customDimensions[&quot;prop__clientTrackingId&quot;])
+| where isempty(clientTrackingIdFilter) or clientTrackingId == clientTrackingIdFilter
+| join kind=leftouter (
+    runEvents
+    | where eventName == &quot;WorkflowRunEnd&quot;
+  ) on operation_Id, runId
+| extend status = iif(isempty(customDimensions1[&quot;status&quot;]), &quot;Running&quot;, replace_string(tostring(customDimensions1[&quot;status&quot;]), @'&quot;', ''))
+| where array_length(statusFilter) == 0 or status in (statusFilter)
+| make-series numberOfRequests=count() default=0 on timestamp from todatetime(&quot;{TimeRange:startISO}&quot;) to todatetime(&quot;{TimeRange:endISO}&quot;) step {TimeRange:grain} by status
+</code></pre><p>The query first turns the multi-select parameters into arrays with <code>dynamic([...])</code>. An empty array means nothing is selected, so the filters only apply when the array isn&rsquo;t empty.</p>
+<p>It then selects all workflow run events, and extracts the event name and run ID from the custom dimensions.</p>
+<p>It takes the start events, applies the filters and uses a left outer join to match each start event to an end event. The join is on both <code>operation_Id</code> and <code>runId</code>. I explain why in <a href="#preserving-incoming-operation-id">Preserving Incoming Operation ID</a>. A start event without a matching end event has no end status, so the query treats it as <code>Running</code>. The status filter is applied last, because the status is only known after the join.</p>
+<p>Finally, <a href="https://learn.microsoft.com/en-us/kusto/query/make-series-operator"><code>make-series</code></a> counts the runs per status and creates a time series. This has a few benefits:</p>
+<ul>
+<li>With <code>make-series</code>, the graph shows the entire selected period, even if there are no requests at the start or end of the period. A <code>summarize</code> with <code>bin</code> would only return time slots that have data.</li>
+<li>The granularity is based on the TimeRange parameter by using <code>{TimeRange:grain}</code>. This way, the granularity is automatically adjusted depending on the time range you&rsquo;ve selected in the Time parameter.</li>
+</ul>
+<p>I&rsquo;ve enabled time brushing on this graph, which means you can select a time period in the graph and all data in the workbook will be filtered accordingly. See <a href="/blog/2023/02/28/azure-workbook-tips-tricks/#time-brushing">Azure Workbook Tips &amp; Tricks - Time Brushing</a> for how to configure this.</p>
+<h3 id="workflow-runs-table">Workflow Runs Table</h3>
+<p>This is the base query to select the workflow runs. I&rsquo;ve left out the filters, which are the same as in the graph query.</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let runEvents = traces
+| extend category = tostring(customDimensions[&quot;Category&quot;])
+| where category == &quot;Workflow.Operations.Runs&quot;
+| extend eventName = tostring(customDimensions[&quot;EventName&quot;])
+| extend runId = tostring(parse_json(tostring(customDimensions[&quot;resource&quot;]))[&quot;runId&quot;]);
+
+let triggers=requests
+| extend category = tostring(customDimensions[&quot;Category&quot;])
+| where category == &quot;Workflow.Operations.Triggers&quot;
+| extend runId = tostring(parse_json(tostring(customDimensions[&quot;resource&quot;]))[&quot;runId&quot;]);
+
+runEvents
+| where eventName == &quot;WorkflowRunStart&quot;
+| extend clientTrackingId = tostring(customDimensions[&quot;prop__clientTrackingId&quot;])
+| join kind=leftouter (
+    runEvents
+    | where eventName == &quot;WorkflowRunEnd&quot;
+  ) on operation_Id, runId
+| extend status = iif(isempty(customDimensions1[&quot;status&quot;]), &quot;Running&quot;, replace_string(tostring(customDimensions1[&quot;status&quot;]), @'&quot;', ''))
+| join kind=leftouter (
+    triggers 
+    | project triggerName=name, operation_Id, runId
+  ) on operation_Id, runId
+| project
+    status,
+    cloud_RoleName,
+    operation_Name,
+    startTime = timestamp,
+    endTime = timestamp1,
+    duration = tolong(customDimensions1[&quot;prop__durationInMilliseconds&quot;]),
+    workflowType = customDimensions[&quot;prop__kind&quot;],
+    view = &quot;View&quot;,
+    triggerName,
+    trace = itemId,
+    runId,
+    clientTrackingId,
+    operation_Id
+| sort by startTime desc
+</code></pre><p>The first part is the same as in the graph query: it finds the start event of each run, joins the end event and determines the status. This query adds a second variable, <code>triggers</code>, which selects the trigger events from the <code>requests</code> table. A trigger is logged as a request, with its name in the <code>name</code> column. The run ID is extracted the same way as for the run events.</p>
+<p>A second left outer join, again on <code>operation_Id</code> and <code>runId</code>, adds the name of the trigger to each run. It&rsquo;s needed for the Resubmit link, which calls an API that requires the trigger name.</p>
+<p>The final <code>project</code> selects and renames the columns for the table:</p>
+<ul>
+<li><code>startTime</code> comes from the start event and <code>endTime</code> from the end event, which is <code>null</code> for a run that&rsquo;s still running.</li>
+<li><code>duration</code> and <code>workflowType</code> (<code>Stateful</code> or <code>Stateless</code>) are logged as custom dimensions. The duration is in milliseconds and comes from the end event.</li>
+<li><code>view</code> is a constant. It only exists so I have a column to render as the View link.</li>
+<li><code>trace</code> is the <code>itemId</code> of the start event. The Trace link uses it to open the end-to-end transaction details. See <a href="/blog/2023/02/28/azure-workbook-tips-tricks/#end-to-end-transaction-details">Azure Workbook Tips &amp; Tricks - End-to-end Transaction Details</a> for how to configure that.</li>
+<li><code>runId</code> and <code>operation_Id</code> identify the run. The View and Resubmit links and the triggers and actions table use them.</li>
+</ul>
+<p>The table sorts by start time in descending order, so the most recent runs are shown first. I&rsquo;ve configured the workbook to show a maximum of 1000 rows, so use the filters or time brushing to narrow down the results if needed.</p>
+<h4 id="preserving-incoming-operation-id">Preserving Incoming Operation ID</h4>
+<p>By default, when enhanced telemetry is enabled, the operation ID matches the run ID of a workflow run. However, this is not the case when you preserve incoming operation IDs. A workflow that&rsquo;s triggered by, for example, a request from API Management or another workflow, keeps the operation ID of the incoming request.</p>
+<p>In my sample application, I have a workflow that triggers on a schedule and selects all movies. For each movie, a &lsquo;recalculate rating&rsquo; command is sent to a Service Bus queue. Another workflow is triggered for each of those messages to recalculate the rating of the movie. When the incoming operation ID is preserved, all the logging of these workflows is correlated and contained in a single end-to-end trace.</p>
+<p>The workbook from <a href="https://techcommunity.microsoft.com/blog/integrationsonazureblog/extending-logic-apps-app-insight-integration-with-azure-workbooks/3784062">Extending Logic Apps App Insight integration with Azure Workbooks</a> and the functionality on the Insights screen of a Logic App don&rsquo;t work well when the incoming operation ID is preserved. They join on <code>operation_Id</code>, so they show multiple rows for a single workflow run. The View and Resubmit buttons also don&rsquo;t work, because they use the <code>operation_Id</code> as the workflow run&rsquo;s ID.</p>
+<p>To preserve the incoming operation ID, set <code>Runtime.ApplicationInsights.PreserveIncomingOperationId</code> to <code>true</code> in your Logic App&rsquo;s <code>host.json</code>, next to the enhanced telemetry setting:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+   <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;2.0&#34;</span>,
+   <span style="color:#f92672">&#34;extensionBundle&#34;</span>: {
+      <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;Microsoft.Azure.Functions.ExtensionBundle.Workflows&#34;</span>,
+      <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;[1, 2.00]&#34;</span>
+   },
+   <span style="color:#f92672">&#34;extensions&#34;</span>: {
+      <span style="color:#f92672">&#34;workflow&#34;</span>: {
+         <span style="color:#f92672">&#34;Settings&#34;</span>: {
+            <span style="color:#f92672">&#34;Runtime.ApplicationInsightTelemetryVersion&#34;</span>: <span style="color:#e6db74">&#34;v2&#34;</span>,
+            <span style="color:#f92672">&#34;Runtime.ApplicationInsights.PreserveIncomingOperationId&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>
+         }
+      }
+   }
+}
+</code></pre></div><p>This preserves the incoming operation ID so workflow telemetry can be correlated with related telemetry. But because of this configuration, <code>operation_Id</code> alone doesn&rsquo;t always identify a specific workflow run. That&rsquo;s why my queries extract <code>runId</code> from the <code>resource</code> custom dimension and join on both <code>operation_Id</code> and <code>runId</code>.</p>
+<h4 id="configuring-the-view-link">Configuring the View Link</h4>
+<p>The View link opens a workflow run in the graphical designer interface of the Logic App. It works for workflows that have state, like stateful workflows or stateless workflows with run history enabled by setting the environment variable <code>Workflows.&lt;workflow-name&gt;.OperationOptions</code> to <code>WithStatelessRunHistory</code>. Here&rsquo;s an example of a workflow run:</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/logic-app-workflow-runs-workbook/view-workflow-in-designer-view.png" alt="Workflow run in the designer"></p>
+<p>To configure the link:</p>
+<ol>
+<li>Open the settings of the <strong>View</strong> column.</li>
+<li>Select <strong>Link</strong> as the <strong>Column renderer</strong>.</li>
+<li>Select <strong>Custom View</strong>.</li>
+<li>Click <strong>Configure</strong>.</li>
+<li>In the <strong>Custom View settings</strong> screen, enter <code>Microsoft_Azure_EMA</code> as the <strong>Extension name</strong> and <code>DesignerEditorV2.ReactView</code> as the <strong>View name</strong>.</li>
+<li>Select <strong>JSON</strong> for the <strong>View inputs</strong> and enter the following:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;{LogicAppId_column}/workflows/{Workflow_column}&#34;</span>,
+  <span style="color:#f92672">&#34;location&#34;</span>: <span style="color:#e6db74">&#34;{LogicAppLocation_column}&#34;</span>,
+  <span style="color:#f92672">&#34;runId&#34;</span>: <span style="color:#e6db74">&#34;{RunID_column}&#34;</span>,
+  <span style="color:#f92672">&#34;isMonitoringView~&#34;</span>: <span style="color:#66d9ef">true</span>,
+  <span style="color:#f92672">&#34;isReadOnly~&#34;</span>: <span style="color:#66d9ef">true</span>
+}
+</code></pre></div></li>
+</ol>
+<p><img src="../../../../../images/monitoring-azure-integration-services/logic-app-workflow-runs-workbook/column-view-custom-view-settings.png" alt="Custom View settings of the View column"></p>
+<p>The <code>{LogicAppId_column}</code> syntax refers to the column of the row in which the View link is clicked. You can use <code>{ParameterName}</code> to refer to a parameter (no postfix necessary). The Logic App ID and location aren&rsquo;t part of the telemetry. I explain how I get them in <a href="#getting-the-logic-app-id">Getting the Logic App ID</a>.</p>
+<h4 id="configuring-the-resubmit-link">Configuring the Resubmit Link</h4>
+<p>The Resubmit link works only with stateful workflows. I couldn&rsquo;t find a way to hide it for stateless workflows, so it remains visible for both stateful and stateless workflows.</p>
+<p>When you click the Resubmit link, a screen with information about the workflow run is shown in the context pane on the right. You can click Resubmit there to actually resubmit the workflow run. Example:</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/logic-app-workflow-runs-workbook/resubmit-workflow-screen.png" alt="Resubmit workflow screen"></p>
+<p>To configure the link:</p>
+<ol>
+<li>Open the settings of the <strong>TriggerName</strong> column.</li>
+<li>Select <strong>Link</strong> as the <strong>Column renderer</strong>.</li>
+<li>Select <strong>ARM Action</strong>.</li>
+<li>Check <strong>Open link in Context pane</strong>.</li>
+<li>Click <strong>Configure</strong>.</li>
+<li>On the <strong>ARM Action Settings</strong> tab, set <strong>ARM Action path</strong> to <code>{LogicAppId_column}/hostruntime/runtime/webhooks/workflow/api/management/workflows/{Workflow_column}/triggers/{TriggerName_column}/histories/{RunID_column}/resubmit?api-version=2018-11-01</code> and specify <code>POST</code> as the <strong>Http Method</strong>.</li>
+<li>On the <strong>UX Settings</strong> tab, specify a title, description and button label to display when the Resubmit link is clicked.</li>
+</ol>
+<p><img src="../../../../../images/monitoring-azure-integration-services/logic-app-workflow-runs-workbook/column-resubmit-arm-action-settings.png" alt="ARM Action settings of the Resubmit column"></p>
+<p>As with the View link, you can use <code>{Workflow_column}</code> to use values from the columns of the row in which the link is clicked and <code>{ParameterName}</code> to refer to a parameter. It works in the fields of both the <strong>ARM Action Settings</strong> and <strong>UX Settings</strong> tabs.</p>
+<h4 id="getting-the-logic-app-id">Getting the Logic App ID</h4>
+<p>The View and Resubmit links need the full ID of the Logic App, which includes the subscription ID and resource group name. For example: <code>/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-monitorais-frc-u7eei/providers/Microsoft.Web/sites/logic-monitorais-frc-u7eei</code>. This isn&rsquo;t available in the Application Insights logging of a workflow run, so I&rsquo;ve created two hidden queries and combine their results in a third one.</p>
+<p>This differs from how the workbook in <a href="https://techcommunity.microsoft.com/blog/integrationsonazureblog/extending-logic-apps-app-insight-integration-with-azure-workbooks/3784062">Extending Logic Apps App Insight integration with Azure Workbooks</a> works. There the Logic App ID is retrieved based on a parameter. But because my table can show runs of different Logic Apps, I needed another solution.</p>
+<p>The screenshot shows the two hidden grids:</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/logic-app-workflow-runs-workbook/hidden-grids-with-runs-and-logic-apps.png" alt="Hidden grids with runs and Logic Apps"></p>
+<p>The first grid contains the workflow runs, based on the Application Insights logging. The second grid runs a query on <a href="https://learn.microsoft.com/en-us/azure/governance/resource-graph/first-query-portal">Azure Resource Graph</a> for the selected subscription to get all Logic Apps:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">where type in~('microsoft.web/sites')
+| where kind contains &quot;workflowapp&quot;
+| project id, name, location
+</code></pre><p>The third grid is the one that&rsquo;s displayed. It merges the results of the other two with a left outer join on the Logic App name. This way, each run has the ID and location of the Logic App in which the workflow was executed.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/logic-app-workflow-runs-workbook/configure-merge.png" alt="Configure merge"></p>
+<h3 id="triggers-and-actions-table">Triggers and Actions Table</h3>
+<p>I use a master-detail table to show the completed triggers and actions of the selected workflow run. See <a href="/blog/2023/02/28/azure-workbook-tips-tricks/#master-detail-table">Azure Workbook Tips &amp; Tricks - Master-detail Table</a> for how to set that up.</p>
+<p>This query selects the trigger and actions of the workflow run:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">requests
+| extend category = tostring(customDimensions[&quot;Category&quot;])
+| where category in (&quot;Workflow.Operations.Triggers&quot;, &quot;Workflow.Operations.Actions&quot;)
+| where operation_Id == '{SelectedWorkflowOperationID}'
+| extend runId = tostring(parse_json(tostring(customDimensions[&quot;resource&quot;]))[&quot;runId&quot;])
+| where runId == '{SelectedWorkflowRunID}'
+| extend 
+    type = coalesce(customDimensions[&quot;actionType&quot;], customDimensions[&quot;triggerType&quot;]),
+    trackedProperties = customDimensions[&quot;trackedProperties&quot;],
+    retries = iif(
+        isnull(customDimensions[&quot;retryHistory&quot;]), 
+        long(null), 
+        array_length(parse_json(tostring(customDimensions[&quot;retryHistory&quot;])))
+      )
+| project
+    status = resultCode,
+    timestamp,
+    name,
+    type,
+    duration,
+    trackedProperties,
+    retries,
+    itemId,
+    id
+| sort by timestamp asc
+</code></pre><p>Triggers and actions are both logged as requests, so the query selects both categories. The <code>{SelectedWorkflowOperationID}</code> and <code>{SelectedWorkflowRunID}</code> parameters hold the values exported from the selected row in the workflow runs table. Filtering on both the operation ID and the run ID ensures only the telemetry of the selected run is shown, even when the operation ID is shared by multiple runs.</p>
+<p>The <code>type</code> column uses <code>coalesce</code> to show the action type for actions and the trigger type for triggers. This is what lets me include the trigger in the same table as the actions. The <code>retries</code> column counts the entries in the <code>retryHistory</code> custom dimension, if it exists. The <code>id</code> column identifies the action and is what the dependencies and exceptions queries use as <code>{SelectedWorkflowActionID}</code>. This column is hidden in the table, because it&rsquo;s only needed to pass the selected action to those queries.</p>
+<h3 id="action-dependencies-and-exceptions">Action Dependencies and Exceptions</h3>
+<p>When you select an action, the workbook shows its dependencies and exceptions in two tabs. This is the dependencies query:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">dependencies
+| where operation_ParentId == '{SelectedWorkflowActionID}'
+| extend
+    status = case(
+        success==true, 'success', 
+        toint(resultCode) between (400 .. 499), 'warning',
+        'error'
+    ),
+    policySource = tostring(customDimensions[&quot;Source&quot;])
+| project status,
+          timestamp,
+          target,
+          name,
+          type,
+          resultCode,
+          duration,
+          itemId
+| sort by timestamp desc
+</code></pre><p>And this is the exceptions query:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">exceptions
+| where operation_ParentId == '{SelectedWorkflowActionID}'
+| project timestamp,
+          problemId,
+          type,
+          outerMessage,
+          itemId
+</code></pre><p>Both queries select the telemetry whose parent is the selected action, using <code>operation_ParentId</code>. In the dependencies query, I map the result to a status so I can show an icon. A successful dependency is a success, a 4xx response code is a warning and everything else is an error. I treat client errors as a warning because they don&rsquo;t necessarily indicate a problem with the workflow itself.</p>
+<h3 id="deploying-the-workbook">Deploying the Workbook</h3>
+<p>I use a generic module to deploy the workbook, as described in <a href="/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module">Deploy Azure Workbooks with a Reusable Bicep Module</a>. The module is used in this <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/infra/03-monitoring/main.bicep">main.bicep</a> of the sample template. Here&rsquo;s a short snippet:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">module logicAppWorkflowRunsWorkbook './modules/workbooks/workbook.bicep' = {
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    environmentName: environmentName
+    location: location
+    tags: tags
+    displayName: 'Logic App Workflow Runs'
+    serializedData: string(loadJsonContent('./modules/workbooks/Logic App Workflow Runs.workbook'))
+    placeholders: {
+      AzureSubscriptionId: subscription().subscriptionId
+      ApplicationInsightsId: appInsights.id
+    }
+    sourceId: appInsights.id
+  }
+}
+</code></pre><p>You can also deploy the workbook manually, as described <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/demos/demo-logic-app-workflow-runs-workbook.md#manually-deploy-the-workbook">here</a>.</p>
+<h3 id="considerations">Considerations</h3>
+<p>Queries over Application Insights data can show incomplete results when telemetry is <a href="https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring#configure-sampling">sampled</a>. Sampling is enabled by default for Logic Apps, so some workflow runs, triggers or actions might be missing from the workbook. I&rsquo;ve also seen completed workflow runs shown as running because the end event wasn&rsquo;t logged. You can check the retained percentage with this query:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">union requests, dependencies, pageViews, browserTimings, exceptions, traces
+| where timestamp &gt; ago(1d)
+| summarize RetainedPercentage = 100 / avg(itemCount)
+    by bin(timestamp, 1h), itemType
+</code></pre><p>To disable sampling for a Logic App, set <code>isEnabled</code> to <code>false</code> in the <code>samplingSettings</code> of your <code>host.json</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#960050;background-color:#1e0010">...</span>
+  <span style="color:#f92672">&#34;logging&#34;</span>: {
+    <span style="color:#f92672">&#34;applicationInsights&#34;</span>: {
+      <span style="color:#f92672">&#34;samplingSettings&#34;</span>: {
+        <span style="color:#f92672">&#34;isEnabled&#34;</span>: <span style="color:#66d9ef">false</span>
+      }
+    }
+  }
+}
+</code></pre></div><p>Beware that this might significantly increase the amount of telemetry, which increases cost as well.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Finding failed, cancelled or running workflow runs across multiple Logic Apps was the problem I wanted to solve. This workbook does that with a graph for the trend, a table to find specific runs and detail tables to drill into triggers, actions, dependencies and exceptions. Joining on both the operation ID and the run ID makes it work when incoming operation IDs are preserved, so I can keep my end-to-end traces.</p>
+<p>The workbook is a starting point. You can adjust the parameters, columns and queries to fit your own integrations.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-monitor">Azure Monitor</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/application-insights">Application Insights</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-workbook">Azure Workbook</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/logic-apps">Logic Apps</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/kusto">Kusto</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module/">Deploy Azure Workbooks with a Reusable Bicep Module &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-developer-cli">azure-developer-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-service-bus">azure-service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mstest">mstest</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/resilience">resilience</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
