@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/cover.jpeg"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2024-05-24T10:15:00+02:00" />
-<meta property="article:modified_time" content="2026-06-09T17:00:00+02:00" />
+<meta property="article:modified_time" content="2026-11-05T16:25:00+01:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/" />
 
 
@@ -210,11 +210,11 @@ Using <a href="https://learn.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-c
 <h3 id="client-certificate-in-key-vault">Client Certificate in Key Vault</h3>
 <p>The Unprotected API needs a client certificate with a private key to authenticate to the Protected API backend. In Azure, Key Vault is the place to store these. For the sample template, all client certificates are imported into Key Vault in <a href="https://github.com/ronaldbosma/mtls-with-apim-and-agw/blob/main/infra/01-core/hooks/postprovision-import-client-certificates.ps1">postprovision-import-client-certificates.ps1</a>, including the one for the Unprotected API.</p>
 <p>Once the certificate is available in Key Vault, it can be referenced from API Management through the <a href="https://learn.microsoft.com/en-us/azure/templates/microsoft.apimanagement/service/certificates?pivots=deployment-language-bicep">Microsoft.ApiManagement/service/certificates</a> resource:</p>
-<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource keyVault 'Microsoft.KeyVault/vaults@2025-05-01' existing = {
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource keyVault 'Microsoft.KeyVault/vaults@2026-05-15' existing = {
   name: keyVaultName
 }
 
-resource clientCertificateSecret 'Microsoft.KeyVault/vaults/secrets@2025-05-01' existing = {
+resource clientCertificateSecret 'Microsoft.KeyVault/vaults/secrets@2026-05-15' existing = {
   name: 'dev-unprotected-api'
   parent: keyVault
 }

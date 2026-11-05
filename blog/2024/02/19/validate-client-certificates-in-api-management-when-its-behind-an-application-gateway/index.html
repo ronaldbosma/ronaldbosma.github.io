@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2024-02-19T19:00:00+01:00" />
-<meta property="article:modified_time" content="2026-06-06T11:00:00+02:00" />
+<meta property="article:modified_time" content="2026-11-05T16:25:00+01:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/" />
 
 
@@ -317,11 +317,11 @@ httpListeners: [
 <p>Note that the hostname <code>agw.mtls-sample.dev</code> is used in the listener configuration. In the sample template, no public DNS record or domain is configured. Instead, a self-signed server certificate is used for this hostname and the Application Gateway is accessed through its public IP address, passing <code>agw.mtls-sample.dev</code> in the <code>Host</code> request header.</p>
 <h4 id="ssl-certificate">SSL Certificate</h4>
 <p>The SSL server certificate is referenced from Key Vault using the following snippet:</p>
-<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource keyVault 'Microsoft.KeyVault/vaults@2025-05-01' existing = {
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource keyVault 'Microsoft.KeyVault/vaults@2026-05-15' existing = {
   name: keyVaultName
 }
 
-resource sslServerCertificateSecret 'Microsoft.KeyVault/vaults/secrets@2025-05-01' existing = {
+resource sslServerCertificateSecret 'Microsoft.KeyVault/vaults/secrets@2026-05-15' existing = {
   name: 'agw-ssl-server-certificate'
   parent: keyVault
 }

@@ -6,10 +6,10 @@
     <lastmod>2026-11-03T10:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure/</loc>
-    <lastmod>2026-11-03T10:00:00+01:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-integration-services/</loc>
-    <lastmod>2026-11-03T10:00:00+01:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-monitor/</loc>
     <lastmod>2026-11-03T10:00:00+01:00</lastmod>
@@ -18,10 +18,10 @@
     <lastmod>2026-11-03T10:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/bicep/</loc>
-    <lastmod>2026-11-03T10:00:00+01:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/</loc>
-    <lastmod>2026-11-03T10:00:00+01:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/kusto/</loc>
     <lastmod>2026-11-03T10:00:00+01:00</lastmod>
@@ -36,22 +36,22 @@
     <lastmod>2026-11-03T10:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/</loc>
-    <lastmod>2026-11-03T10:00:00+01:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/series/</loc>
-    <lastmod>2026-11-03T10:00:00+01:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/</loc>
-    <lastmod>2026-11-03T10:00:00+01:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module/</loc>
     <lastmod>2026-10-27T09:30:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/infra-as-code/</loc>
-    <lastmod>2026-10-27T09:30:00+01:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/api-management/</loc>
-    <lastmod>2026-10-20T13:15:00+02:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-functions/</loc>
     <lastmod>2026-10-20T13:15:00+02:00</lastmod>
@@ -114,7 +114,7 @@
     <lastmod>2026-01-06T16:00:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/security/</loc>
-    <lastmod>2026-06-09T17:00:00+02:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2025/12/15/catch-all-api-in-azure-api-management-forward-any-request/</loc>
     <lastmod>2025-12-15T16:00:00+01:00</lastmod>
@@ -213,22 +213,22 @@
     <lastmod>2026-07-31T10:15:00+02:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/client-certificates/</loc>
-    <lastmod>2026-06-09T17:00:00+02:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/series/client-certificates-and-mtls-in-api-management/</loc>
-    <lastmod>2026-06-09T17:00:00+02:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/mtls/</loc>
-    <lastmod>2026-06-09T17:00:00+02:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2024/05/24/securing-backend-connections-with-mtls-in-api-management/</loc>
-    <lastmod>2026-06-09T17:00:00+02:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/application-gateway/</loc>
-    <lastmod>2026-06-06T11:00:00+02:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2024/02/19/validate-client-certificates-in-api-management-when-its-behind-an-application-gateway/</loc>
-    <lastmod>2026-06-06T11:00:00+02:00</lastmod>
+    <lastmod>2026-11-05T16:25:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/blog/2024/02/02/validate-client-certificates-in-api-management/</loc>
     <lastmod>2026-06-05T12:00:00+02:00</lastmod>
