@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-10-20T13:15:00+02:00" />
-<meta property="article:modified_time" content="2026-10-20T13:15:00+02:00" />
+<meta property="article:modified_time" content="2026-11-10T11:30:00+02:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/" />
 
 
@@ -204,43 +204,43 @@
 <pre tabindex="0"><code class="language-kusto" data-lang="kusto">let requestSummary = requests
 | where customDimensions[&quot;Service Type&quot;] == &quot;API Management&quot;
 | extend api = tostring(customDimensions[&quot;API Name&quot;])
-| extend isClientFailure = success == false and toint(resultCode) between (400 .. 499)
-| extend isServerFailure = success == false and isClientFailure == false
-| summarize
-    lastClientFailure = maxif(timestamp, isClientFailure),
-    lastServerFailure = maxif(timestamp, isServerFailure),
-    lastSuccess = maxif(timestamp, success == true)
+| extend isClientFailure = success==false and toint(resultCode) between (400 .. 499)
+| extend isServerFailure = success==false and isClientFailure==false
+| summarize 
+    lastClientFailure=maxif(timestamp, isClientFailure),
+    lastServerFailure=maxif(timestamp, isServerFailure),
+    lastSuccess=maxif(timestamp, success==true) 
   by api;
 
 requests
 | where customDimensions[&quot;Service Type&quot;] == &quot;API Management&quot;
 | extend api = tostring(customDimensions[&quot;API Name&quot;])
-| evaluate pivot(resultCode, count(), api)
+| evaluate pivot(resultCode, sum(itemCount), api)
 | join kind=leftouter requestSummary on api
 | project-away api1
 | project-reorder api, lastServerFailure, * desc, lastSuccess, lastClientFailure
 | sort by lastServerFailure desc, api asc
-</code></pre><p>The <code>evaluate pivot(resultCode, count(), api)</code> step turns distinct response codes into columns, with request counts per API. The <code>leftouter</code> join brings in the summary timestamps while keeping every API from the pivot result. The join introduces a duplicate API key column called <code>api1</code>, which <code>project-away api1</code> removes.</p>
+</code></pre><p>The <code>evaluate pivot(resultCode, sum(itemCount), api)</code> step turns distinct response codes into columns, with request counts per API. It uses <code>sum(itemCount)</code> instead of <code>count()</code>, because <code>itemCount</code> tells how many original requests a telemetry item represents when sampling is enabled. The <code>leftouter</code> join brings in the summary timestamps while keeping every API from the pivot result. The join introduces a duplicate API key column called <code>api1</code>, which <code>project-away api1</code> removes.</p>
 <p>The <code>project-reorder</code> step puts <code>api</code> and <code>lastServerFailure</code> first, orders the response-code count columns by column name in descending order and places <code>lastSuccess</code> and <code>lastClientFailure</code> at the end. This makes the table easier to scan, with the latest server failure next to each API and higher response codes before lower ones, because I care most about errors.</p>
 <h4 id="azure-functions">Azure Functions</h4>
 <p>The dashboard shows success and failure counts for each function, along with the latest success and failure times.</p>
 <p><img src="../../../../../images/monitoring-azure-integration-services/monitoring-azure-integrations-with-a-dashboard/azure-functions.png" alt="Azure Functions"></p>
 <p>This query summarizes successes and failures per function and function app.</p>
 <pre tabindex="0"><code class="language-kusto" data-lang="kusto">requests
-| where customDimensions[&quot;faas.name&quot;] != &quot;&quot;
-| extend function = tostring(customDimensions[&quot;faas.name&quot;])
-| summarize
-    success = countif(success == true),
-    lastSuccess = maxif(timestamp, success == true),
-    failed = countif(success == false),
-    lastFailure = maxif(timestamp, success == false)
+| where customDimensions['faas.name'] != ''
+| extend function = tostring(customDimensions['faas.name'])
+| summarize 
+    success=sumif(itemCount, success==true), 
+    lastSuccess=maxif(timestamp, success==true),
+    failed=sumif(itemCount, success==false), 
+    lastFailure=maxif(timestamp, success==false)
   by function, cloud_RoleName
-| project
-    function,
-    lastFailure,
-    failed,
-    lastSuccess,
-    success,
+| project 
+    function, 
+    lastFailure, 
+    failed, 
+    lastSuccess, 
+    success, 
     functionApp = cloud_RoleName
 | sort by lastFailure desc, function asc
 </code></pre><p>The query is based on OpenTelemetry logging. My <a href="https://gist.github.com/ronaldbosma/ac21e32e2d7f8ad1512760bca8b0609b#kusto-queries">Migrate Azure Functions project from Application Insights to OpenTelemetry</a> gist includes an example query for the older Application Insights logging and another that combines both.</p>

@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-11-10T09:00:00+01:00" />
-<meta property="article:modified_time" content="2026-11-10T09:30:00+01:00" />
+<meta property="article:modified_time" content="2026-11-10T11:39:00+01:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/" />
 
 
@@ -262,12 +262,13 @@ requests
 | where array_length(subscriptionFilter) == 0 or subscription in (subscriptionFilter)
 | where array_length(apiFilter) == 0 or api in (apiFilter)
 | where array_length(operationFilter) == 0 or operation in (operationFilter)
-| make-series numberOfRequests=count() default=0 on timestamp from todatetime(&quot;{TimeRange:startISO}&quot;) to todatetime(&quot;{TimeRange:endISO}&quot;) step {TimeRange:grain} by status
+| make-series numberOfRequests=sum(itemCount) default=0 on timestamp from todatetime(&quot;{TimeRange:startISO}&quot;) to todatetime(&quot;{TimeRange:endISO}&quot;) step {TimeRange:grain} by status
 </code></pre><p>The query first turns the multi-select parameters into arrays with <code>dynamic([...])</code>. An empty array means nothing is selected, so the filters only apply when the array isn&rsquo;t empty.</p>
 <p>It then selects the requests logged by API Management. Other services can log requests to the same Application Insights instance, so the query filters on the <code>Service Type</code> custom dimension. The result code filter is applied right away, because <code>resultCode</code> is a regular column.</p>
 <p>Next, the query determines the status of each request. A successful request is a success, a 4xx result code is a warning and everything else is an error. I treat client errors as a warning because they don&rsquo;t necessarily indicate a problem with API Management or the backend. The query also extracts the subscription, API and operation from the custom dimensions that API Management adds to each request. The remaining filters are applied after that, because these values are only known after the <code>extend</code>.</p>
-<p>Finally, <a href="https://learn.microsoft.com/en-us/kusto/query/make-series-operator"><code>make-series</code></a> counts the requests per status and creates a time series. This has a few benefits:</p>
+<p>Finally, <a href="https://learn.microsoft.com/en-us/kusto/query/make-series-operator"><code>make-series</code></a> sums <code>itemCount</code> for each status and creates a time series. This has a few benefits:</p>
 <ul>
+<li>When Application Insights sampling is enabled, <code>itemCount</code> accounts for the requests represented by each retained telemetry item, so the graph shows an estimated request count rather than just counting the sampled records.</li>
 <li>With <code>make-series</code>, the graph shows the entire selected period, even if there are no requests at the start or end of the period. A <code>summarize</code> with <code>bin</code> would only return time slots that have data.</li>
 <li>The granularity is based on the TimeRange parameter by using <code>{TimeRange:grain}</code>. This way, the granularity is automatically adjusted depending on the time range you&rsquo;ve selected in the Time parameter.</li>
 </ul>
@@ -338,7 +339,7 @@ requests
 }
 </code></pre><p>You can also deploy the workbook manually, as described <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/demos/demo-apim-requests-workbook.md#manually-deploy-the-workbook">here</a>.</p>
 <h3 id="considerations">Considerations</h3>
-<p>Queries over Application Insights data can show incomplete results when telemetry is sampled. The diagnostics resource in the snippet doesn&rsquo;t configure sampling, so I&rsquo;m not sampling the requests of my API Management instance. I usually keep it that way, because with sampling some requests would be missing from the workbook. The <code>alwaysLog: 'allErrors'</code> setting makes sure failed requests are logged, but successful requests could still be dropped. You can check the retained percentage with this query:</p>
+<p>When Application Insights sampling is enabled, the graph uses <code>itemCount</code> to estimate the total number of requests represented by the sampled telemetry. The table still shows only the individual requests that were retained, so it can omit requests. The diagnostics resource in the snippet doesn&rsquo;t configure sampling, so I&rsquo;m not sampling the requests of my API Management instance. I usually keep it that way. The <code>alwaysLog: 'allErrors'</code> setting makes sure failed requests are logged, but successful requests could still be dropped if sampling is configured. You can check the retained percentage with this query:</p>
 <pre tabindex="0"><code class="language-kusto" data-lang="kusto">union requests, dependencies, pageViews, browserTimings, exceptions, traces
 | where timestamp &gt; ago(1d)
 | summarize RetainedPercentage = 100 / avg(itemCount)
