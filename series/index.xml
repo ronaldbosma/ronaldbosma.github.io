@@ -7,11 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 03 Nov 2026 10:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/series/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 10 Nov 2026 09:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/series/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Monitoring Azure Integration Services</title>
       <link>https://ronaldbosma.github.io/series/monitoring-azure-integration-services/</link>
-      <pubDate>Tue, 03 Nov 2026 10:00:00 +0100</pubDate>
+      <pubDate>Tue, 10 Nov 2026 09:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/series/monitoring-azure-integration-services/</guid>
       <description>This series covers various ways to monitor Azure Integration Services, including dashboards, workbooks, health checks, alerts and health models.</description>
