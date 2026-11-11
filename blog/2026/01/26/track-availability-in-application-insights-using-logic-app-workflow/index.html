@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/01/26/track-availability-in-application-insights-using-logic-app-workflow/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/01/26/track-availability-in-application-insights-using-logic-app-workflow/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-01-26T17:00:00+01:00" />
-<meta property="article:modified_time" content="2026-11-07T17:00:00+01:00" />
+<meta property="article:modified_time" content="2026-11-11T09:45:00+01:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/01/19/track-availability-in-application-insights-using-.net/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/01/12/track-availability-in-application-insights-using-standard-test/" />
 
 
@@ -184,6 +184,7 @@
 </ul>
 <p>While this example uses an API on API Management, the same approach applies when calling any other backend system for which you want to track availability. You can also use other Logic App connectors besides HTTP, like calling a function in SAP using an SAP-specific connector.</p>
 <p>To make deployment easier, I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template: <a href="https://github.com/ronaldbosma/track-availability-in-app-insights">Track Availability in Application Insights</a>. The template demonstrates three scenarios for tracking availability: standard test (webtest), .NET Azure Function and Logic App workflow. If you want to deploy and try the solution, check out the <a href="https://github.com/ronaldbosma/track-availability-in-app-insights#getting-started">getting started section</a> for the prerequisites and deployment instructions. This post focuses on the Logic App implementation.</p>
+<p><strong>UPDATE (2026-11-11):</strong> The template has been updated to use .NET 10 in the custom code project. You can see the changes I made to migrate in <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/compare/v1.4.10...v1.5.1">this comparison</a>.</p>
 <h2 id="backend-availability-test-workflow">Backend Availability Test Workflow</h2>
 <p>The first workflow performs a simple HTTP GET request to check if the backend API is available. Here&rsquo;s what the workflow looks like in the designer:</p>
 <p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-logic-app-workflow/logic-app-workflow-backend-status.png" alt="Logic App Workflow - Backend Status"></p>
@@ -285,11 +286,11 @@
 <li>Creates an <code>AvailabilityTelemetry</code> object with the test results including the run location (retrieved from an environment variable)</li>
 <li>Calculates the test duration by subtracting the start time from the current time</li>
 <li>Creates an <code>Activity</code> to enable distributed tracing and correlation of telemetry in Application Insights</li>
-<li>Sets various IDs on the availability telemetry to enable end-to-end correlation<br>
-<strong>UPDATE (2026-11-07)</strong>: correlation between the availability telemetry and other workflow logging unfortunately doesn&rsquo;t work when targeting .NET 10 in the custom code project</li>
+<li>Sets various IDs on the availability telemetry to enable end-to-end correlation</li>
 <li>Publishes the telemetry to Application Insights using the <code>TelemetryClient</code></li>
 </ul>
 <p>The <code>TelemetryClient</code> is registered in the <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/src/logicApp/Functions/Startup.cs">Startup.cs</a> of the Logic App&rsquo;s custom code project. The <code>ILoggerFactory</code> is already registered by the Logic App runtime.</p>
+<p><strong>UPDATE (2026-11-11):</strong> After updating to .NET 10, you also need to register an activity listener for correlation between the availability telemetry and workflow logging to work. The listener is registered in <a href="https://github.com/ronaldbosma/track-availability-in-app-insights/blob/main/src/logicApp/Functions/Startup.cs">Startup.cs</a> as well.</p>
 <blockquote>
 <p>I could have created a single function that performed both the HTTP GET and tracked the (un)availability of the backend, which would look similar to what I describe in my previous post. But I decided to only put the &lsquo;track availability&rsquo; code in functions to visualize the logic and so other logic can rely on the Logic App capabilities. For example, using a managed identity to call a backend is super easy in a workflow, as I describe in my post <a href="/blog/2025/09/24/call-oauth-protected-apis-with-managed-identity-from-logic-apps/">Call OAuth-Protected APIs with Managed Identity from Logic Apps</a>.</p>
 </blockquote>
@@ -369,10 +370,9 @@
 <p>When you expand a test to see detailed results, you&rsquo;ll notice that we only have results from one region:</p>
 <p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-logic-app-workflow/availability-test-details.png" alt="Availability Test Details"></p>
 <p>This is because we&rsquo;re executing the availability test from a Logic App deployed in a single region. If you need multi-region testing with custom tests, you would deploy the Logic App to multiple regions.</p>
-<p><strong>UPDATE 2026-11-07</strong>: Correlation between the availability telemetry and other workflow logging doesn&rsquo;t work when targeting .NET 10 in the custom code project. When you drill down, you no longer see the end-to-end transaction details of the availability test and workflow run; you only see the availability test results. You&rsquo;ll need to use another way to check the workflow run details, such as the workflow&rsquo;s run history or my <a href="/blog/2026/11/03/logic-app-workflow-runs-workbook/">Logic App Workflow Runs Workbook</a>.</p>
-<p><del>When you drill into the details of a specific test result, you can view the end-to-end transaction details:</del></p>
+<p>When you drill into the details of a specific test result, you can view the end-to-end transaction details:</p>
 <p><img src="../../../../../images/track-availability-in-app-insights-series/track-availability-in-app-insights-using-logic-app-workflow/logic-app-workflow-end-to-end-transaction-details.png" alt="End-to-end Transaction Details"></p>
-<p><del>The end-to-end transaction view shows the correlation between the Logic App workflow execution, the HTTP request to API Management and the availability test result. The timeline is a bit &lsquo;messy&rsquo; compared to the Azure Function implementation because of the way the workflow tracks the availability result as a separate action after the HTTP call is performed. However, all the telemetry is properly correlated, allowing you to trace the complete flow.</del></p>
+<p>The end-to-end transaction view shows the correlation between the Logic App workflow execution, the HTTP request to API Management and the availability test result. The timeline is a bit &lsquo;messy&rsquo; compared to the Azure Function implementation because of the way the workflow tracks the availability result as a separate action after the HTTP call is performed. However, all the telemetry is properly correlated, allowing you to trace the complete flow.</p>
 <h2 id="setting-up-alerts">Setting Up Alerts</h2>
 <p>Setting up alerts for Logic App-based availability tests works the same as for Azure Function-based tests. For more details, see the <a href="/blog/2026/01/19/track-availability-in-application-insights-using-.net/#setting-up-alerts">Setting Up Alerts</a> section of the previous post.</p>
 <h2 id="considerations">Considerations</h2>
