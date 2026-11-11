@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-10-20T13:15:00+02:00" />
-<meta property="article:modified_time" content="2026-11-10T11:30:00+02:00" />
+<meta property="article:modified_time" content="2026-11-11T14:30:00+01:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/" />
 
 
@@ -331,8 +331,8 @@ runEvents
 <p>Queries over Application Insights data can show incomplete results when telemetry is sampled. You can check the retained percentage with this query:</p>
 <pre tabindex="0"><code class="language-kusto" data-lang="kusto">union requests, dependencies, pageViews, browserTimings, exceptions, traces
 | where timestamp &gt; ago(1d)
-| summarize RetainedPercentage = 100 / avg(itemCount)
-    by bin(timestamp, 1h), itemType
+| summarize retainedPercentage = 100 / avg(itemCount)
+    by bin(timestamp, 1h), itemType, cloud_RoleName
 </code></pre><p>If sampling affects the results you need, you can use metrics instead or review the sampling configuration.</p>
 <h3 id="conclusion">Conclusion</h3>
 <p>An Azure dashboard gives me a quick overview of an integration environment without having to open each service separately. By combining service metrics with Application Insights queries, you can see request activity, failures, health and other signals in one place. Exporting the dashboard and replacing environment-specific values lets you deploy the same overview across environments.</p>

@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-11-03T10:00:00+01:00" />
-<meta property="article:modified_time" content="2026-11-03T10:00:00+01:00" />
+<meta property="article:modified_time" content="2026-11-11T14:30:00+01:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/" />
 
 
@@ -459,8 +459,8 @@ runEvents
 <p>Queries over Application Insights data can show incomplete results when telemetry is <a href="https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring#configure-sampling">sampled</a>. Sampling is enabled by default for Logic Apps, so some workflow runs, triggers or actions might be missing from the workbook. I&rsquo;ve also seen completed workflow runs shown as running because the end event wasn&rsquo;t logged. You can check the retained percentage with this query:</p>
 <pre tabindex="0"><code class="language-kusto" data-lang="kusto">union requests, dependencies, pageViews, browserTimings, exceptions, traces
 | where timestamp &gt; ago(1d)
-| summarize RetainedPercentage = 100 / avg(itemCount)
-    by bin(timestamp, 1h), itemType
+| summarize retainedPercentage = 100 / avg(itemCount)
+    by bin(timestamp, 1h), itemType, cloud_RoleName
 </code></pre><p>To disable sampling for a Logic App, set <code>isEnabled</code> to <code>false</code> in the <code>samplingSettings</code> of your <code>host.json</code> file:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
   <span style="color:#960050;background-color:#1e0010">...</span>

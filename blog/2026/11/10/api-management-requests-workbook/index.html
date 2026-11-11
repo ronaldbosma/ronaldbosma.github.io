@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-11-10T09:00:00+01:00" />
-<meta property="article:modified_time" content="2026-11-10T11:39:00+01:00" />
+<meta property="article:modified_time" content="2026-11-11T14:30:00+01:00" />
 <meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/" />
 
 
@@ -342,8 +342,8 @@ requests
 <p>When Application Insights sampling is enabled, the graph uses <code>itemCount</code> to estimate the total number of requests represented by the sampled telemetry. The table still shows only the individual requests that were retained, so it can omit requests. The diagnostics resource in the snippet doesn&rsquo;t configure sampling, so I&rsquo;m not sampling the requests of my API Management instance. I usually keep it that way. The <code>alwaysLog: 'allErrors'</code> setting makes sure failed requests are logged, but successful requests could still be dropped if sampling is configured. You can check the retained percentage with this query:</p>
 <pre tabindex="0"><code class="language-kusto" data-lang="kusto">union requests, dependencies, pageViews, browserTimings, exceptions, traces
 | where timestamp &gt; ago(1d)
-| summarize RetainedPercentage = 100 / avg(itemCount)
-    by bin(timestamp, 1h), itemType
+| summarize retainedPercentage = 100 / avg(itemCount)
+    by bin(timestamp, 1h), itemType, cloud_RoleName
 </code></pre><p>Beware that logging every request increases the amount of telemetry, which increases cost as well. API Management doesn&rsquo;t log as much as, for example, a Logic App workflow does, which logs events for every run, trigger and action. API Management logs a request and, when it calls a backend, a dependency. But on an API with a lot of traffic, this can still add up. Keep an eye on the ingestion volume of your Application Insights instance. If the cost becomes an issue, you can configure a sampling percentage in the diagnostic settings.</p>
 <h3 id="conclusion">Conclusion</h3>
 <p>Finding specific API Management requests in Application Insights is more work than I want it to be. This workbook solves that with filters on status, subscription, API, operation and result code, a graph for the trend and a table with API Management specific data. The Trace link then takes me straight to the end-to-end transaction details.</p>
