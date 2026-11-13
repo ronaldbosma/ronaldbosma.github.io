@@ -18,7 +18,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/03/02/github-actions-workflow-for-azure-developer-cli-azd-templates/cover.png"/><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2026-03-02T06:00:00+01:00" />
-<meta property="article:modified_time" content="2026-04-17T12:00:00+02:00" />
+<meta property="article:modified_time" content="2026-11-13T16:55:00+01:00" />
 
 
 
@@ -134,7 +134,7 @@
                                     <i class="far fa-star"></i>
                                     Mar 2, 2026
                                     <i class="far fa-clock clock"></i>
-                                    13 min read
+                                    12 min read
                                 </span>					
                             </div>
                         </div>			
@@ -266,30 +266,22 @@
 </span><span style="color:#e6db74">      --parameters environmentName=$env:AZURE_ENV_NAME `
 </span><span style="color:#e6db74">                   location=$env:AZURE_LOCATION</span>    
 </code></pre></div><p>If your <code>main.bicep</code> file has more parameters, add those to the validate command as well.</p>
-<p>If the application code has unit tests, I run those too. The test results are stored in the <code>artifacts</code> folder and uploaded as workflow artifacts, which can be helpful for later inspection. Here&rsquo;s an example of running .NET tests, but you can adapt it to your test framework and language:</p>
+<p>If the application code has unit tests, I run those too. Here&rsquo;s an example of running .NET tests, but you can adapt it to your test framework and language:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Run Unit Tests for Function App</span>
   <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
-</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet run --report-trx --results-directory &#34;${{ github.workspace }}/artifacts/TestResults/functionApp&#34;</span>
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet run --report-gh</span>
   <span style="color:#f92672">working-directory</span>: <span style="color:#ae81ff">./src/functionApp/FunctionApp.Tests</span>
 
 - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Run Unit Tests for Logic App Functions</span>
   <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
-</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet run --report-trx --results-directory &#34;${{ github.workspace }}/artifacts/TestResults/logicApp&#34;</span>
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet run --report-gh</span>
   <span style="color:#f92672">working-directory</span>: <span style="color:#ae81ff">./src/logicApp/Functions.Tests</span>
 
 - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Run Unit Tests for Logic App Workflows</span>
   <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
-</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet run --report-trx --results-directory &#34;${{ github.workspace }}/artifacts/TestResults/logicApp&#34;</span>
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet run --report-gh</span>
   <span style="color:#f92672">working-directory</span>: <span style="color:#ae81ff">./src/logicApp/Workflows.Tests</span>
-
-- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Upload Unit Test Results</span>
-  <span style="color:#f92672">if</span>: <span style="color:#ae81ff">always()</span>
-  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/upload-artifact@v7</span>
-  <span style="color:#f92672">with</span>:
-    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">unit-test-results</span>
-    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/TestResults/</span>
-    <span style="color:#f92672">retention-days</span>: <span style="color:#ae81ff">1</span>
-</code></pre></div><p>Note that the <code>if: always()</code> condition ensures that test results are uploaded even if some tests fail, which is important for diagnosing issues.</p>
+</code></pre></div><p>By passing the <code>--report-gh</code> flag, test results are reported to the GitHub Actions workflow. You&rsquo;ll need to add the <code>Microsoft.Testing.Extensions.GitHubActionsReport</code> NuGet package to your test project for this to work.</p>
 <blockquote>
 <p>I&rsquo;m using <a href="https://learn.microsoft.com/en-us/dotnet/core/testing/microsoft-testing-platform-intro?tabs=dotnetcli">Microsoft.Testing.Platform</a> in my test projects, so I can use <code>dotnet run</code> to execute tests. If you&rsquo;re using VSTest, you can use <code>dotnet test</code> instead. Just make sure to specify the correct logger and results directory to store the test results as artifacts.</p>
 </blockquote>
@@ -385,22 +377,8 @@
 
 - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Run Integration Tests</span>
   <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
-</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet ./artifacts/integration-tests/IntegrationTests.dll --report-trx --results-directory ./artifacts/integration-tests/TestResults</span>
+</span><span style="color:#e6db74">    </span>    <span style="color:#ae81ff">dotnet ./artifacts/integration-tests/IntegrationTests.dll --report-gh</span>
   <span style="color:#f92672">working-directory</span>: <span style="color:#ae81ff">./</span>
-  <span style="color:#f92672">env</span>:
-    <span style="color:#75715e"># Pass the necessary deployed resource properties as environment variables so the integration tests can access them.</span>
-    <span style="color:#f92672">AZURE_TENANT_ID</span>: <span style="color:#ae81ff">${{ secrets.AZURE_TENANT_ID || vars.AZURE_TENANT_ID }}</span>
-    <span style="color:#f92672">AZURE_RESOURCE_GROUP</span>: <span style="color:#ae81ff">${{ needs.deploy.outputs.AZURE_RESOURCE_GROUP }}</span>
-    <span style="color:#f92672">AZURE_API_MANAGEMENT_GATEWAY_URL</span>: <span style="color:#ae81ff">${{ needs.deploy.outputs.AZURE_API_MANAGEMENT_GATEWAY_URL }}</span>
-    <span style="color:#f92672">AZURE_KEY_VAULT_URI</span>: <span style="color:#ae81ff">${{ needs.deploy.outputs.AZURE_KEY_VAULT_URI }}</span>
-
-- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Upload Test Results</span>
-  <span style="color:#f92672">if</span>: <span style="color:#ae81ff">always()</span>
-  <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/upload-artifact@v7</span>
-  <span style="color:#f92672">with</span>:
-    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">integration-test-results</span>
-    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./artifacts/integration-tests/TestResults/</span>
-    <span style="color:#f92672">retention-days</span>: <span style="color:#ae81ff">1</span>
 </code></pre></div><p>Note the environment variables passed to the test job. They are taken from the outputs of the deploy job, which in turn are retrieved from the azd environment file created during provisioning. This way, the tests can connect to the correct deployed resources without hardcoding any values.</p>
 <blockquote>
 <p>If you need secrets in your tests, for example an API key, you can store those in Key Vault and give the pipeline access to the vault. That way, you can keep secrets out of GitHub and still use them in your tests.</p>
