@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>API Management Insights Workbook | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/cover.png"/>
+<meta name="twitter:title" content="API Management Insights Workbook"/>
+<meta name="twitter:description" content="The APIM Requests workbook from my previous post focuses on finding specific API Management requests. The APIM Insights workbook in this post gives more insights into capacity, scaling, request volume and duration. It also shows more information for individual operations, like executed requests, dependencies, number of requests and duration."/>
+
+	<meta property="og:title" content="API Management Insights Workbook" />
+<meta property="og:description" content="The APIM Requests workbook from my previous post focuses on finding specific API Management requests. The APIM Insights workbook in this post gives more insights into capacity, scaling, request volume and duration. It also shows more information for individual operations, like executed requests, dependencies, number of requests and duration." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-11-17T09:00:00+01:00" />
+<meta property="article:modified_time" content="2026-11-11T12:00:00+01:00" />
+<meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=API%20Management%20Insights%20Workbook&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f17%2fapi-management-insights-workbook%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f17%2fapi-management-insights-workbook%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f17%2fapi-management-insights-workbook%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect | Microsoft MVP<br>
+                                    <i class="far fa-star"></i>
+                                    Nov 17, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    12 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">API Management Insights Workbook</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>A few years ago, I created a workbook for a client to get more insights into how API Management behaves. On a couple of projects afterwards, I really missed it. So, I created a version that can be reused across projects using API Management and Application Insights.</p>
+<p>The APIM Requests workbook from my <a href="/blog/2026/11/10/api-management-requests-workbook/">previous post</a> helps you find specific API Management requests. The APIM Insights workbook in this post takes a broader view and shows capacity, scaling, request volume and duration. For a selected operation, it also lets you drill down into the requests, dependencies, traces and exceptions, and shows graphs with the number of requests and failures, the duration, the request size and the response size.</p>
+<p>This is the fourth post in my <a href="/series/monitoring-azure-integration-services/">Monitoring Azure Integration Services</a> series.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#sample-template">Sample Template</a></li>
+<li><a href="#workbook-overview">Workbook Overview</a>
+<ul>
+<li><a href="#comparison-with-the-analytics-overview-workbook">Comparison with the Analytics Overview Workbook</a></li>
+</ul>
+</li>
+<li><a href="#parameters">Parameters</a>
+<ul>
+<li><a href="#auto-scaling">Auto Scaling</a></li>
+</ul>
+</li>
+<li><a href="#groups">Groups</a>
+<ul>
+<li><a href="#capacity-and-scaling">Capacity and Scaling</a></li>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#operation-details">Operation Details</a></li>
+</ul>
+</li>
+<li><a href="#deploying-the-workbook">Deploying the Workbook</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="sample-template">Sample Template</h3>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/monitor-azure-integration-services">Monitor Azure Integration Services</a> to demonstrate different monitoring approaches for Azure Integration Services, including dashboards, workbooks, health checks, alerts and health models. The workbook featured in this post is included in the template. The template has a sample application that lets users manage movies and submit or update ratings. It uses API Management, Azure Functions, Logic App workflows and Azure Service Bus. If you&rsquo;d like to deploy and try the solution, follow the template&rsquo;s <a href="https://github.com/ronaldbosma/monitor-azure-integration-services#getting-started">getting started instructions</a>. The template also includes a <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/demos/demo-apim-insights-workbook.md">demo guide</a> for this workbook.</p>
+<h3 id="workbook-overview">Workbook Overview</h3>
+<p>The workbook has four groups: Capacity and Scaling for v1 tiers, Capacity and Scaling for v2 tiers, Overview and Operation Details. The groups are collapsed by default, so you can expand the ones you need.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/apim-insights-workbook/apim-insights-workbook.png" alt="APIM Insights workbook"></p>
+<p>The definition file is <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/infra/03-monitoring/modules/workbooks/APIM%20Insights.workbook">APIM Insights.workbook</a>.</p>
+<p>The workbook queries the <code>requests</code> table in Application Insights, so API Management needs to log to it. See the <a href="/blog/2026/11/10/api-management-requests-workbook/#enabling-application-insights-logging">Enabling Application Insights Logging</a> section in my previous post for how to set that up.</p>
+<p>I&rsquo;m assuming you know a bit about editing Azure Workbooks. If not, have a look at my <a href="/blog/2023/02/28/azure-workbook-tips-tricks/">Azure Workbook Tips &amp; Tricks</a> post first.</p>
+<h4 id="comparison-with-the-analytics-overview-workbook">Comparison with the Analytics Overview Workbook</h4>
+<p>API Management already has an &lsquo;Analytics Overview&rsquo; workbook that you can open from the Monitoring section of the resource. It has a few graphs and some tables that mainly show totals per entity, like API, operation and product. It also has a table with the individual requests. The only parameter you can filter on is the time range.</p>
+<p>My APIM Insights workbook differs in a couple of ways:</p>
+<ul>
+<li>The Analytics Overview workbook uses tables like <code>ApiManagementGatewayLogs</code> in a Log Analytics workspace. To get data in there, you need to add diagnostic settings, enable the logs and set the destination table to &lsquo;Resource specific&rsquo;. The APIM Insights workbook uses Application Insights logging.</li>
+<li>The diagnostic settings logs don&rsquo;t contain everything. For example, policies like <code>send-service-bus-message</code> aren&rsquo;t logged. In Application Insights, these show up as additional dependencies.</li>
+<li>The functionality is different. The APIM Insights workbook displays additional data for a selected operation, like the requests, dependencies, number of requests and duration. It also lets you open the end-to-end transaction details of a request.</li>
+<li>Diagnostic settings don&rsquo;t work for the Consumption tier, and the workbooks aren&rsquo;t available through the menu of the API Management instance for this tier. The APIM Insights workbook is deployed as a separate resource and uses Application Insights, so it doesn&rsquo;t depend on either.</li>
+</ul>
+<p>If you want to use the built-in Analytics Overview workbook, you can enable the diagnostic settings with the following Bicep snippet:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource apimDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: '${apiManagementSettings.serviceName}-diag'
+  scope: apiManagementService
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logAnalyticsDestinationType: 'Dedicated'
+    logs: [
+      {
+        categoryGroup: 'AllLogs'
+        enabled: true
+      }
+    ]
+  }
+}
+</code></pre><p>Setting <code>logAnalyticsDestinationType</code> to <code>Dedicated</code> sends the logs to the correct tables.</p>
+<h3 id="parameters">Parameters</h3>
+<p>The workbook has the following parameters at the top:</p>
+<ul>
+<li>Azure Subscription, Application Insights and API Management: these let me deploy the workbook once and use it for different environments.</li>
+<li>API Management Autoscaling: an optional parameter with the autoscale setting of the API Management instance, which is used to show the number of instances. See <a href="#auto-scaling">Auto Scaling</a>.</li>
+<li>Time: the time range used by all queries and graphs.</li>
+<li>Subscription: a drop-down with the API Management subscriptions used in the selected time range.</li>
+<li>API: a drop-down with the APIs that were called in the selected time range.</li>
+</ul>
+<p>The subscription and API filters only apply to the Overview and Operation Details groups.</p>
+<p>I&rsquo;ve configured the default time range to an hour, because the template is usually deployed as a short-lived demo environment. In real-world scenarios, I would set the time range to, for example, 14 days. That makes it easier to spot trends like an increase in request duration over time.</p>
+<p>For a more detailed explanation on how to configure parameters in a workbook, see <a href="/blog/2023/02/28/azure-workbook-tips-tricks/#parameters">Azure Workbook Tips &amp; Tricks - Parameters</a>.</p>
+<h4 id="auto-scaling">Auto Scaling</h4>
+<p>Auto scaling has a separate parameter, because it&rsquo;s a separate resource that needs to be deployed. This parameter is optional because the Developer tier doesn&rsquo;t support auto scaling and the Consumption tier scales automatically without a separate autoscale configuration.</p>
+<p>In <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/infra/01-base/modules/api-management.bicep">api-management.bicep</a> of the sample template, I&rsquo;ve added a simple auto scale configuration:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">resource apimAutoscaleSettings 'Microsoft.Insights/autoscalesettings@2022-10-01' = {
+  name: '${apiManagementSettings.serviceName}-autoscale'
+  location: location
+  tags: tags
+  properties: {
+    name: '${apiManagementSettings.serviceName}-autoscale'
+    enabled: true
+    targetResourceUri: apiManagementService.id
+
+    profiles: [
+      {
+        name: 'Default'
+        capacity: {
+          minimum: '1'
+          maximum: '1'
+          default: '1'
+        }
+        rules: []
+      }
+    ]
+  }
+}
+</code></pre><p>This sample doesn&rsquo;t actually scale, because the minimum and maximum capacity are both set to 1. But this way the metric is emitted, so it can be displayed in the workbook.</p>
+<p>See <a href="https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-autoscale">Automatically scale an Azure API Management instance</a> for more information on auto scaling API Management.</p>
+<h3 id="groups">Groups</h3>
+<p>The workbook is divided into groups. The Capacity and Scaling groups for the v1 and v2 tiers are separate, because the v2 metrics are different from the v1 metrics. This way, the workbook works for both and you can remove the group you don&rsquo;t need.</p>
+<p>You can expand, for example, the Capacity and Overview groups at the same time to see if an increase in capacity or instances was caused by an increase in requests.</p>
+<p>I&rsquo;ve enabled time brushing on all graphs. This means you can select a time period in a graph and all data in the workbook is filtered accordingly. See <a href="/blog/2023/02/28/azure-workbook-tips-tricks/#time-brushing">Azure Workbook Tips &amp; Tricks - Time Brushing</a> for how to configure this.</p>
+<h4 id="capacity-and-scaling">Capacity and Scaling</h4>
+<p>In my <a href="/blog/2023/02/28/azure-workbook-tips-tricks/">Azure Workbook Tips &amp; Tricks</a> post, I mainly use queries to show data. The graphs in the Capacity and Scaling groups are based on metrics instead. They&rsquo;re fairly simple to configure. You choose &lsquo;Add metric&rsquo; instead of &lsquo;Add query&rsquo; and configure the metric the same way you would when viewing metrics on the API Management resource.</p>
+<p>The v1 tier group has two graphs:</p>
+<ul>
+<li>API Management Capacity: the average and maximum capacity metric of the API Management instance, which measures the utilization of your instance&rsquo;s computing power (such as CPU and memory consumption).</li>
+<li>API Management Autoscale: the number of instances, based on the observed capacity metric of the autoscale setting. This graph is hidden when the API Management Autoscaling parameter is empty.</li>
+</ul>
+<p><img src="../../../../../images/monitoring-azure-integration-services/apim-insights-workbook/section-1-capacity-and-scaling-v1.png" alt="APIM Insights workbook - Capacity and Scaling (v1 tier)"></p>
+<p>The v2 tier group has graphs for the CPU and memory percentage of the gateway instead of the capacity, plus the same autoscale graph.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/apim-insights-workbook/section-2-capacity-and-scaling-v2.png" alt="APIM Insights workbook - Capacity and Scaling (v2 tier)"></p>
+<h4 id="overview">Overview</h4>
+<p>The Overview group has three graphs, filtered by the Subscription and API parameters:</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/apim-insights-workbook/section-3-overview.png" alt="APIM Insights workbook - Overview"></p>
+<p>The number of requests and number of failed requests graphs use a query similar to the one described in the <a href="/blog/2026/11/10/api-management-requests-workbook/#number-of-requests-graph">Number of Requests Graph</a> section of my previous post. Failed requests are already part of the number of requests graph. But when there are a lot of successful requests, the failures are difficult to spot. That&rsquo;s why they also have their own graph.</p>
+<p>The request duration graph uses the following query:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let subscriptionFilter = dynamic([{ApimSubscription}]);
+let apiFilter = dynamic([{API}]);
+
+requests
+| where customDimensions[&quot;Service Type&quot;] == &quot;API Management&quot;
+| where customDimensions[&quot;Service ID&quot;] == &quot;{ApiManagement:name}&quot;
+| extend 
+    subscription = tostring(customDimensions[&quot;Subscription Name&quot;]),
+    api = tostring(customDimensions[&quot;API Name&quot;])
+| where array_length(subscriptionFilter) == 0 or subscription in (subscriptionFilter)
+| where array_length(apiFilter) == 0 or api in (apiFilter)
+| make-series 
+    avg = avg(duration), 
+    median = percentile(duration, 50),
+    p80 = percentile(duration, 80),
+    p95 = percentile(duration, 95)
+  on timestamp from todatetime(&quot;{TimeRange:startISO}&quot;) to todatetime(&quot;{TimeRange:endISO}&quot;) step {TimeRange:grain}
+</code></pre><p>The query starts like the queries in my previous post. The multi-select parameters are turned into arrays and the filters only apply when an array isn&rsquo;t empty. This query also filters on the <code>Service ID</code> custom dimension, which contains the name of the API Management instance.</p>
+<p>Instead of the number of requests, the <a href="https://learn.microsoft.com/en-us/kusto/query/make-series-operator"><code>make-series</code></a> operator now calculates multiple aggregations of the request <code>duration</code> (in milliseconds) per time slot: the average, the median and the 80th and 95th percentile. The average can hide a few slow requests, while the percentiles show how slow the slowest requests are. Because <code>make-series</code> uses <code>{TimeRange:grain}</code>, the granularity adjusts automatically to the selected time range.</p>
+<h4 id="operation-details">Operation Details</h4>
+<p>This is the group I find the most interesting. I&rsquo;ve used it myself to troubleshoot issues with specific operations or find unexpected behaviour, like operations that fail more often than expected.</p>
+<p>The top table shows each operation with its number of requests, failures, duration, request size and response size. You can expand an operation to see the same information per result code. When you select a row, the details for that operation or result code are displayed below the table.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/apim-insights-workbook/section-4-operation-details.png" alt="APIM Insights workbook - Operation Details"></p>
+<p>This is the query for the operations table:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let subscriptionFilter = dynamic([{ApimSubscription}]);
+let apiFilter = dynamic([{API}]);
+
+let filteredRequests = requests
+| where customDimensions[&quot;Service Type&quot;] == &quot;API Management&quot;
+| where customDimensions[&quot;Service ID&quot;] == &quot;{ApiManagement:name}&quot;
+| extend 
+    subscription = tostring(customDimensions[&quot;Subscription Name&quot;]),
+    api = tostring(customDimensions[&quot;API Name&quot;])
+| where array_length(subscriptionFilter) == 0 or subscription in (subscriptionFilter)
+| where array_length(apiFilter) == 0 or api in (apiFilter)
+| extend 
+    operation = tostring(customDimensions[&quot;Operation Name&quot;]),
+    requestSize = toint(customMeasurements[&quot;Request Size&quot;]),
+    responseSize = toint(customMeasurements[&quot;Response Size&quot;])
+;
+
+let operations = filteredRequests
+| summarize 
+        numberOfRequests = sum(itemCount),
+        numberOfFailures = sumif(itemCount, success == false),
+        failRatio = round(100.0 * sumif(itemCount, success == false) / sum(itemCount), 2),
+        avgDuration = avg(duration),
+        (medianDuration, p80Duration, p95Duration, p99Duration) = percentiles(duration, 50, 80, 95, 99),
+        avgRequestSize = avg(requestSize),
+        sumRequestSize = sum(requestSize),
+        avgResponseSize = avg(responseSize),
+        sumResponseSize = sum(responseSize)
+    by rowName = api, rowId = operation_Name, parentRowId = '', operation, operation_Name, resultCode = ''
+| sort by numberOfRequests desc
+;
+
+let operationsPerResultCode = filteredRequests
+| summarize 
+        numberOfRequests = sum(itemCount),
+        numberOfFailures = sumif(itemCount, success == false),
+        failRatio = round(100.0 * sumif(itemCount, success == false) / sum(itemCount), 2),
+        avgDuration = avg(duration),
+        (medianDuration, p80Duration, p95Duration, p99Duration) = percentiles(duration, 50, 80, 95, 99),
+        avgRequestSize = avg(requestSize),
+        sumRequestSize = sum(requestSize),
+        avgResponseSize = avg(responseSize),
+        sumResponseSize = sum(responseSize)
+    by rowName = resultCode, rowId = strcat(operation_Name, ': ', resultCode), parentRowId = operation_Name, operation, operation_Name, resultCode
+| sort by resultCode asc
+;
+
+union operations, operationsPerResultCode
+</code></pre><p>The query does the following:</p>
+<ul>
+<li><code>filteredRequests</code> selects the requests of the API Management instance, applies the subscription and API filters and extracts the operation name. The request and response size come from the <code>customMeasurements</code> that API Management adds to each request.</li>
+<li><code>operations</code> aggregates the requests per operation. It calculates the number of requests and failures, the failure ratio, the average, median, p80, p95 and p99 duration and the average and total request and response size. The request and failure totals use the sum of <code>itemCount</code> to account for sampling. The <a href="https://learn.microsoft.com/en-us/kusto/query/percentiles-aggregation-function"><code>percentiles</code></a> function calculates multiple percentiles in one go.</li>
+<li><code>operationsPerResultCode</code> calculates the same aggregations, but grouped by operation and result code.</li>
+<li>The <code>union</code> combines both results into a single table, with a row per operation and a row per operation and result code.</li>
+</ul>
+<p>The <code>rowId</code> and <code>parentRowId</code> columns are hidden in the table. Instead, they&rsquo;re used to configure a tree. In the column settings, a &lsquo;Parent/Child&rsquo; tree is configured using the <code>rowId</code>, <code>parentRowId</code> and <code>rowName</code> columns. The operation rows have an empty <code>parentRowId</code>, so they&rsquo;re at the top level. The result code rows have the <code>operation_Name</code> as their <code>parentRowId</code>, so they&rsquo;re shown below their operation when you expand it.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/apim-insights-workbook/operation-details-tree-settings.png" alt="Tree settings of the operation details table"></p>
+<p>The <code>operation_Name</code> is a built-in column that includes both the API and the operation name, so it uniquely identifies an operation. For example: <code>movies-api;rev=1 - get-movies</code>. The <code>API Name</code> and <code>Operation Name</code> custom dimensions are still extracted, because they are the readable names of the operations shown in the table.</p>
+<p>The <code>operation_Name</code> and <code>resultCode</code> columns are also projected separately and are hidden as well. They&rsquo;re exported as parameters when you select a row, so they can be used as filters for the details below the table. See <a href="/blog/2023/02/28/azure-workbook-tips-tricks/#master-detail-table">Azure Workbook Tips &amp; Tricks - Master-detail Table</a> for how to set that up.</p>
+<p>When you select an operation or the underlying result code, more information is displayed for the selection. This includes tables with the executed requests, dependencies, traces and exceptions, and graphs with the number of requests and failures, the duration, the request size and the response size. If you select an operation, the exported <code>resultCode</code> is empty, so the details include all result codes. If you select a result code, the details are limited to that result code.</p>
+<h3 id="deploying-the-workbook">Deploying the Workbook</h3>
+<p>I use a generic module to deploy the workbook, as described in <a href="/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module">Deploy Azure Workbooks with a Reusable Bicep Module</a>. The module is used in this <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/infra/03-monitoring/main.bicep">main.bicep</a> of the sample template. Here&rsquo;s a short snippet:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">module apimInsightsWorkbook './modules/workbooks/workbook.bicep' = {
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    environmentName: environmentName
+    location: location
+    tags: tags
+    displayName: 'APIM Insights'
+    serializedData: string(loadJsonContent('./modules/workbooks/APIM Insights.workbook'))
+    placeholders: {
+      AzureSubscriptionId: subscription().subscriptionId
+      ApplicationInsightsId: appInsights.id
+      ApiManagementId: apiManagementService.id
+      ApiManagementAutoscaleSettingsId: apimAutoscaleSettings.?id ?? ''
+    }
+    sourceId: appInsights.id
+  }
+}
+</code></pre><p>Compared to the workbook in my previous post, there are two extra placeholders. The <code>ApiManagementId</code> is used to select the API Management instance and to query its metrics. The <code>ApiManagementAutoscaleSettingsId</code> is optional. If the instance has no autoscale setting, which is the case for the Consumption and Developer tiers, it&rsquo;s an empty string.</p>
+<p>You can also deploy the workbook manually, as described <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/demos/demo-apim-insights-workbook.md#manually-deploy-the-workbook">here</a>.</p>
+<h3 id="considerations">Considerations</h3>
+<p>Queries over Application Insights data can show incomplete results when telemetry is sampled. This applies to this workbook as well. See the <a href="/blog/2026/11/10/api-management-requests-workbook/#considerations">Considerations</a> section of my previous post for how to check the retained percentage and for the effect of logging on cost.</p>
+<p>The capacity and scaling graphs are based on metrics, not on Application Insights data, so sampling doesn&rsquo;t affect them.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>The built-in Analytics Overview workbook gives a high-level view of API Management, but it needs diagnostic settings and doesn&rsquo;t include everything that is logged to Application Insights. The APIM Insights workbook fills that gap. It combines capacity and scaling metrics, request and duration graphs and a table with details per operation and result code. From there, you can drill down to view more information like the executed requests, dependencies, traces, etc.</p>
+<p>The workbook is a starting point. You can remove the groups you don&rsquo;t need and adjust the parameters and queries to fit your own APIs.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-monitor">Azure Monitor</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/application-insights">Application Insights</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-workbook">Azure Workbook</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/api-management">API Management</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/kusto">Kusto</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/">API Management Requests Workbook &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-developer-cli">azure-developer-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-service-bus">azure-service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mstest">mstest</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/resilience">resilience</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

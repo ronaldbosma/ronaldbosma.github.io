@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 10 Nov 2026 09:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/bicep/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 17 Nov 2026 09:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/bicep/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>API Management Insights Workbook</title>
+      <link>https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/</link>
+      <pubDate>Tue, 17 Nov 2026 09:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/</guid>
+      <description>The APIM Requests workbook from my previous post focuses on finding specific API Management requests. The APIM Insights workbook in this post gives more insights into capacity, scaling, request volume and duration. It also shows more information for individual operations, like executed requests, dependencies, number of requests and duration.</description>
+    </item>
+    
     <item>
       <title>API Management Requests Workbook</title>
       <link>https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/</link>
