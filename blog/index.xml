@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 17 Nov 2026 09:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 24 Nov 2026 09:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Azure Functions Workbook</title>
+      <link>https://ronaldbosma.github.io/blog/2026/11/24/azure-functions-workbook/</link>
+      <pubDate>Tue, 24 Nov 2026 09:00:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2026/11/24/azure-functions-workbook/</guid>
+      <description>Finding specific Azure Functions executions means opening each function separately in the Azure Portal or building the right search in Application Insights. In this post, I walk through an Azure Workbook that shows the executions of all Function Apps that log to the same Application Insights, with a graph over time and a table you can filter on success, Function App, function and result code.</description>
+    </item>
+    
     <item>
       <title>API Management Insights Workbook</title>
       <link>https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/</link>

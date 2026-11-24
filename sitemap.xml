@@ -2,17 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://ronaldbosma.github.io/tags/api-management/</loc>
-    <lastmod>2026-11-17T09:15:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/</loc>
-    <lastmod>2026-11-11T12:00:00+01:00</lastmod>
-  </url><url>
     <loc>https://ronaldbosma.github.io/tags/application-insights/</loc>
     <lastmod>2026-11-17T09:15:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure/</loc>
     <lastmod>2026-11-17T09:15:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/tags/azure-functions/</loc>
+    <lastmod>2026-11-11T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/2026/11/24/azure-functions-workbook/</loc>
+    <lastmod>2026-11-11T14:15:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-integration-services/</loc>
     <lastmod>2026-11-17T09:15:00+01:00</lastmod>
@@ -44,6 +44,12 @@
     <loc>https://ronaldbosma.github.io/tags/</loc>
     <lastmod>2026-11-17T09:15:00+01:00</lastmod>
   </url><url>
+    <loc>https://ronaldbosma.github.io/tags/api-management/</loc>
+    <lastmod>2026-11-17T09:15:00+01:00</lastmod>
+  </url><url>
+    <loc>https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/</loc>
+    <lastmod>2026-11-11T12:00:00+01:00</lastmod>
+  </url><url>
     <loc>https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/</loc>
     <lastmod>2026-11-17T09:15:00+01:00</lastmod>
   </url><url>
@@ -58,9 +64,6 @@
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/infra-as-code/</loc>
     <lastmod>2026-11-05T16:25:00+01:00</lastmod>
-  </url><url>
-    <loc>https://ronaldbosma.github.io/tags/azure-functions/</loc>
-    <lastmod>2026-11-11T14:30:00+01:00</lastmod>
   </url><url>
     <loc>https://ronaldbosma.github.io/tags/azure-service-bus/</loc>
     <lastmod>2026-11-11T14:30:00+01:00</lastmod>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Azure Functions Workbook | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/11/24/azure-functions-workbook/cover.png"/>
+<meta name="twitter:title" content="Azure Functions Workbook"/>
+<meta name="twitter:description" content="Finding specific Azure Functions executions means opening each function separately in the Azure Portal or building the right search in Application Insights. In this post, I walk through an Azure Workbook that shows the executions of all Function Apps that log to the same Application Insights, with a graph over time and a table you can filter on success, Function App, function and result code."/>
+
+	<meta property="og:title" content="Azure Functions Workbook" />
+<meta property="og:description" content="Finding specific Azure Functions executions means opening each function separately in the Azure Portal or building the right search in Application Insights. In this post, I walk through an Azure Workbook that shows the executions of all Function Apps that log to the same Application Insights, with a graph over time and a table you can filter on success, Function App, function and result code." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/11/24/azure-functions-workbook/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/11/24/azure-functions-workbook/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-11-24T09:00:00+01:00" />
+<meta property="article:modified_time" content="2026-11-11T14:15:00+01:00" />
+<meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/10/api-management-requests-workbook/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/11/03/logic-app-workflow-runs-workbook/" /><meta property="og:see_also" content="https://ronaldbosma.github.io/blog/2026/10/20/monitoring-azure-integrations-with-a-dashboard/" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Azure%20Functions%20Workbook&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f24%2fazure-functions-workbook%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f24%2fazure-functions-workbook%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f24%2fazure-functions-workbook%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect | Microsoft MVP<br>
+                                    <i class="far fa-star"></i>
+                                    Nov 24, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    9 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Azure Functions Workbook</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/11/24/azure-functions-workbook/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working with Azure Functions in integrations where several Function Apps log to the same Application Insights instance. When something goes wrong, I want to find the function execution that failed. In the Azure Portal you can view the invocations of a single function, but that means going through the functions one by one. The alternative is to use the search and filtering in Application Insights, but you&rsquo;d have to set up the same filters every time.</p>
+<p>In this post, I&rsquo;ll walk through an Azure Workbook that shows all executed functions of all Function Apps that log to the same Application Insights. This makes it a lot easier to find the executions you&rsquo;re looking for. I&rsquo;ll explain the queries behind the workbook and how to deploy it.</p>
+<p>This is the fifth post in my <a href="/series/monitoring-azure-integration-services/">Monitoring Azure Integration Services</a> series.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#sample-template">Sample Template</a></li>
+<li><a href="#workbook-overview">Workbook Overview</a></li>
+<li><a href="#opentelemetry-logging">OpenTelemetry Logging</a></li>
+<li><a href="#parameters">Parameters</a></li>
+<li><a href="#number-of-functions-executed-graph">Number of Functions Executed Graph</a></li>
+<li><a href="#functions-table">Functions Table</a></li>
+<li><a href="#deploying-the-workbook">Deploying the Workbook</a></li>
+<li><a href="#considerations">Considerations</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="sample-template">Sample Template</h3>
+<p>I&rsquo;ve created an Azure Developer CLI (<code>azd</code>) template called <a href="https://github.com/ronaldbosma/monitor-azure-integration-services">Monitor Azure Integration Services</a> to demonstrate different monitoring approaches for Azure Integration Services, including dashboards, workbooks, health checks, alerts and health models. The workbook featured in this post is included in the template. The template has a sample application that lets users manage movies and submit or update ratings. It uses API Management, Azure Functions, Logic App workflows and Azure Service Bus. If you&rsquo;d like to deploy and try the solution, follow the template&rsquo;s <a href="https://github.com/ronaldbosma/monitor-azure-integration-services#getting-started">getting started instructions</a>. The template also includes a <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/demos/demo-azure-functions-workbook.md">demo guide</a> for this workbook.</p>
+<h3 id="workbook-overview">Workbook Overview</h3>
+<p>The setup of this workbook is very similar to the <a href="/blog/2026/11/10/api-management-requests-workbook/">API Management Requests Workbook</a>. It has a graph with the number of functions executed over time and a table with the individual executions below it. Both can be filtered using the parameters at the top.</p>
+<p><img src="../../../../../images/monitoring-azure-integration-services/azure-functions-workbook/azure-functions-workbook.png" alt="Azure Functions workbook"></p>
+<p>The definition file is <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/infra/03-monitoring/modules/workbooks/Azure%20Functions.workbook">Azure Functions.workbook</a>.</p>
+<p>I&rsquo;m assuming you know a bit about editing Azure Workbooks. If not, have a look at <a href="/blog/2023/02/28/azure-workbook-tips-tricks/">Azure Workbook Tips &amp; Tricks</a> first.</p>
+<h3 id="opentelemetry-logging">OpenTelemetry Logging</h3>
+<p>The workbook queries the <code>requests</code> table in Application Insights and relies on the properties that Azure Functions logs when OpenTelemetry is enabled, like <code>faas.name</code> and <code>faas.trigger</code>. See <a href="https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto">Use OpenTelemetry with Azure Functions</a> for how to enable OpenTelemetry in your app.</p>
+<p>If you&rsquo;re still using the Application Insights logging, the custom properties are different and the queries in this post won&rsquo;t return any results. See <a href="https://gist.github.com/ronaldbosma/ac21e32e2d7f8ad1512760bca8b0609b">Migrate Azure Functions project from Application Insights to OpenTelemetry</a> for instructions on how to migrate to OpenTelemetry. The gist also contains an alternative query that you can use if you want to keep the current logging.</p>
+<h3 id="parameters">Parameters</h3>
+<p>The workbook has the following parameters at the top:</p>
+<ul>
+<li>Subscription and Application Insights: these let me deploy the workbook once and try it on different environments.</li>
+<li>Time: the time range used by all queries.</li>
+<li>Success: a hardcoded list with yes and no, to show only the successful or only the failed executions.</li>
+<li>Function App: a drop-down with the Function Apps that logged executions in the selected time range, filtered on the selected success value.</li>
+<li>Function: a drop-down with the functions that were executed, filtered on the selected success value and Function Apps.</li>
+<li>Result Code: a drop-down with the result codes that were logged, filtered on all of the above.</li>
+</ul>
+<p>The result code depends on the type of function. An HTTP-triggered function logs the HTTP status code it returned, like 200 or 500. Other triggers don&rsquo;t have a status code. A function that&rsquo;s triggered by a Service Bus message, for example, logs a result code of 0, even when it fails. Because of that, I mostly use the Success parameter to find failed executions and the Result Code parameter for HTTP-triggered functions.</p>
+<p>For a more detailed explanation on how to configure parameters in a workbook, see <a href="/blog/2023/02/28/azure-workbook-tips-tricks/#parameters">Azure Workbook Tips &amp; Tricks - Parameters</a>.</p>
+<h3 id="number-of-functions-executed-graph">Number of Functions Executed Graph</h3>
+<p>The graph displays the number of functions executed over time, split by success and error. This is the query:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let successFilter = '{Success}';
+let functionAppFilter = dynamic([{FunctionApp}]);
+let functionFilter = dynamic([{Function}]);
+let resultCodeFilter = dynamic([{ResultCode}]);
+
+requests
+| extend functionName = tostring(customDimensions['faas.name'])
+| where functionName != '' // Only include Azure Function related requests
+| where isempty(successFilter) or success == tobool(successFilter)
+| where array_length(functionAppFilter) == 0 or cloud_RoleName in (functionAppFilter)
+| where array_length(functionFilter) == 0 or functionName in (functionFilter)
+| where array_length(resultCodeFilter) == 0 or resultCode in (resultCodeFilter)
+| make-series numberOfRequests=sum(itemCount) default=0 on timestamp from todatetime(&quot;{TimeRange:startISO}&quot;) to todatetime(&quot;{TimeRange:endISO}&quot;) step {TimeRange:grain} by success
+</code></pre><p>The query first puts the parameter values in variables. The multi-select parameters are turned into arrays with <code>dynamic([...])</code>. An empty array means nothing is selected, so those filters only apply when the array isn&rsquo;t empty. The Success parameter is a single value, so it&rsquo;s kept as a string. When it&rsquo;s empty, the filter is skipped.</p>
+<p>It then selects the requests logged by Azure Functions. Other types of services can log requests to the same Application Insights instance, so the query extracts the <code>faas.name</code> custom dimension and only keeps the requests where it has a value. Next, the filters are applied.</p>
+<p>Finally, <a href="https://learn.microsoft.com/en-us/kusto/query/make-series-operator"><code>make-series</code></a> sums <code>itemCount</code> for executions per success value and creates a time series. This has a few benefits:</p>
+<ul>
+<li>When Application Insights sampling is enabled, <code>itemCount</code> accounts for the executions represented by each retained telemetry item, so the graph shows an estimated execution count rather than just counting the sampled records.</li>
+<li>With <code>make-series</code>, the graph shows the entire selected period, even if nothing was executed at the start or end of the period. A <code>summarize</code> with <code>bin</code> would only return time slots that have data.</li>
+<li>The granularity is based on the TimeRange parameter by using <code>{TimeRange:grain}</code>. This way, the granularity is automatically adjusted depending on the time range you&rsquo;ve selected in the Time parameter.</li>
+</ul>
+<p>The <code>success</code> column contains the values <code>True</code> and <code>False</code>. In the chart settings of the workbook, I&rsquo;ve configured series labels, so they&rsquo;re shown as Success (green) and Error (red).</p>
+<p>I&rsquo;ve enabled time brushing on this graph, which means you can select a time period in the graph and all data in the workbook will be filtered accordingly. See <a href="/blog/2023/02/28/azure-workbook-tips-tricks/#time-brushing">Azure Workbook Tips &amp; Tricks - Time Brushing</a> for how to configure this.</p>
+<h3 id="functions-table">Functions Table</h3>
+<p>The table lists the individual function executions. This is the query:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">let successFilter = '{Success}';
+let functionAppFilter = dynamic([{FunctionApp}]);
+let functionFilter = dynamic([{Function}]);
+let resultCodeFilter = dynamic([{ResultCode}]);
+
+requests
+| extend functionName = tostring(customDimensions['faas.name'])
+| where functionName != '' // Only include Azure Function related requests
+| where isempty(successFilter) or success == tobool(successFilter)
+| where array_length(functionAppFilter) == 0 or cloud_RoleName in (functionAppFilter)
+| where array_length(functionFilter) == 0 or functionName in (functionFilter)
+| where array_length(resultCodeFilter) == 0 or resultCode in (resultCodeFilter)
+| extend status = iff(success==true, 'success', 'error')
+| extend functionTrigger = tostring(customDimensions['faas.trigger'])
+| project
+    status,
+    timestamp,
+    cloud_RoleName,
+    functionName,
+    duration,
+    resultCode,
+    functionTrigger,
+    details = itemId,
+    trace = itemId
+| sort by timestamp desc
+</code></pre><p>The first part is the same as in the graph query: it selects the function executions and applies the filters. The difference is the last part, where the query determines a status, extracts the trigger and uses <code>project</code> to select and order the columns for the table:</p>
+<ul>
+<li><code>status</code> is <code>success</code> or <code>error</code> and is rendered as an icon.</li>
+<li><code>cloud_RoleName</code> is the name of the Function App and <code>functionName</code> is the name of the function. The workbook shows them as Function App and Name.</li>
+<li><code>duration</code> is the duration of the execution.</li>
+<li><code>resultCode</code> is the result code of the execution.</li>
+<li><code>functionTrigger</code> is the type of trigger, extracted from the <code>faas.trigger</code> custom dimension.</li>
+<li><code>details</code> and <code>trace</code> both contain the <code>itemId</code> of the request. The Details link opens the request details in a context pane. The Trace link opens the end-to-end transaction details.</li>
+</ul>
+<p>Which fields are filled differs per type of function:</p>
+<ul>
+<li>Not every function logs the trigger. For an HTTP-triggered function it&rsquo;s set to <code>http</code>, but for a function triggered by a Service Bus message it&rsquo;s empty for example.</li>
+<li>Not every function has a meaningful result code. A function triggered by a Service Bus message has a result code of 0, as you can see in the screenshot.</li>
+</ul>
+<p>The table sorts by timestamp in descending order, so the most recent executions are shown first. I&rsquo;ve configured the workbook to show a maximum of 1000 rows, so use the filters or time brushing to narrow down the results if needed. The search field above the table lets you search through all columns.</p>
+<p>See <a href="/blog/2023/02/28/azure-workbook-tips-tricks/#table">Azure Workbook Tips &amp; Tricks - Table</a> for more info on configuring, styling and formatting tables.</p>
+<h3 id="deploying-the-workbook">Deploying the Workbook</h3>
+<p>I use a generic module to deploy the workbook, as described in <a href="/blog/2026/10/27/deploy-azure-workbooks-with-a-reusable-bicep-module">Deploy Azure Workbooks with a Reusable Bicep Module</a>. The module is used in this <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/infra/03-monitoring/main.bicep">main.bicep</a> of the sample template. Here&rsquo;s a short snippet:</p>
+<pre tabindex="0"><code class="language-bicep" data-lang="bicep">module azureFunctionsWorkbook './modules/workbooks/workbook.bicep' = {
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    environmentName: environmentName
+    location: location
+    tags: tags
+    displayName: 'Azure Functions'
+    serializedData: string(loadJsonContent('./modules/workbooks/Azure Functions.workbook'))
+    placeholders: {
+      AzureSubscriptionId: subscription().subscriptionId
+      ApplicationInsightsId: appInsights.id
+    }
+    sourceId: appInsights.id
+  }
+}
+</code></pre><p>You can also deploy the workbook manually, as described <a href="https://github.com/ronaldbosma/monitor-azure-integration-services/blob/main/demos/demo-azure-functions-workbook.md#manually-deploy-the-workbook">here</a>.</p>
+<h3 id="considerations">Considerations</h3>
+<p>Similar to the other workbooks, sampling is something to consider. Queries over Application Insights data can show incomplete results when telemetry is sampled, because some of the executions are then missing from the graph and the table. Whether your Function Apps sample depends on how you&rsquo;ve configured OpenTelemetry. See <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-sampling">Sampling in Azure Application Insights with OpenTelemetry</a> for the details and check how your Function Apps are configured. You can check the retained percentage with this query:</p>
+<pre tabindex="0"><code class="language-kusto" data-lang="kusto">union requests, dependencies, pageViews, browserTimings, exceptions, traces
+| where timestamp &gt; ago(1d)
+| summarize retainedPercentage = 100 / avg(itemCount)
+    by bin(timestamp, 1h), itemType, cloud_RoleName
+</code></pre><p>Beware that logging every function execution increases the amount of telemetry, which increases cost as well. Functions that run often, like a timer trigger or a Service Bus trigger that processes many messages, can add up quickly. Keep an eye on the ingestion volume of your Application Insights instance. If the cost becomes an issue, you can configure sampling.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>This workbook makes it easier to find specific function executions across multiple Function Apps. It solves that with filters on success, Function App, function and result code, a graph for the trend and a table with the executions. The Trace link then takes me straight to the end-to-end transaction details.</p>
+<p>The workbook is a starting point. Not every field is filled for every type of function, so adjust the queries and columns to fit the triggers you use.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-monitor">Azure Monitor</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/application-insights">Application Insights</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-workbook">Azure Workbook</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-functions">Azure Functions</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/bicep">Bicep</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/kusto">Kusto</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/11/17/api-management-insights-workbook/">API Management Insights Workbook &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-developer-cli">azure-developer-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-service-bus">azure-service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mstest">mstest</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/resilience">resilience</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>
