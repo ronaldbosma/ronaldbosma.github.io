@@ -7,7 +7,52 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 24 Nov 2026 09:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 25 Nov 2026 09:15:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>azd</title>
+      <link>https://ronaldbosma.github.io/tags/azd/</link>
+      <pubDate>Wed, 25 Nov 2026 09:15:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure</title>
+      <link>https://ronaldbosma.github.io/tags/azure/</link>
+      <pubDate>Wed, 25 Nov 2026 09:15:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Developer CLI</title>
+      <link>https://ronaldbosma.github.io/tags/azure-developer-cli/</link>
+      <pubDate>Wed, 25 Nov 2026 09:15:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-developer-cli/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Azure Integration Services</title>
+      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
+      <pubDate>Wed, 25 Nov 2026 09:15:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Logic Apps</title>
+      <link>https://ronaldbosma.github.io/tags/logic-apps/</link>
+      <pubDate>Wed, 25 Nov 2026 09:15:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/tags/logic-apps/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Application Insights</title>
       <link>https://ronaldbosma.github.io/tags/application-insights/</link>
@@ -18,29 +63,11 @@
     </item>
     
     <item>
-      <title>Azure</title>
-      <link>https://ronaldbosma.github.io/tags/azure/</link>
-      <pubDate>Tue, 24 Nov 2026 09:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Azure Functions</title>
       <link>https://ronaldbosma.github.io/tags/azure-functions/</link>
       <pubDate>Tue, 24 Nov 2026 09:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/azure-functions/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Azure Integration Services</title>
-      <link>https://ronaldbosma.github.io/tags/azure-integration-services/</link>
-      <pubDate>Tue, 24 Nov 2026 09:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure-integration-services/</guid>
       <description></description>
     </item>
     
@@ -90,15 +117,6 @@
     </item>
     
     <item>
-      <title>Logic Apps</title>
-      <link>https://ronaldbosma.github.io/tags/logic-apps/</link>
-      <pubDate>Tue, 03 Nov 2026 10:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/logic-apps/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Infra as Code</title>
       <link>https://ronaldbosma.github.io/tags/infra-as-code/</link>
       <pubDate>Tue, 27 Oct 2026 09:30:00 +0100</pubDate>
@@ -140,24 +158,6 @@
       <pubDate>Mon, 09 Mar 2026 06:00:00 +0100</pubDate>
       
       <guid>https://ronaldbosma.github.io/tags/resilience/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>azd</title>
-      <link>https://ronaldbosma.github.io/tags/azd/</link>
-      <pubDate>Mon, 02 Mar 2026 06:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azd/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Azure Developer CLI</title>
-      <link>https://ronaldbosma.github.io/tags/azure-developer-cli/</link>
-      <pubDate>Mon, 02 Mar 2026 06:00:00 +0100</pubDate>
-      
-      <guid>https://ronaldbosma.github.io/tags/azure-developer-cli/</guid>
       <description></description>
     </item>
     

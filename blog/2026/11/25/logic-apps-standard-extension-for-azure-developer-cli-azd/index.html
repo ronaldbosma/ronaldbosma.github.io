@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="generator" content="Hugo 0.92.2" />
+	
+	<title>Logic Apps Standard Extension for Azure Developer CLI (azd) | Ronald&#39;s Blog</title>
+	
+	
+
+	<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://ronaldbosma.github.io/blog/2026/11/25/logic-apps-standard-extension-for-azure-developer-cli-azd/cover.png"/>
+<meta name="twitter:title" content="Logic Apps Standard Extension for Azure Developer CLI (azd)"/>
+<meta name="twitter:description" content="Deploying a Logic Apps Standard project with azd currently requires configuring Node.js as the language, even when your project has nothing to do with Node. In this post, I&rsquo;ll introduce the Azure Logic Apps Standard extension I created to fix this and walk through how to use it for both a basic Logic App and one that includes a .NET custom code project."/>
+
+	<meta property="og:title" content="Logic Apps Standard Extension for Azure Developer CLI (azd)" />
+<meta property="og:description" content="Deploying a Logic Apps Standard project with azd currently requires configuring Node.js as the language, even when your project has nothing to do with Node. In this post, I&rsquo;ll introduce the Azure Logic Apps Standard extension I created to fix this and walk through how to use it for both a basic Logic App and one that includes a .NET custom code project." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ronaldbosma.github.io/blog/2026/11/25/logic-apps-standard-extension-for-azure-developer-cli-azd/" /><meta property="og:image" content="https://ronaldbosma.github.io/blog/2026/11/25/logic-apps-standard-extension-for-azure-developer-cli-azd/cover.png"/><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2026-11-25T09:15:00+01:00" />
+<meta property="article:modified_time" content="2026-11-25T09:15:00+01:00" />
+
+
+
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/medium.1d01d3d4d781b8550d11f5739b856ba0c3f1c4baf071bf614af1feec4b541711.css" integrity="sha256-HQHT1NeBuFUNEfVzm4VroMPxxLrwcb9hSvH&#43;7EtUFxE=">
+
+	
+	<link rel="stylesheet" href="https://ronaldbosma.github.io/css/additional.8819b6defcdc6d21280f9b402b00df87ca779135901de6c22e708c62e20184b9.css" integrity="sha256-iBm23vzcbSEoD5tAKwDfh8p3kTWQHebCLnCMYuIBhLk=">
+
+	
+	
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+    <div class="container pr-0">
+        
+        <a class="navbar-brand" href="https://ronaldbosma.github.io//">
+
+            
+            <span style="font-family:Righteous;">Ronald&#39;s Blog</span>
+            
+        </a>
+        
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <div class="collapse navbar-collapse" id="navbarMediumish">
+            
+            <ul class="navbar-nav ml-auto">
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/series">Series</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">About Me</a>
+                </li>
+                 
+                <li class="nav-item ">
+                    <a class="nav-link" href="/index.xml">RSS</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+
+
+        <div class="site-content">   
+            <div class="container">
+<div class="mainheading">
+    <h1 class="sitetitle">Ronald&#39;s Blog</h1>
+    <p class="lead">
+         
+    </p>
+</div><div class="main-content">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-2 pl-0"><div class="share sticky-top sticky-top-offset">
+    <p>Share</p>
+    <ul>
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Logic%20Apps%20Standard%20Extension%20for%20Azure%20Developer%20CLI%20%28azd%29&url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f25%2flogic-apps-standard-extension-for-azure-developer-cli-azd%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=435');return false;">
+        <i class="fab fa-x-twitter"></i>
+        </a>
+        </li>
+        
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f25%2flogic-apps-standard-extension-for-azure-developer-cli-azd%2f" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+        <i class="fab fa-facebook-f"></i>
+        </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+        <a target="_blank" href="https://www.xing.com/spi/shares/new?url=https%3a%2f%2fronaldbosma.github.io%2fblog%2f2026%2f11%2f25%2flogic-apps-standard-extension-for-azure-developer-cli-azd%2f" onclick="window.open(this.href, 'xing-share', 'width=550,height=435');return false;">
+        <i class="fab fa-xing"></i>
+        </a>
+        </li>        
+    </ul>
+
+    
+</div>
+</div>
+                                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        	
+                        
+                        
+                        
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/author.webp" alt="Ronald Bosma">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                <a target="_blank" class="link-dark">Ronald Bosma</a><br>
+                                <span class="author-description">
+                                    Software Architect | Microsoft MVP<br>
+                                    <i class="far fa-star"></i>
+                                    Nov 25, 2026
+                                    <i class="far fa-clock clock"></i>
+                                    6 min read
+                                </span>					
+                            </div>
+                        </div>			
+                        	
+                        
+                                                
+                        
+                        <h1 class="posttitle">Logic Apps Standard Extension for Azure Developer CLI (azd)</h1> 
+                    </div>
+
+                    
+                    
+                    
+                        <img class="featured-image img-fluid" src="https://ronaldbosma.github.io/blog/2026/11/25/logic-apps-standard-extension-for-azure-developer-cli-azd/cover.png" alt="thumbnail for this post">
+                    
+                    
+
+                    
+                    <div class="article-post">
+                        <p>I&rsquo;ve been working with the <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/">Azure Developer CLI (azd)</a> to deploy Logic Apps Standard projects for a while, and one thing I was missing was native support for Logic Apps Standard projects in azd. To package a Logic Apps Standard project, you can use Node.js as a workaround by configuring <code>language: js</code> in your <code>azure.yaml</code>. It works, but it creates an unnecessary dependency on Node.js, even when your project has nothing to do with Node. It also doesn&rsquo;t handle the scenario where your Logic App includes a <a href="https://learn.microsoft.com/en-us/azure/logic-apps/create-run-custom-code-functions">.NET custom code project</a>.</p>
+<p>To address this, I created the <a href="https://github.com/Azure/azure-dev/tree/main/cli/azd/extensions/azure.logicappsstandard">Azure Logic Apps Standard extension</a>. It introduces the <code>logicappsstandard</code> language, which handles packaging Logic Apps Standard projects correctly, including support for custom code projects.</p>
+<p>In this post, I&rsquo;ll explain the problem in more detail, introduce azd extensions and walk through how to install and use the extension. I&rsquo;ve also created a <a href="https://github.com/ronaldbosma/azure-logicappsstandard-azd-extension-sample">sample template</a> that you can deploy to see the extension in action.</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ul>
+<li><a href="#the-problem-with-deploying-logic-apps-using-azd">The Problem with Deploying Logic Apps using azd</a></li>
+<li><a href="#azure-developer-cli-extensions">Azure Developer CLI Extensions</a></li>
+<li><a href="#installing-the-extension">Installing the Extension</a></li>
+<li><a href="#packaging-a-logic-app-without-custom-code">Packaging a Logic App Without Custom Code</a></li>
+<li><a href="#packaging-a-logic-app-with-custom-code">Packaging a Logic App with Custom Code</a></li>
+<li><a href="#requiring-the-extension-in-your-template">Requiring the Extension in Your Template</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<h3 id="the-problem-with-deploying-logic-apps-using-azd">The Problem with Deploying Logic Apps using azd</h3>
+<p>When you want to deploy a Logic Apps Standard project using azd, there&rsquo;s no built-in language option for it. The standard workaround is to configure the service with <code>language: js</code> in your <code>azure.yaml</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">services</span>:
+  <span style="color:#f92672">logicAppWithCode</span>:
+    <span style="color:#f92672">project</span>: <span style="color:#ae81ff">./src/logicAppWithCode</span>
+    <span style="color:#f92672">host</span>: <span style="color:#ae81ff">function</span>
+    <span style="color:#f92672">language</span>: <span style="color:#ae81ff">js</span>
+</code></pre></div><p>This works because the configured project folder will be zipped, but it has a few downsides. It introduces a dependency on Node.js that isn&rsquo;t needed if your project doesn&rsquo;t contain any JavaScript. Every developer and CI/CD agent that uses the template needs Node.js installed. It also means the <code>.funcignore</code> file isn&rsquo;t respected when packaging. So, files that should be excluded can end up in the deployment package.</p>
+<blockquote>
+<p>Note that Logic Apps Standard is built on top of the Azure Functions runtime, so using <code>host: function</code> makes sense.</p>
+</blockquote>
+<p>The situation gets more complicated when your Logic App includes a <a href="https://learn.microsoft.com/en-us/azure/logic-apps/create-run-custom-code-functions">custom code project</a>. Custom code projects let you add .NET functions that your workflows can call. Before packaging the Logic App, you need to build the .NET project so the compiled output gets included in the deployment zip. You can do this by adding a <code>prepackage</code> <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/azd-extensibility">hook</a> that builds the project:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">services</span>:
+  <span style="color:#f92672">logicAppWithCode</span>:
+    <span style="color:#f92672">project</span>: <span style="color:#ae81ff">./src/logicAppWithCode</span>
+    <span style="color:#f92672">dist</span>: <span style="color:#ae81ff">Workflows</span>
+    <span style="color:#f92672">host</span>: <span style="color:#ae81ff">function</span>
+    <span style="color:#f92672">language</span>: <span style="color:#ae81ff">js</span>
+    <span style="color:#f92672">hooks</span>:
+      <span style="color:#f92672">prepackage</span>:
+        <span style="color:#f92672">shell</span>: <span style="color:#ae81ff">pwsh</span>
+        <span style="color:#f92672">run</span>: <span style="color:#ae81ff">../../hooks/prepackage-logicapp-build-functions-project.ps1</span>
+</code></pre></div><p>The hook script itself executes something like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">dotnet build ./Functions/Functions.csproj --configuration Release
+</code></pre></div><p>This works, but it means writing and maintaining extra hook scripts to get a build working. It also introduces an extra dependency on for example PowerShell.</p>
+<h3 id="azure-developer-cli-extensions">Azure Developer CLI Extensions</h3>
+<p><a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/extensions/overview">Azure Developer CLI extensions</a> are modular components that extend the functionality of azd. They allow you to add new capabilities, automate workflows and integrate with other services directly from the CLI without modifying azd itself.</p>
+<p>Extensions are distributed through extension sources, which are file-based or URL-based manifests that list available extensions. Think of them as NuGet feeds or npm registries for azd. By default, azd is configured with the official extension source registry, so you can install extensions without any additional setup.</p>
+<p>The extension framework also supports a concept called a Framework Service Provider, which is what I used for the Azure Logic Apps Standard extension. It lets an extension register itself as the handler for a custom language value configured in an <code>azure.yaml</code>.</p>
+<p>In the case of the Azure Logic Apps Standard extension, when azd encounters <code>language: logicappsstandard</code>, it hands off the restore, build and package phases to the extension.</p>
+<h3 id="installing-the-extension">Installing the Extension</h3>
+<p>The extension is available from the official azd extension source, so you can install it directly without adding a source:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">azd ext install azure.logicappsstandard
+</code></pre></div><p>If you already have the extension installed and want to upgrade to the latest version, run:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">azd ext upgrade azure.logicappsstandard
+</code></pre></div><p>The source code for the extension is available at <a href="https://github.com/Azure/azure-dev/tree/main/cli/azd/extensions/azure.logicappsstandard">https://github.com/Azure/azure-dev/tree/main/cli/azd/extensions/azure.logicappsstandard</a>.</p>
+<h3 id="packaging-a-logic-app-without-custom-code">Packaging a Logic App Without Custom Code</h3>
+<p>If your Logic App doesn&rsquo;t include a custom code project, the setup is straightforward. Assume your template has a similar project structure as the following:</p>
+<pre tabindex="0"><code>└── src
+    └── logicAppWithoutCode
+        ├── .vscode
+        ├── Artifacts
+        ├── lib
+        ├── Workflow1
+        │   └── workflow.json
+        ├── Workflow2
+        │   └── workflow.json
+        ├── workflow-designtime
+        ├── .funcignore
+        ├── .gitignore
+        ├── host.json
+        └── local.settings.json
+</code></pre><p>Configure your service in <code>azure.yaml</code> like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">services</span>:
+  <span style="color:#f92672">logicAppWithoutCode</span>:
+    <span style="color:#f92672">project</span>: <span style="color:#ae81ff">./src/logicAppWithoutCode</span>
+    <span style="color:#f92672">host</span>: <span style="color:#ae81ff">function</span>
+    <span style="color:#f92672">language</span>: <span style="color:#ae81ff">logicappsstandard</span>
+</code></pre></div><p>The extension will package everything under <code>./src/logicAppWithoutCode</code> into a zip file. Because <code>host: function</code> is used, the exclusions in <code>.funcignore</code> are respected and only the relevant files are included in the package. No Node.js required.</p>
+<h3 id="packaging-a-logic-app-with-custom-code">Packaging a Logic App with Custom Code</h3>
+<p>If your Logic App includes a custom code project, the project structure typically looks similar to this:</p>
+<pre tabindex="0"><code>└── src
+    └── logicAppWithCode
+        ├── Functions
+        │   ├── MyFunctions.cs
+        │   ├── Functions.csproj
+        │   └── ...
+        └── Workflows
+            ├── Workflow1
+            │   └── workflow.json
+            ├── Workflow2
+            │   └── workflow.json
+            ├── host.json
+            └── ...
+</code></pre><p>Here the workflows are in a <code>Workflows</code> subfolder instead of at the root of the project. There&rsquo;s also a <code>Functions</code> folder containing the custom code project that needs to be built before packaging.</p>
+<p>Configure your service in <code>azure.yaml</code> like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">services</span>:
+  <span style="color:#f92672">logicAppWithCode</span>:
+    <span style="color:#f92672">project</span>: <span style="color:#ae81ff">./src/logicAppWithCode</span>
+    <span style="color:#f92672">dist</span>: <span style="color:#ae81ff">Workflows</span>
+    <span style="color:#f92672">host</span>: <span style="color:#ae81ff">function</span>
+    <span style="color:#f92672">language</span>: <span style="color:#ae81ff">logicappsstandard</span>
+    <span style="color:#f92672">customCodeProject</span>: <span style="color:#ae81ff">Functions/Functions.csproj</span>
+</code></pre></div><p>When azd runs the package phase, the extension first builds the custom code project specified in <code>customCodeProject</code> and then packages the Logic App artifacts in the folder configured by the <code>dist</code> property. No prepackage hook needed.</p>
+<p>The <code>customCodeProject</code> property is the path to the <code>.csproj</code> file, relative to the <code>project</code> folder. Make sure the required build toolchain is installed on the machine running the deployment. For .NET 10 projects, that means the .NET 10 SDK. For .NET Framework projects, you need .NET Framework or MSBuild tools.</p>
+<h3 id="requiring-the-extension-in-your-template">Requiring the Extension in Your Template</h3>
+<p>If you share your template with others, it helps to make the extension a <a href="https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/extensions/overview#declare-required-extensions-in-a-project">declared requirement</a>. You can do this with the <code>requiredVersions</code> section in <code>azure.yaml</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">requiredVersions</span>:
+  <span style="color:#f92672">extensions</span>:
+    <span style="color:#f92672">azure.logicappsstandard</span>: <span style="color:#e6db74">&#34;latest&#34;</span>
+</code></pre></div><p>When someone runs azd without the extension installed, azd will ask to install it.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>The <a href="https://github.com/Azure/azure-dev/tree/main/cli/azd/extensions/azure.logicappsstandard">Azure Logic Apps Standard extension</a> removes the Node.js dependency from Logic Apps Standard deployments and adds first-class support for custom code projects, without needing prepackage hooks or custom scripts. The <a href="https://github.com/ronaldbosma/azure-logicappsstandard-azd-extension-sample">sample template</a> gives you a working starting point for both scenarios, including infrastructure and a test workflow. If you&rsquo;re deploying Logic Apps Standard with azd, give it a try.</p>
+
+                    </div>
+                    
+                    
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        
+                        <li>
+                        <a href="/tags/azd">azd</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure">Azure</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-developer-cli">Azure Developer CLI</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/azure-integration-services">Azure Integration Services</a>
+                        </li>
+                        
+                        <li>
+                        <a href="/tags/logic-apps">Logic Apps</a>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                    
+                    
+                    
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    
+                    
+                        <a class="d-block col-md-6 text-lg-right" href="https://ronaldbosma.github.io/blog/2026/11/24/azure-functions-workbook/">Azure Functions Workbook &raquo;</a>
+                    
+                    <div class="clearfix"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+
+            </div>
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+			<div class="d-md-flex align-items-center justify-content-center h-100">
+				<h2 class="d-md-block d-none align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+			</div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+			
+			<a class="mt-1 mb-1" href="/tags/api-management">api-management</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-gateway">application-gateway</a>
+			
+			<a class="mt-1 mb-1" href="/tags/application-insights">application-insights</a>
+			
+			<a class="mt-1 mb-1" href="/tags/atdd">atdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azd">azd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure">azure</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-cli">azure-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-developer-cli">azure-developer-cli</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-devops">azure-devops</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-functions">azure-functions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-integration-services">azure-integration-services</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-monitor">azure-monitor</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-pipelines">azure-pipelines</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-service-bus">azure-service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/azure-workbook">azure-workbook</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bdd">bdd</a>
+			
+			<a class="mt-1 mb-1" href="/tags/bicep">bicep</a>
+			
+			<a class="mt-1 mb-1" href="/tags/cleaner-code">cleaner-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/client-certificates">client-certificates</a>
+			
+			<a class="mt-1 mb-1" href="/tags/continuous-integration">continuous-integration</a>
+			
+			<a class="mt-1 mb-1" href="/tags/entra-id">entra-id</a>
+			
+			<a class="mt-1 mb-1" href="/tags/event-hub">event-hub</a>
+			
+			<a class="mt-1 mb-1" href="/tags/gherkin">gherkin</a>
+			
+			<a class="mt-1 mb-1" href="/tags/github-actions">github-actions</a>
+			
+			<a class="mt-1 mb-1" href="/tags/hugo">hugo</a>
+			
+			<a class="mt-1 mb-1" href="/tags/iis">iis</a>
+			
+			<a class="mt-1 mb-1" href="/tags/infra-as-code">infra-as-code</a>
+			
+			<a class="mt-1 mb-1" href="/tags/kusto">kusto</a>
+			
+			<a class="mt-1 mb-1" href="/tags/logic-apps">logic-apps</a>
+			
+			<a class="mt-1 mb-1" href="/tags/managed-identity">managed-identity</a>
+			
+			<a class="mt-1 mb-1" href="/tags/microsoft-graph">microsoft-graph</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mstest">mstest</a>
+			
+			<a class="mt-1 mb-1" href="/tags/mtls">mtls</a>
+			
+			<a class="mt-1 mb-1" href="/tags/nuget">nuget</a>
+			
+			<a class="mt-1 mb-1" href="/tags/oauth">oauth</a>
+			
+			<a class="mt-1 mb-1" href="/tags/pester">pester</a>
+			
+			<a class="mt-1 mb-1" href="/tags/powershell">powershell</a>
+			
+			<a class="mt-1 mb-1" href="/tags/psrule">psrule</a>
+			
+			<a class="mt-1 mb-1" href="/tags/reqnroll">reqnroll</a>
+			
+			<a class="mt-1 mb-1" href="/tags/resilience">resilience</a>
+			
+			<a class="mt-1 mb-1" href="/tags/security">security</a>
+			
+			<a class="mt-1 mb-1" href="/tags/service-bus">service-bus</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specflow">specflow</a>
+			
+			<a class="mt-1 mb-1" href="/tags/specification-by-example">specification-by-example</a>
+			
+			<a class="mt-1 mb-1" href="/tags/test-automation">test-automation</a>
+			
+			<a class="mt-1 mb-1" href="/tags/windows-server">windows-server</a>
+			
+			<a class="mt-1 mb-1" href="/tags/yaml">yaml</a>
+			
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                &copy; Copyright Ronald Bosma - All rights reserved
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" rel="noopener" href="https://www.wowthemes.net">Mediumish Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+        </div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script src="https://ronaldbosma.github.io/js/mediumish.84218587c174fd40bce82544b98851670f0b124a7324b349c54a4065e2b32ffc.js" integrity="sha256-hCGFh8F0/UC86CVEuYhRZw8LEkpzJLNJxUpAZeKzL/w="></script><script type="text/javascript">
+    !(function (cfg){function e(){cfg.onInit&&cfg.onInit(i)}var S,u,D,t,n,i,C=window,x=document,w=C.location,I="script",b="ingestionendpoint",E="disableExceptionTracking",A="ai.device.";"instrumentationKey"[S="toLowerCase"](),u="crossOrigin",D="POST",t="appInsightsSDK",n=cfg.name||"appInsights",(cfg.name||C[t])&&(C[t]=n),i=C[n]||function(l){var d=!1,g=!1,f={initialize:!0,queue:[],sv:"7",version:2,config:l};function m(e,t){var n={},i="Browser";function a(e){e=""+e;return 1===e.length?"0"+e:e}return n[A+"id"]=i[S](),n[A+"type"]=i,n["ai.operation.name"]=w&&w.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(f.sv||f.version),{time:(i=new Date).getUTCFullYear()+"-"+a(1+i.getUTCMonth())+"-"+a(i.getUTCDate())+"T"+a(i.getUTCHours())+":"+a(i.getUTCMinutes())+":"+a(i.getUTCSeconds())+"."+(i.getUTCMilliseconds()/1e3).toFixed(3).slice(2,5)+"Z",iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}},ver:4,seq:"1",aiDataContract:undefined}}var h=-1,v=0,y=["js.monitor.azure.com","js.cdn.applicationinsights.io","js.cdn.monitor.azure.com","js0.cdn.applicationinsights.io","js0.cdn.monitor.azure.com","js2.cdn.applicationinsights.io","js2.cdn.monitor.azure.com","az416426.vo.msecnd.net"],k=l.url||cfg.src;if(k){if((n=navigator)&&(~(n=(n.userAgent||"").toLowerCase()).indexOf("msie")||~n.indexOf("trident/"))&&~k.indexOf("ai.3")&&(k=k.replace(/(\/)(ai\.3\.)([^\d]*)$/,function(e,t,n){return t+"ai.2"+n})),!1!==cfg.cr)for(var e=0;e<y.length;e++)if(0<k.indexOf(y[e])){h=e;break}var i=function(e){var a,t,n,i,o,r,s,c,p,u;f.queue=[],g||(0<=h&&v+1<y.length?(a=(h+v+1)%y.length,T(k.replace(/^(.*\/\/)([\w\.]*)(\/.*)$/,function(e,t,n,i){return t+y[a]+i})),v+=1):(d=g=!0,o=k,c=(p=function(){var e,t={},n=l.connectionString;if(n)for(var i=n.split(";"),a=0;a<i.length;a++){var o=i[a].split("=");2===o.length&&(t[o[0][S]()]=o[1])}return t[b]||(e=(n=t.endpointsuffix)?t.location:null,t[b]="https://"+(e?e+".":"")+"dc."+(n||"services.visualstudio.com")),t}()).instrumentationkey||l.instrumentationKey||"",p=(p=p[b])?p+"/v2/track":l.endpointUrl,(u=[]).push((t="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",n=o,r=p,(s=(i=m(c,"Exception")).data).baseType="ExceptionData",s.baseData.exceptions=[{typeName:"SDKLoadFailed",message:t.replace(/\./g,"-"),hasFullStack:!1,stack:t+"\nSnippet failed to load ["+n+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(w&&w.pathname||"_unknown_")+"\nEndpoint: "+r,parsedStack:[]}],i)),u.push((s=o,t=p,(r=(n=m(c,"Message")).data).baseType="MessageData",(i=r.baseData).message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+s+")").replace(/\"/g,"")+'"',i.properties={endpoint:t},n)),o=u,c=p,JSON&&((r=C.fetch)&&!cfg.useXhr?r(c,{method:D,body:JSON.stringify(o),mode:"cors"}):XMLHttpRequest&&((s=new XMLHttpRequest).open(D,c),s.setRequestHeader("Content-type","application/json"),s.send(JSON.stringify(o))))))},a=function(e,t){g||setTimeout(function(){!t&&f.core||i()},500),d=!1},T=function(e){var n=x.createElement(I),e=(n.src=e,cfg[u]);return!e&&""!==e||"undefined"==n[u]||(n[u]=e),n.onload=a,n.onerror=i,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||a(0,t)},cfg.ld&&cfg.ld<0?x.getElementsByTagName("head")[0].appendChild(n):setTimeout(function(){x.getElementsByTagName(I)[0].parentNode.appendChild(n)},cfg.ld||0),n};T(k)}try{f.cookie=x.cookie}catch(p){}function t(e){for(;e.length;)!function(t){f[t]=function(){var e=arguments;d||f.queue.push(function(){f[t].apply(f,e)})}}(e.pop())}var r,s,n="track",o="TrackPage",c="TrackEvent",n=(t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+o,"stop"+o,"start"+c,"stop"+c,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),f.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4},(l.extensionConfig||{}).ApplicationInsightsAnalytics||{});return!0!==l[E]&&!0!==n[E]&&(t(["_"+(r="onerror")]),s=C[r],C[r]=function(e,t,n,i,a){var o=s&&s(e,t,n,i,a);return!0!==o&&f["_"+r]({message:e,url:t,lineNumber:n,columnNumber:i,error:a,evt:C.event}),o},l.autoExceptionInstrumented=!0),f}(cfg.cfg),(C[n]=i).queue&&0===i.queue.length?(i.queue.push(e),i.trackPageView({})):e();})({
+    src: "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js",
+    
+    
+    
+    crossOrigin: "anonymous",
+    
+    
+    cfg: { 
+     connectionString: "InstrumentationKey=ef9efef7-c49b-41cd-a2a9-c38b380159cf;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/",
+     cookieCfg: {
+        enabled: false 
+     }
+    }});
+</script>
+        <script type="text/javascript">
+    
+
+    var keyValuePairs = document.cookie.split(';');
+    for (var i = 0; i < keyValuePairs.length; i++) {
+        var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
+        
+        var expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + 1);
+
+        
+        document.cookie = name + "=;domain=" + window.location.hostname + ";path=/;expires=" + expireDate.toUTCString();
+    }
+</script>
+    </body>
+</html>

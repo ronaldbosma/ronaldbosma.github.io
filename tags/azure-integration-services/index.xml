@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Ronald Bosma - All rights reserved</copyright>
-    <lastBuildDate>Tue, 24 Nov 2026 09:00:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-integration-services/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 25 Nov 2026 09:15:00 +0100</lastBuildDate><atom:link href="https://ronaldbosma.github.io/tags/azure-integration-services/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Logic Apps Standard Extension for Azure Developer CLI (azd)</title>
+      <link>https://ronaldbosma.github.io/blog/2026/11/25/logic-apps-standard-extension-for-azure-developer-cli-azd/</link>
+      <pubDate>Wed, 25 Nov 2026 09:15:00 +0100</pubDate>
+      
+      <guid>https://ronaldbosma.github.io/blog/2026/11/25/logic-apps-standard-extension-for-azure-developer-cli-azd/</guid>
+      <description>Deploying a Logic Apps Standard project with azd currently requires configuring Node.js as the language, even when your project has nothing to do with Node. In this post, I&amp;rsquo;ll introduce the Azure Logic Apps Standard extension I created to fix this and walk through how to use it for both a basic Logic App and one that includes a .NET custom code project.</description>
+    </item>
+    
     <item>
       <title>Azure Functions Workbook</title>
       <link>https://ronaldbosma.github.io/blog/2026/11/24/azure-functions-workbook/</link>
